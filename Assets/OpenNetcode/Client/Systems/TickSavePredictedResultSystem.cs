@@ -1,0 +1,37 @@
+﻿using OpenNetcode.Client.Components;
+using OpenNetcode.Movement.Components;
+using OpenNetcode.Shared.Components;
+using OpenNetcode.Shared.Systems;
+using OpenNetcode.Shared.Time;
+using Shared.Coordinates;
+using Unity.Entities;
+using UnityEngine;
+
+namespace OpenNetcode.Client.Systems
+{
+    [UpdateInGroup(typeof(TickSimulationSystemGroup), OrderLast = true)]
+    public class TickSavePredictedResultSystem<TPrediction, TInput, TResult> : SystemBase
+        where TPrediction : unmanaged, INetworkedComponent
+        where TInput : unmanaged, INetworkedComponent
+        where TResult : unmanaged, IResultMessage<TPrediction>
+    {
+        protected override void OnUpdate()
+        {
+            int tick = GetSingleton<TickData>().Value;
+            
+            Entity clientEntity = GetSingleton<ClientData>().LocalPlayer;
+            TInput input = EntityManager.GetComponentData<TInput>(clientEntity);
+            TPrediction prediction = EntityManager.GetComponentData<TPrediction>(clientEntity);
+            var predictedMoves = EntityManager.GetBuffer<PredictedMove<TPrediction, TInput>>(clientEntity);
+            
+            int index = (tick) % predictedMoves.Length;
+
+            predictedMoves[index] = new PredictedMove<TPrediction, TInput>()
+            {
+                Tick = tick,
+                Input = input,
+                Prediction = prediction
+            };
+        }
+    }
+}

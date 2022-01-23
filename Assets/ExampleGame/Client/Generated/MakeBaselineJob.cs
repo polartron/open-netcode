@@ -1,0 +1,107 @@
+using OpenNetcode.Client.Components;
+using OpenNetcode.Shared.Components;
+using Unity.Burst;
+using Unity.Collections;
+using Unity.Entities;
+using Unity.Jobs;
+
+//<using>
+//<generated>
+using OpenNetcode.Movement.Components;
+using Shared.Components;
+using ExampleGame.Shared.Components;
+//</generated>
+
+namespace Client.Generated
+{
+    [BurstCompile]
+    struct MakeBaseLineJob : IJob
+    {
+        [ReadOnly] public int SnapshotIndex;
+        [ReadOnly] public int Tick;
+        [ReadOnly] public ClientArea Area;
+
+        [ReadOnly] public NativeHashMap<int, ClientEntitySnapshot> Entities;
+
+        //<template>
+        //[ReadOnly] public BufferFromEntity<SnapshotBufferElement<##TYPE##>> ##TYPE##Buffer;
+        //</template>
+//<generated>
+        [ReadOnly] public BufferFromEntity<SnapshotBufferElement<EntityPosition>> EntityPositionBuffer;
+        [ReadOnly] public BufferFromEntity<SnapshotBufferElement<EntityVelocity>> EntityVelocityBuffer;
+//</generated>
+        [ReadOnly] public ComponentDataFromEntity<NetworkedPrefab> NetworkedPrefabFromEntity;
+
+        public void Execute()
+        {
+            NativeArray<ClientEntitySnapshot> entitySnapshots = Entities.GetValueArray(Allocator.Temp);
+            entitySnapshots.Sort();
+            MakeBaselines(ref Area, entitySnapshots);
+        }
+
+        private void MakeBaselines(ref ClientArea area, in NativeArray<ClientEntitySnapshot> entitySnapshots)
+        {
+            NativeArray<ClientEntitySnapshot> entities =
+                new NativeArray<ClientEntitySnapshot>(entitySnapshots.Length, Allocator.Temp);
+
+            //<template>
+            //NativeArray<##TYPE##> ##TYPELOWER##s = new NativeArray<##TYPE##>(entitySnapshots.Length, Allocator.Temp);
+            //int ##TYPELOWER##Index = 0;
+            //</template>
+//<generated>
+            NativeArray<EntityPosition> entityPositions = new NativeArray<EntityPosition>(entitySnapshots.Length, Allocator.Temp);
+            int entityPositionIndex = 0;
+            NativeArray<EntityVelocity> entityVelocitys = new NativeArray<EntityVelocity>(entitySnapshots.Length, Allocator.Temp);
+            int entityVelocityIndex = 0;
+//</generated>
+
+            for (int i = 0; i < entitySnapshots.Length; i++)
+            {
+                var snapshot = entitySnapshots[i];
+                int mask = snapshot.ComponentMask;
+
+                if (NetworkedPrefabFromEntity.HasComponent(snapshot.Entity))
+                {
+                    snapshot.Type = NetworkedPrefabFromEntity[snapshot.Entity].Index;
+                }
+
+                //<template>
+                //if ((mask & (1 << ##INDEX##)) != 0)
+                //{
+                //    var buffer = ##TYPE##Buffer[snapshot.Entity];
+                //    ##TYPELOWER##s[##TYPELOWER##Index] = buffer[Tick % buffer.Length].Value;
+                //    snapshot.##TYPE##Index = ##TYPELOWER##Index;
+                //    ##TYPELOWER##Index++;
+                //}
+                //</template>
+//<generated>
+                if ((mask & (1 << 0)) != 0)
+                {
+                    var buffer = EntityPositionBuffer[snapshot.Entity];
+                    entityPositions[entityPositionIndex] = buffer[Tick % buffer.Length].Value;
+                    snapshot.EntityPositionIndex = entityPositionIndex;
+                    entityPositionIndex++;
+                }
+                if ((mask & (1 << 1)) != 0)
+                {
+                    var buffer = EntityVelocityBuffer[snapshot.Entity];
+                    entityVelocitys[entityVelocityIndex] = buffer[Tick % buffer.Length].Value;
+                    snapshot.EntityVelocityIndex = entityVelocityIndex;
+                    entityVelocityIndex++;
+                }
+//</generated>
+                entities[i] = snapshot;
+            }
+
+            area.ClientEntitySnapshotBaseLine.UpdateBaseline(entities, SnapshotIndex, entitySnapshots.Length);
+
+            //<template>
+            //area.##TYPE##BaseLine.UpdateBaseline(##TYPELOWER##s, SnapshotIndex, ##TYPELOWER##Index);
+            //</template>
+//<generated>
+            area.EntityPositionBaseLine.UpdateBaseline(entityPositions, SnapshotIndex, entityPositionIndex);
+            area.EntityVelocityBaseLine.UpdateBaseline(entityVelocitys, SnapshotIndex, entityVelocityIndex);
+//</generated>
+        }
+    }
+}

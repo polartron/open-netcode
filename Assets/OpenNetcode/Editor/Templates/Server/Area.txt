@@ -1,0 +1,43 @@
+using System;
+using OpenNetcode.Movement.Components;
+using OpenNetcode.Shared;
+using OpenNetcode.Shared.Time;
+using Server.Generated;
+
+//<using>
+
+namespace Server.Generated
+{
+    internal struct Area : IDisposable
+    {
+        private int _capacity;
+
+        public int Capacity
+        {
+            get { return _capacity; }
+        }
+
+        public BaseLines<ServerEntitySnapshot> EntitySnapshotBaseLine;
+
+        //<template>
+        //public BaseLines<##TYPE##> ##TYPE##BaseLine;
+        //</template>
+
+        public Area(int capacity)
+        {
+            _capacity = capacity;
+            EntitySnapshotBaseLine = new BaseLines<ServerEntitySnapshot>(capacity, TimeConfig.BaseSnapshotEvery);
+            //<template>
+            //##TYPE##BaseLine = new BaseLines<##TYPE##>(capacity, TimeConfig.BaseSnapshotEvery);
+            //</template>
+        }
+
+        public void Dispose()
+        {
+            EntitySnapshotBaseLine.Dispose();
+            //<template>
+            //##TYPE##BaseLine.Dispose();
+            //</template>
+        }
+    }
+}

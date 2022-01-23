@@ -1,0 +1,34 @@
+using OpenNetcode.Movement.Components;
+using OpenNetcode.Shared.Components;
+using Shared.Components;
+using Unity.Entities;
+
+//<using>
+
+namespace Server.Generated
+{
+    [InternalBufferCapacity(8)]
+    public struct PrivateSnapshotObserver : IBufferElementData
+    {
+        public Entity Entity;
+        public int ComponentInterestMask;
+
+        public static int Observe<T>(int mask) where T : unmanaged, ISnapshotComponent<T>
+        {
+            //<template>
+            //if (typeof(T) == typeof(##TYPE##))
+            //{
+            //    return mask | (1 << ##INDEX##);
+            //}
+            //</template>
+            //<privatetemplate>
+            //if (typeof(T) == typeof(##TYPE##))
+            //{
+            //    return mask | (1 << ##INDEX##);
+            //}
+            //</privatetemplate>
+
+            return mask;
+        }
+    }
+}

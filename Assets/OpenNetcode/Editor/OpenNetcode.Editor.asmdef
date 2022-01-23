@@ -1,0 +1,18 @@
+{
+    "name": "OpenNetcode.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:0d8c0cb81c978424ba60256af2e2bf82"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

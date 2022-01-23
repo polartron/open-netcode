@@ -1,0 +1,30 @@
+{
+    "name": "OpenNetcode.Tests",
+    "rootNamespace": "",
+    "references": [
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "Unity.Collections",
+        "Unity.Networking.Transport",
+        "Unity.Mathematics",
+        "Unity.Entities",
+        "OpenNetcode.Client",
+        "OpenNetcode.Server",
+        "OpenNetcode.Shared"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
