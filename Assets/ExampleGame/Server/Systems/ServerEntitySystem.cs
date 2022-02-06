@@ -5,15 +5,13 @@ using OpenNetcode.Shared.Components;
 using OpenNetcode.Shared.Systems;
 using Server.Components;
 using Server.Generated;
-using Shared;
 using Shared.Components;
 using Shared.Coordinates;
-using Unity.Collections;
 using Unity.Entities;
 using Unity.Transforms;
 using UnityEngine;
 
-namespace Server.System
+namespace ExampleGame.Server.Systems
 {
     [DisableAutoCreation]
     [UpdateInGroup(typeof(InitializationSystemGroup))]

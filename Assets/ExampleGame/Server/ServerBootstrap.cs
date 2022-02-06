@@ -1,10 +1,9 @@
-using ExampleGame.Server.System;
+using ExampleGame.Server.Systems;
 using OpenNetcode.Movement.Components;
 using OpenNetcode.Movement.Systems;
 using OpenNetcode.Server;
 using OpenNetcode.Server.Systems;
 using OpenNetcode.Shared.Systems;
-using Server.System;
 using Shared;
 using Unity.Entities;
 using UnityEngine;

@@ -2,13 +2,12 @@
 using OpenNetcode.Shared;
 using OpenNetcode.Shared.Messages;
 using OpenNetcode.Shared.Systems;
-using Server.System;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Networking.Transport;
 using UnityEngine;
 
-namespace ExampleGame.Server.System
+namespace ExampleGame.Server.Systems
 {
     [UpdateInGroup(typeof(TickPreSimulationSystemGroup))]
     [UpdateAfter(typeof(TickServerReceiveSystem))]

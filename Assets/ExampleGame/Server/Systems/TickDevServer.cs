@@ -1,6 +1,5 @@
 using ExampleGame.Shared.Components;
 using OpenNetcode.Movement.Components;
-using OpenNetcode.Shared.Components;
 using OpenNetcode.Shared.Systems;
 using Server.Components;
 using Unity.Entities;
@@ -9,7 +8,7 @@ using Unity.Transforms;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace Server.System
+namespace ExampleGame.Server.Systems
 {
 
     [DisableAutoCreation]
