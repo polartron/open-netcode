@@ -11,7 +11,6 @@ using OpenNetcode.Shared.Systems;
 using OpenNetcode.Shared.Time;
 using Shared;
 using Shared.Components;
-using Shared.Messages;
 using Unity.Entities;
 using Unity.Transforms;
 using UnityEngine;
@@ -34,7 +33,7 @@ namespace Client
             EntityManager entityManager = World.EntityManager;
 
             Entity clientEntity = CreateLocalPlayer(ref entityManager, playerPrefab);
-            ClientInitialization.Initialize<EntityPosition, CharacterInput, ResultMessage>(World, clientEntity, networkedPrefabs);
+            ClientInitialization.Initialize<EntityPosition, CharacterInput>(World, clientEntity, networkedPrefabs);
             var tickSystem = World.GetExistingSystem<TickSystem>();
             tickSystem.AddPreSimulationSystem(new Client.Generated.TickClientSnapshotSystem<EntityPosition, CharacterInput>(
                 World.GetExistingSystem<ClientNetworkSystem>()));

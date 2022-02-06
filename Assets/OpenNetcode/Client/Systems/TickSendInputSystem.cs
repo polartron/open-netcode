@@ -11,10 +11,9 @@ using UnityEngine;
 namespace OpenNetcode.Client.Systems
 {
     [UpdateInGroup(typeof(TickPreSimulationSystemGroup))]
-    public class TickSendInputSystem<TPrediction, TInput, TResult> : SystemBase
+    public class TickSendInputSystem<TPrediction, TInput> : SystemBase
         where TPrediction : unmanaged, INetworkedComponent, IComponentData
         where TInput : unmanaged, INetworkedComponent, IComponentData
-        where TResult : unmanaged, IResultMessage<TPrediction>
     {
         private IClientNetworkSystem _clientNetworkSystem;
         private NativeArray<TInput> _inputs = new NativeArray<TInput>(5, Allocator.Persistent);

@@ -13,10 +13,9 @@ namespace OpenNetcode.Client
 {
     public static class ClientInitialization
     {
-        public static void Initialize<TPrediction, TInput, TResult>(in World clientWorld, in Entity localPlayer, in NetworkedPrefabs networkedPrefabs)
+        public static void Initialize<TPrediction, TInput>(in World clientWorld, in Entity localPlayer, in NetworkedPrefabs networkedPrefabs)
             where TPrediction : unmanaged, INetworkedComponent
             where TInput : unmanaged, INetworkedComponent
-            where TResult : unmanaged, IResultMessage<TPrediction>
         {
             var predictedMoves = clientWorld.EntityManager.AddBuffer<PredictedMove<TPrediction, TInput>>(localPlayer);
             
@@ -43,9 +42,9 @@ namespace OpenNetcode.Client
             tickSystem.AddPreSimulationSystem(new TickReceiveClientInfoSystem(clientNetworkSystem));
             tickSystem.AddPreSimulationSystem(new TickReceiveResultSystem(clientNetworkSystem));
             tickSystem.AddPostSimulationSystem(new TickClientSendSystem(clientNetworkSystem));
-            tickSystem.AddPreSimulationSystem(new TickSendInputSystem<TPrediction, TInput, TResult>(clientNetworkSystem));
+            tickSystem.AddPreSimulationSystem(new TickSendInputSystem<TPrediction, TInput>(clientNetworkSystem));
             tickSystem.AddPreSimulationSystem(new TickPredictionSystem<TPrediction, TInput>());
-            tickSystem.AddSimulationSystem(new TickSavePredictedResultSystem<TPrediction, TInput, TResult>());
+            tickSystem.AddSimulationSystem(new TickSavePredictedResultSystem<TPrediction, TInput>());
             
             
         }

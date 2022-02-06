@@ -10,10 +10,9 @@ using UnityEngine;
 namespace OpenNetcode.Client.Systems
 {
     [UpdateInGroup(typeof(TickSimulationSystemGroup), OrderLast = true)]
-    public class TickSavePredictedResultSystem<TPrediction, TInput, TResult> : SystemBase
+    public class TickSavePredictedResultSystem<TPrediction, TInput> : SystemBase
         where TPrediction : unmanaged, INetworkedComponent
         where TInput : unmanaged, INetworkedComponent
-        where TResult : unmanaged, IResultMessage<TPrediction>
     {
         protected override void OnUpdate()
         {
