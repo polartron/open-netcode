@@ -133,8 +133,21 @@ namespace OpenNetcode.Editor
                     CreateTemplate(template, Path.Combine(ClientGeneratedPath, fileName + ".cs"), publicSnapshots, privateSnapshots, publicEvents);
                 }
             }
+            
+            // Generate snapshot settings
 
             AssetDatabase.Refresh();
+        }
+        
+        public static int CountBits(uint value)
+        {
+            int count = 0;
+            while (value != 0)
+            {
+                count++;
+                value &= value - 1;
+            }
+            return count;
         }
         
         private static void CreateTemplate(string filePath, string generatedPath, List<Type> publicSnapshots, List<Type> privateSnapshots, List<Type> publicEvents)
@@ -172,11 +185,15 @@ namespace OpenNetcode.Editor
                 namespaceIndex += insert.Length;
             }
             
+            
+            int eventMaskBits = CountBits((uint) publicEvents.Count);
+            int componentBufferLength = publicEvents.Count + publicSnapshots.Count;
+            
             text = text.Insert(namespaceIndex, "//</generated>\n");
             
-            text = Replace(text, "<template>", "</template>", publicSnapshots);
-            text = Replace(text, "<privatetemplate>", "</privatetemplate>", privateSnapshots, publicSnapshots.Count);
-            text = Replace(text, "<events>", "</events>", publicEvents, 0, publicSnapshots.Count);
+            text = Replace(text, "<template>", "</template>", publicSnapshots, eventMaskBits, componentBufferLength);
+            text = Replace(text, "<privatetemplate>", "</privatetemplate>", privateSnapshots, eventMaskBits, componentBufferLength, publicSnapshots.Count);
+            text = Replace(text, "<events>", "</events>", publicEvents, eventMaskBits, componentBufferLength, 0, publicSnapshots.Count);
 
             Debug.Log("Generated " + Path.Combine(Application.dataPath, generatedPath));
             
@@ -209,7 +226,7 @@ namespace OpenNetcode.Editor
             return text;
         }
 
-        private static string Replace(string text, string templateTagBegin, string templateTagEnd, List<Type> types, int typeOffset = 0, int indexOffset = 0)
+        private static string Replace(string text, string templateTagBegin, string templateTagEnd, List<Type> types, int eventMaskBits, int componentBufferLength, int typeOffset = 0, int indexOffset = 0)
         {
             int seek = 0;
             
@@ -247,6 +264,8 @@ namespace OpenNetcode.Editor
                     insert = insert.Replace("##TYPELOWER##", lower);
                     insert = insert.Replace("##INDEX##", (i + typeOffset).ToString());
                     insert = insert.Replace("##INDEXOFFSET##", indexOffset.ToString());
+                    insert = insert.Replace("##EVENTMASKBITS##", eventMaskBits.ToString());
+                    insert = insert.Replace("##COMPONENTBUFFERLENGTH##", componentBufferLength.ToString());
                     insert += "\n";
                     text = text.Insert(insertPosition, insert);
                     insertPosition += insert.Length;

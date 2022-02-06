@@ -243,7 +243,15 @@ namespace Client.Generated
 
                 if (Convert.ToBoolean(reader.ReadRawBits(1))) // We have events
                 {
-                    int eventMask = (int) reader.ReadRawBits(SnapshotSettings.EventMaskBits); // What type of events?
+                    int eventMaskBits = 0;
+                    //<template>
+                    //eventMaskBits = ##EVENTMASKBITS##;
+                    //</template>
+//<generated>
+                    eventMaskBits = 1;
+                    eventMaskBits = 1;
+//</generated>
+                    int eventMask = (int) reader.ReadRawBits(eventMaskBits); // What type of events?
 
                     //<events>
                     //if (!ParseEvent<##TYPE##>(eventMask, ##INDEXOFFSET##, tick, ##INDEX##, ref componentBuffers, hasCreatedBuffer,
@@ -385,7 +393,15 @@ namespace Client.Generated
                 ServerIndex = index
             });
 
-            var componentBuffers = new ComponentBuffers(SnapshotSettings.ComponentBufferLength);
+            int componentBufferLength = 0;
+            //<template>
+            //componentBufferLength = ##COMPONENTBUFFERLENGTH##;
+            //</template>
+//<generated>
+            componentBufferLength = 3;
+            componentBufferLength = 3;
+//</generated>
+            var componentBuffers = new ComponentBuffers(componentBufferLength);
             
             //<template>
             //if (created)

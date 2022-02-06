@@ -10,7 +10,7 @@ using Shared.Components;
 using ExampleGame.Shared.Components;
 //</generated>
 
-namespace Server.Generated
+namespace ExampleGame.Server.Generated
 {
     [BurstCompile]
     public struct ClearEventsJob : IJobEntityBatch

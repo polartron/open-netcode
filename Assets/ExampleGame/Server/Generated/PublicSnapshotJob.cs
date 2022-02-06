@@ -230,7 +230,17 @@ namespace Server.Generated
 
                 if (eventMask != 0)
                 {
-                    writer.WriteRawBits((uint) eventMask, SnapshotSettings.EventMaskBits); // Event mask
+                    int eventMaskBits = 0;
+                    //<template>
+                    //eventMaskBits = ##EVENTMASKBITS##;
+                    //</template>
+//<generated>
+                    eventMaskBits = 1;
+                    eventMaskBits = 1;
+//</generated>
+                    
+                    
+                    writer.WriteRawBits((uint) eventMask, eventMaskBits); // Event mask
 
                     //<events>
                     //if ((eventMask & (1 << ##INDEX##)) != 0)
