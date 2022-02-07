@@ -131,7 +131,7 @@ namespace OpenNetcode.Server.Systems
         
             var parsePacketsJob = new ParsePacketsJob()
             {
-                Connections = _connections.AsDeferredJobArray(),
+                Connections = _connections,
                 Driver = _driver.ToConcurrent(),
                 ReceivedMessages = ReceivePackets.AsParallelWriter()
             };
@@ -146,7 +146,7 @@ namespace OpenNetcode.Server.Systems
         unsafe struct ParsePacketsJob : IJobParallelForDefer
         {
             public NetworkDriver.Concurrent Driver;
-            public NativeArray<NetworkConnection> Connections;
+            [ReadOnly] public NativeList<NetworkConnection> Connections;
             public NativeMultiHashMap<int, PacketArrayWrapper>.ParallelWriter ReceivedMessages;
 
             public void Execute(int index)
