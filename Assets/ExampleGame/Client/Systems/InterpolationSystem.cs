@@ -1,6 +1,6 @@
-﻿using Client.Components;
+﻿using ExampleGame.Client.Components;
+using ExampleGame.Shared.Movement.Components;
 using OpenNetcode.Client.Components;
-using OpenNetcode.Movement.Components;
 using OpenNetcode.Shared.Systems;
 using OpenNetcode.Shared.Time;
 using Shared.Coordinates;
@@ -10,7 +10,7 @@ using Unity.Entities;
 using Unity.Transforms;
 using UnityEngine;
 
-namespace Client.Systems
+namespace ExampleGame.Client.Systems
 {
     [UpdateInGroup(typeof(SimulationSystemGroup))]
     [UpdateAfter(typeof(TickSystem))]

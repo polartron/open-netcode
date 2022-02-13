@@ -1,6 +1,6 @@
 using Unity.Entities;
 
-namespace Server.Components
+namespace ExampleGame.Server.Components
 {
     [GenerateAuthoringComponent]
     public struct WanderingAiTag : IComponentData

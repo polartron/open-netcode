@@ -1,6 +1,6 @@
 using Unity.Entities;
 
-namespace OpenNetcode.Movement.Components
+namespace ExampleGame.Shared.Movement.Components
 {
     [GenerateAuthoringComponent]
     public struct MovementConfig : IComponentData

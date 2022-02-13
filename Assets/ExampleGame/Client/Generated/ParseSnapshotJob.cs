@@ -14,8 +14,7 @@ using UnityEngine;
 
 //<using>
 //<generated>
-using OpenNetcode.Movement.Components;
-using Shared.Components;
+using ExampleGame.Shared.Movement.Components;
 using ExampleGame.Shared.Components;
 //</generated>
 
@@ -41,6 +40,7 @@ namespace Client.Generated
 //<generated>
         public BufferFromEntity<SnapshotBufferElement<EntityPosition>> EntityPositionBuffer;
         public BufferFromEntity<SnapshotBufferElement<EntityVelocity>> EntityVelocityBuffer;
+        public BufferFromEntity<SnapshotBufferElement<PathComponent>> PathComponentBuffer;
 //</generated>
         //<privatetemplate>
         //public BufferFromEntity<SnapshotBufferElement<##TYPE##>> ##TYPE##Buffer;
@@ -104,6 +104,7 @@ namespace Client.Generated
 //<generated>
             var baseEntityPosition = Area.EntityPositionBaseLine.GetBaseline(baseLine);
             var baseEntityVelocity = Area.EntityVelocityBaseLine.GetBaseline(baseLine);
+            var basePathComponent = Area.PathComponentBaseLine.GetBaseline(baseLine);
 //</generated>
 
             NativeHashSet<ActiveEntity> activeEntities = new NativeHashSet<ActiveEntity>(5000, Allocator.Temp);
@@ -239,6 +240,13 @@ namespace Client.Generated
                     Success[0] = false;
                     return;
                 }
+                if (!ParseComponent<PathComponent>(tick, 2, activeEntity.BaseEntity.PathComponentIndex, ref componentBuffers,
+                    hasCreatedBuffer, serverEntity, activeEntity, ref reader,
+                    basePathComponent, ref PathComponentBuffer, CompressionModel))
+                {
+                    Success[0] = false;
+                    return;
+                }
 //</generated>
 
                 if (Convert.ToBoolean(reader.ReadRawBits(1))) // We have events
@@ -248,6 +256,7 @@ namespace Client.Generated
                     //eventMaskBits = ##EVENTMASKBITS##;
                     //</template>
 //<generated>
+                    eventMaskBits = 1;
                     eventMaskBits = 1;
                     eventMaskBits = 1;
 //</generated>
@@ -263,7 +272,7 @@ namespace Client.Generated
                     //}
                     //</events>
 //<generated>
-                    if (!ParseEvent<BumpEvent>(eventMask, 2, tick, 0, ref componentBuffers, hasCreatedBuffer,
+                    if (!ParseEvent<BumpEvent>(eventMask, 3, tick, 0, ref componentBuffers, hasCreatedBuffer,
                         serverEntity,
                         ref reader, ref BumpEventBuffer, CompressionModel))
                     {
@@ -398,8 +407,9 @@ namespace Client.Generated
             //componentBufferLength = ##COMPONENTBUFFERLENGTH##;
             //</template>
 //<generated>
-            componentBufferLength = 3;
-            componentBufferLength = 3;
+            componentBufferLength = 4;
+            componentBufferLength = 4;
+            componentBufferLength = 4;
 //</generated>
             var componentBuffers = new ComponentBuffers(componentBufferLength);
             
@@ -414,8 +424,11 @@ namespace Client.Generated
             //}
             //else
             //{
-            //    var array = ##TYPE##Buffer[entity].AsNativeArray();
-            //    componentBuffers.Set(array.GetUnsafePtr(), array.Length, ##INDEX##);
+            //    if (##TYPE##Buffer.HasComponent(entity))
+            //    {
+            //        var array = ##TYPE##Buffer[entity].AsNativeArray();
+            //        componentBuffers.Set(array.GetUnsafePtr(), array.Length, ##INDEX##);
+            //    }
             //}
             //</template>
 //<generated>
@@ -429,8 +442,11 @@ namespace Client.Generated
             }
             else
             {
-                var array = EntityPositionBuffer[entity].AsNativeArray();
-                componentBuffers.Set(array.GetUnsafePtr(), array.Length, 0);
+                if (EntityPositionBuffer.HasComponent(entity))
+                {
+                    var array = EntityPositionBuffer[entity].AsNativeArray();
+                    componentBuffers.Set(array.GetUnsafePtr(), array.Length, 0);
+                }
             }
             if (created)
             {
@@ -442,10 +458,30 @@ namespace Client.Generated
             }
             else
             {
-                var array = EntityVelocityBuffer[entity].AsNativeArray();
-                componentBuffers.Set(array.GetUnsafePtr(), array.Length, 1);
+                if (EntityVelocityBuffer.HasComponent(entity))
+                {
+                    var array = EntityVelocityBuffer[entity].AsNativeArray();
+                    componentBuffers.Set(array.GetUnsafePtr(), array.Length, 1);
+                }
+            }
+            if (created)
+            {
+                var pathComponentBuffer = EntityCommandBuffer.AddBuffer<SnapshotBufferElement<PathComponent>>(entity);
+                for (int i = 0; i < TimeConfig.SnapshotsPerSecond; i++)
+                    pathComponentBuffer.Add(default);
+                var array = pathComponentBuffer.AsNativeArray();
+                componentBuffers.Set(array.GetUnsafePtr(), array.Length, 2);
+            }
+            else
+            {
+                if (PathComponentBuffer.HasComponent(entity))
+                {
+                    var array = PathComponentBuffer[entity].AsNativeArray();
+                    componentBuffers.Set(array.GetUnsafePtr(), array.Length, 2);
+                }
             }
 //</generated>
+            
             //<privatetemplate>
             //if (created)
             //{
@@ -462,6 +498,7 @@ namespace Client.Generated
                     entityHealthBuffer.Add(default);
             }
 //</generated>
+            
             //<events>
             //if (created)
             //{
@@ -473,8 +510,11 @@ namespace Client.Generated
             //}
             //else
             //{
-            //    var array = ##TYPE##Buffer[entity].AsNativeArray();
-            //    componentBuffers.Set(array.GetUnsafePtr(), array.Length,##INDEXOFFSET## + ##INDEX##);
+            //    if (##TYPE##Buffer.HasComponent(entity))
+            //    {
+            //        var array = ##TYPE##Buffer[entity].AsNativeArray();
+            //        componentBuffers.Set(array.GetUnsafePtr(), array.Length, ##INDEXOFFSET## + ##INDEX##);
+            //    }
             //}
             //</events>
 //<generated>
@@ -484,12 +524,15 @@ namespace Client.Generated
                 for (int i = 0; i < TimeConfig.SnapshotsPerSecond; i++)
                     bumpEventBuffer.Add(default);
                 var array = bumpEventBuffer.AsNativeArray();
-                componentBuffers.Set(array.GetUnsafePtr(), array.Length, 2 + 0);
+                componentBuffers.Set(array.GetUnsafePtr(), array.Length, 3 + 0);
             }
             else
             {
-                var array = BumpEventBuffer[entity].AsNativeArray();
-                componentBuffers.Set(array.GetUnsafePtr(), array.Length,2 + 0);
+                if (BumpEventBuffer.HasComponent(entity))
+                {
+                    var array = BumpEventBuffer[entity].AsNativeArray();
+                    componentBuffers.Set(array.GetUnsafePtr(), array.Length, 3 + 0);
+                }
             }
 //</generated>
 
@@ -513,6 +556,10 @@ namespace Client.Generated
             {
                 mask = mask | (1 << 1);
             }
+            if (componentTypes.Contains(ComponentType.ReadWrite<PathComponent>()))
+            {
+                mask = mask | (1 << 2);
+            }
 //</generated>
             //<privatetemplate>
             //if (componentTypes.Contains(ComponentType.ReadWrite<##TYPE##>()))
@@ -523,7 +570,7 @@ namespace Client.Generated
 //<generated>
             if (componentTypes.Contains(ComponentType.ReadWrite<EntityHealth>()))
             {
-                mask = mask | (1 << 2);
+                mask = mask | (1 << 3);
             }
 //</generated>
 

@@ -14,8 +14,7 @@ using OpenNetcode.Shared.Time;
 
 //<using>
 //<generated>
-using OpenNetcode.Movement.Components;
-using Shared.Components;
+using ExampleGame.Shared.Movement.Components;
 using ExampleGame.Shared.Components;
 //</generated>
 
@@ -25,6 +24,7 @@ using ExampleGame.Shared.Components;
 //<generated>
 [assembly: RegisterGenericComponentType(typeof(SnapshotBufferElement<EntityPosition>))]
 [assembly: RegisterGenericComponentType(typeof(SnapshotBufferElement<EntityVelocity>))]
+[assembly: RegisterGenericComponentType(typeof(SnapshotBufferElement<PathComponent>))]
 //</generated>
 //<privatetemplate>
 //[assembly: RegisterGenericComponentType(typeof(SnapshotBufferElement<##TYPE##>))]
@@ -94,10 +94,11 @@ namespace Client.Generated
 //<generated>
             DoRollback<EntityPosition>(entity, tick);
             DoRollback<EntityVelocity>(entity, tick);
+            DoRollback<PathComponent>(entity, tick);
 //</generated>
         }
 
-        private void DoRollback<T>(in Entity entity, int tick) where T : unmanaged, INetworkedComponent
+        private void DoRollback<T>(in Entity entity, int tick) where T : unmanaged, IComponentData
         {
             if (!EntityManager.HasComponent<SnapshotBufferElement<T>>(entity))
                 return;
@@ -245,6 +246,10 @@ namespace Client.Generated
                     {
                         componentMask = componentMask | (1 << 1);
                     }
+                    if (EntityManager.HasComponent(entity, typeof(PathComponent)))
+                    {
+                        componentMask = componentMask | (1 << 2);
+                    }
 //</generated>
                     //<privatetemplate>
                     //if (EntityManager.HasComponent(entity, typeof(##TYPE##)))
@@ -255,7 +260,7 @@ namespace Client.Generated
 //<generated>
                     if (EntityManager.HasComponent(entity, typeof(EntityHealth)))
                     {
-                        componentMask = componentMask | (1 << 2);
+                        componentMask = componentMask | (1 << 3);
                     }
 //</generated>
 
@@ -277,6 +282,12 @@ namespace Client.Generated
                     if (!EntityManager.HasComponent<SnapshotBufferElement<EntityVelocity>>(entity))
                     {
                         var buffer = EntityManager.AddBuffer<SnapshotBufferElement<EntityVelocity>>(entity);
+                        for (int b = 0; b < TimeConfig.SnapshotsPerSecond; b++)
+                            buffer.Add(default);
+                    }
+                    if (!EntityManager.HasComponent<SnapshotBufferElement<PathComponent>>(entity))
+                    {
+                        var buffer = EntityManager.AddBuffer<SnapshotBufferElement<PathComponent>>(entity);
                         for (int b = 0; b < TimeConfig.SnapshotsPerSecond; b++)
                             buffer.Add(default);
                     }
@@ -324,6 +335,10 @@ namespace Client.Generated
                 {
                     ReadBufferElement<EntityVelocity>(ref reader, observedSnapshot.Entity, snapshotTick);
                 }
+                if ((updateMask & (1 << 2)) != 0)
+                {
+                    ReadBufferElement<PathComponent>(ref reader, observedSnapshot.Entity, snapshotTick);
+                }
 //</generated>
                 //<privatetemplate>
                 //if ((updateMask & (1 << ##INDEX##)) != 0)
@@ -332,7 +347,7 @@ namespace Client.Generated
                 //}
                 //</privatetemplate>
 //<generated>
-                if ((updateMask & (1 << 2)) != 0)
+                if ((updateMask & (1 << 3)) != 0)
                 {
                     ReadBufferElement<EntityHealth>(ref reader, observedSnapshot.Entity, snapshotTick);
                 }
@@ -394,6 +409,7 @@ namespace Client.Generated
 //<generated>
                 EntityPositionBuffer = GetBufferFromEntity<SnapshotBufferElement<EntityPosition>>(),
                 EntityVelocityBuffer = GetBufferFromEntity<SnapshotBufferElement<EntityVelocity>>(),
+                PathComponentBuffer = GetBufferFromEntity<SnapshotBufferElement<PathComponent>>(),
 //</generated>
                 //<privatetemplate>
                 //##TYPE##Buffer = GetBufferFromEntity<SnapshotBufferElement<##TYPE##>>(),
@@ -454,6 +470,7 @@ namespace Client.Generated
 //<generated>
                 EntityPositionBuffer = GetBufferFromEntity<SnapshotBufferElement<EntityPosition>>(true),
                 EntityVelocityBuffer = GetBufferFromEntity<SnapshotBufferElement<EntityVelocity>>(true),
+                PathComponentBuffer = GetBufferFromEntity<SnapshotBufferElement<PathComponent>>(true),
 //</generated>
             };
             

@@ -2,7 +2,8 @@
     "name": "OpenNetcode.Editor",
     "rootNamespace": "",
     "references": [
-        "GUID:0d8c0cb81c978424ba60256af2e2bf82"
+        "GUID:0d8c0cb81c978424ba60256af2e2bf82",
+        "GUID:734d92eba21c94caba915361bd5ac177"
     ],
     "includePlatforms": [
         "Editor"

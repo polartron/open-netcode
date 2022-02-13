@@ -78,7 +78,7 @@ namespace Client.Generated
             //</template>
         }
 
-        private void DoRollback<T>(in Entity entity, int tick) where T : unmanaged, INetworkedComponent
+        private void DoRollback<T>(in Entity entity, int tick) where T : unmanaged, IComponentData
         {
             if (!EntityManager.HasComponent<SnapshotBufferElement<T>>(entity))
                 return;

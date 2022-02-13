@@ -18,8 +18,7 @@ using Shared.Generated;
 
 //<using>
 //<generated>
-using OpenNetcode.Movement.Components;
-using Shared.Components;
+using ExampleGame.Shared.Movement.Components;
 using ExampleGame.Shared.Components;
 //</generated>
 
@@ -134,6 +133,7 @@ namespace Server.Generated
 //<generated>
                     EntityPositionComponents = GetComponentDataFromEntity<EntityPosition>(true),
                     EntityVelocityComponents = GetComponentDataFromEntity<EntityVelocity>(true),
+                    PathComponentComponents = GetComponentDataFromEntity<PathComponent>(true),
 //</generated>
                     //<privatetemplate>
                     //##TYPE##Components = GetComponentDataFromEntity<##TYPE##>(true),
@@ -177,6 +177,7 @@ namespace Server.Generated
 //<generated>
                 EntityPositionComponents = GetComponentDataFromEntity<EntityPosition>(true),
                 EntityVelocityComponents = GetComponentDataFromEntity<EntityVelocity>(true),
+                PathComponentComponents = GetComponentDataFromEntity<PathComponent>(true),
 //</generated>
                 //<events>
                 //##TYPE##BufferFromEntity = GetBufferFromEntity<BumpEvent>(true),
@@ -239,6 +240,7 @@ namespace Server.Generated
 //<generated>
                             EntityPositionFromEntity = GetComponentDataFromEntity<EntityPosition>(true),
                             EntityVelocityFromEntity = GetComponentDataFromEntity<EntityVelocity>(true),
+                            PathComponentFromEntity = GetComponentDataFromEntity<PathComponent>(true),
 //</generated>
                             //<events>
                             //##TYPE##BufferFromEntity = GetBufferFromEntity<##TYPE##>(true),

@@ -1,7 +1,7 @@
 using Unity.Entities;
 using Unity.Mathematics;
 
-namespace Client.Components
+namespace ExampleGame.Client.Components
 {
     public struct CachedTranslation : IComponentData
     {

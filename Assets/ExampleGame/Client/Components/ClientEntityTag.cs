@@ -1,6 +1,6 @@
 using Unity.Entities;
 
-namespace Client.Components
+namespace ExampleGame.Client.Components
 {
     public struct ClientEntityTag : IComponentData
     {

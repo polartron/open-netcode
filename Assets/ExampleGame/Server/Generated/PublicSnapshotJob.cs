@@ -1,6 +1,5 @@
 using System;
 using ExampleGame.Shared.Components;
-using OpenNetcode.Movement.Components;
 using OpenNetcode.Shared;
 using OpenNetcode.Shared.Utils;
 using Unity.Burst;
@@ -13,8 +12,7 @@ using Shared.Generated;
 
 //<using>
 //<generated>
-using OpenNetcode.Movement.Components;
-using Shared.Components;
+using ExampleGame.Shared.Movement.Components;
 using ExampleGame.Shared.Components;
 //</generated>
 
@@ -40,6 +38,7 @@ namespace Server.Generated
 //<generated>
         [ReadOnly] public ComponentDataFromEntity<EntityPosition> EntityPositionFromEntity;
         [ReadOnly] public ComponentDataFromEntity<EntityVelocity> EntityVelocityFromEntity;
+        [ReadOnly] public ComponentDataFromEntity<PathComponent> PathComponentFromEntity;
 //</generated>
         //<events>
         //[ReadOnly] public BufferFromEntity<##TYPE##> ##TYPE##BufferFromEntity;
@@ -95,6 +94,8 @@ namespace Server.Generated
             int entityPositionIndex = 0;
             NativeArray<EntityVelocity> entityVelocityComponents = new NativeArray<EntityVelocity>(entitySnapshots.Length, Allocator.Temp);
             int entityVelocityIndex = 0;
+            NativeArray<PathComponent> pathComponentComponents = new NativeArray<PathComponent>(entitySnapshots.Length, Allocator.Temp);
+            int pathComponentIndex = 0;
 //</generated>
 
             for (int i = 0; i < entitySnapshots.Length; i++)
@@ -123,6 +124,12 @@ namespace Server.Generated
                     snapshot.EntityVelocityIndex = entityVelocityIndex;
                     entityVelocityIndex++;
                 }
+                if ((mask & (1 << 2)) != 0)
+                {
+                    pathComponentComponents[pathComponentIndex] = PathComponentFromEntity[snapshot.Entity];
+                    snapshot.PathComponentIndex = pathComponentIndex;
+                    pathComponentIndex++;
+                }
 //</generated>
 
                 entities[i] = snapshot;
@@ -135,6 +142,7 @@ namespace Server.Generated
 //<generated>
             area.EntityPositionBaseLine.UpdateBaseline(entityPositionComponents, tick, entityPositionIndex);
             area.EntityVelocityBaseLine.UpdateBaseline(entityVelocityComponents, tick, entityVelocityIndex);
+            area.PathComponentBaseLine.UpdateBaseline(pathComponentComponents, tick, pathComponentIndex);
 //</generated>
 
             entities.Dispose();
@@ -194,6 +202,7 @@ namespace Server.Generated
 //<generated>
             var baseentityPosition = Area.EntityPositionBaseLine.GetBaseline(PlayerSnapshotIndex);
             var baseentityVelocity = Area.EntityVelocityBaseLine.GetBaseline(PlayerSnapshotIndex);
+            var basepathComponent = Area.PathComponentBaseLine.GetBaseline(PlayerSnapshotIndex);
 //</generated>
 
             for (int i = 0; i < currentSnapshots.Length; i++)
@@ -224,6 +233,12 @@ namespace Server.Generated
                     EntityVelocity baseComponent = updated.Added ? default : baseentityVelocity[updated.Base.EntityVelocityIndex];
                     component.WriteSnapshot(ref writer, CompressionModel, baseComponent);
                 }
+                if ((componentMask & (1 << 2)) != 0)
+                {
+                    PathComponent component = PathComponentFromEntity[current.Entity];
+                    PathComponent baseComponent = updated.Added ? default : basepathComponent[updated.Base.PathComponentIndex];
+                    component.WriteSnapshot(ref writer, CompressionModel, baseComponent);
+                }
 //</generated>
 
                 writer.WriteRawBits(Convert.ToUInt32(eventMask != 0), 1); // Does this entity have events?
@@ -235,6 +250,7 @@ namespace Server.Generated
                     //eventMaskBits = ##EVENTMASKBITS##;
                     //</template>
 //<generated>
+                    eventMaskBits = 1;
                     eventMaskBits = 1;
                     eventMaskBits = 1;
 //</generated>

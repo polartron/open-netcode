@@ -1,12 +1,8 @@
-using OpenNetcode.Movement.Components;
-using OpenNetcode.Shared.Components;
-using Shared.Components;
 using Unity.Entities;
 
 //<using>
 //<generated>
-using OpenNetcode.Movement.Components;
-using Shared.Components;
+using ExampleGame.Shared.Movement.Components;
 using ExampleGame.Shared.Components;
 //</generated>
 
@@ -18,7 +14,7 @@ namespace Server.Generated
         public Entity Entity;
         public int ComponentInterestMask;
 
-        public static int Observe<T>(int mask) where T : unmanaged, ISnapshotComponent<T>
+        public static int Observe<T>(int mask) where T : unmanaged
         {
             //<template>
             //if (typeof(T) == typeof(##TYPE##))
@@ -35,6 +31,10 @@ namespace Server.Generated
             {
                 return mask | (1 << 1);
             }
+            if (typeof(T) == typeof(PathComponent))
+            {
+                return mask | (1 << 2);
+            }
 //</generated>
             //<privatetemplate>
             //if (typeof(T) == typeof(##TYPE##))
@@ -45,7 +45,7 @@ namespace Server.Generated
 //<generated>
             if (typeof(T) == typeof(EntityHealth))
             {
-                return mask | (1 << 2);
+                return mask | (1 << 3);
             }
 //</generated>
 

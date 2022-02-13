@@ -1,11 +1,10 @@
-﻿using ExampleGame.Shared.Components;
-using OpenNetcode.Movement.Components;
+﻿using ExampleGame.Server.Components;
+using ExampleGame.Shared.Components;
+using ExampleGame.Shared.Movement.Components;
 using OpenNetcode.Server.Components;
 using OpenNetcode.Shared.Components;
 using OpenNetcode.Shared.Systems;
-using Server.Components;
 using Server.Generated;
-using Shared.Components;
 using Shared.Coordinates;
 using Unity.Entities;
 using Unity.Transforms;
@@ -20,6 +19,7 @@ namespace ExampleGame.Server.Systems
     {
         internal Entity Player;
         internal Entity Monster;
+        internal Entity PathingMonster;
 
         public Entity SpawnPlayer(Vector3 position, int ownerId)
         {
@@ -85,6 +85,36 @@ namespace ExampleGame.Server.Systems
         public void SpawnMonster(Vector3 position)
         {
             Entity entity = EntityManager.Instantiate(Monster);
+#if UNITY_EDITOR
+            EntityManager.SetName(entity, "Monster");
+#endif
+            EntityManager.AddComponent<Translation>(entity);
+            var floatingOrigin = GetSingleton<FloatingOrigin>();
+            EntityManager.SetComponentData(entity, new EntityPosition()
+            {
+                Value = floatingOrigin.GetGameUnits(position)
+            });
+            
+            EntityManager.AddComponent<ServerNetworkedEntity>(entity);
+            EntityManager.SetComponentData(entity, new ServerNetworkedEntity()
+            {
+                OwnerNetworkId = -1
+            });
+            
+            EntityManager.SetComponentData(entity, new Translation()
+            {
+                Value = position
+            });
+            
+            EntityManager.AddComponent<SpatialHash>(entity);
+            EntityManager.AddComponent<WanderingAiTag>(entity);
+
+            EntityManager.AddBuffer<BumpEvent>(entity);
+        }
+        
+        public void SpawnPathingMonster(Vector3 position)
+        {
+            Entity entity = EntityManager.Instantiate(PathingMonster);
 #if UNITY_EDITOR
             EntityManager.SetName(entity, "Monster");
 #endif

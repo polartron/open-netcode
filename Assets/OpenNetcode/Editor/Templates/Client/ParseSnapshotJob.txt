@@ -362,10 +362,14 @@ namespace Client.Generated
             //}
             //else
             //{
-            //    var array = ##TYPE##Buffer[entity].AsNativeArray();
-            //    componentBuffers.Set(array.GetUnsafePtr(), array.Length, ##INDEX##);
+            //    if (##TYPE##Buffer.HasComponent(entity))
+            //    {
+            //        var array = ##TYPE##Buffer[entity].AsNativeArray();
+            //        componentBuffers.Set(array.GetUnsafePtr(), array.Length, ##INDEX##);
+            //    }
             //}
             //</template>
+            
             //<privatetemplate>
             //if (created)
             //{
@@ -374,6 +378,7 @@ namespace Client.Generated
             //        ##TYPELOWER##Buffer.Add(default);
             //}
             //</privatetemplate>
+            
             //<events>
             //if (created)
             //{
@@ -385,8 +390,11 @@ namespace Client.Generated
             //}
             //else
             //{
-            //    var array = ##TYPE##Buffer[entity].AsNativeArray();
-            //    componentBuffers.Set(array.GetUnsafePtr(), array.Length,##INDEXOFFSET## + ##INDEX##);
+            //    if (##TYPE##Buffer.HasComponent(entity))
+            //    {
+            //        var array = ##TYPE##Buffer[entity].AsNativeArray();
+            //        componentBuffers.Set(array.GetUnsafePtr(), array.Length, ##INDEXOFFSET## + ##INDEX##);
+            //    }
             //}
             //</events>
 

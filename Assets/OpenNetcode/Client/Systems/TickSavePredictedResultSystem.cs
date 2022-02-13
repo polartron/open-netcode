@@ -1,11 +1,8 @@
 ﻿using OpenNetcode.Client.Components;
-using OpenNetcode.Movement.Components;
 using OpenNetcode.Shared.Components;
 using OpenNetcode.Shared.Systems;
 using OpenNetcode.Shared.Time;
-using Shared.Coordinates;
 using Unity.Entities;
-using UnityEngine;
 
 namespace OpenNetcode.Client.Systems
 {

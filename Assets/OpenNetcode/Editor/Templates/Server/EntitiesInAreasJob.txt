@@ -1,5 +1,3 @@
-using ExampleGame.Shared.Components;
-using OpenNetcode.Movement.Components;
 using OpenNetcode.Server.Components;
 using OpenNetcode.Shared.Components;
 using Shared.Utils;

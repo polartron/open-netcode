@@ -1,5 +1,3 @@
-using ExampleGame.Shared.Components;
-using OpenNetcode.Movement.Components;
 using OpenNetcode.Server.Components;
 using OpenNetcode.Shared.Components;
 using Shared.Utils;
@@ -9,8 +7,7 @@ using Unity.Entities;
 
 //<using>
 //<generated>
-using OpenNetcode.Movement.Components;
-using Shared.Components;
+using ExampleGame.Shared.Movement.Components;
 using ExampleGame.Shared.Components;
 //</generated>
 
@@ -31,6 +28,7 @@ namespace Server.Generated
 //<generated>
         [ReadOnly] public ComponentDataFromEntity<EntityPosition> EntityPositionComponents;
         [ReadOnly] public ComponentDataFromEntity<EntityVelocity> EntityVelocityComponents;
+        [ReadOnly] public ComponentDataFromEntity<PathComponent> PathComponentComponents;
 //</generated>
         //<events>
         //[ReadOnly] public BufferFromEntity<##TYPE##> ##TYPE##BufferFromEntity;
@@ -71,6 +69,10 @@ namespace Server.Generated
                 if (EntityVelocityComponents.HasComponent(entity))
                 {
                     componentMask = componentMask | (1 << 1);
+                }
+                if (PathComponentComponents.HasComponent(entity))
+                {
+                    componentMask = componentMask | (1 << 2);
                 }
 //</generated>
                 serverEntitySnapshot.ComponentMask = componentMask;

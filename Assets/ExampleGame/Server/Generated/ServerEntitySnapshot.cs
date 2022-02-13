@@ -3,8 +3,7 @@ using Unity.Entities;
 
 //<using>
 //<generated>
-using OpenNetcode.Movement.Components;
-using Shared.Components;
+using ExampleGame.Shared.Movement.Components;
 using ExampleGame.Shared.Components;
 //</generated>
 
@@ -23,6 +22,7 @@ namespace Server.Generated
 //<generated>
         public int EntityPositionIndex;
         public int EntityVelocityIndex;
+        public int PathComponentIndex;
 //</generated>
 
         public int CompareTo(ServerEntitySnapshot other)

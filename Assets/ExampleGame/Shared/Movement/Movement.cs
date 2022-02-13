@@ -1,8 +1,8 @@
 ﻿using System;
-using OpenNetcode.Movement.Components;
+using ExampleGame.Shared.Movement.Components;
 using UnityEngine;
 
-namespace OpenNetcode.Movement
+namespace ExampleGame.Shared.Movement
 {
     public static class Movement
     {

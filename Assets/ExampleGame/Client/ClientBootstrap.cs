@@ -1,22 +1,20 @@
-using Client.Components;
-using Client.Systems;
+using ExampleGame.Client.Components;
 using ExampleGame.Client.Systems;
 using ExampleGame.Shared.Components;
+using ExampleGame.Shared.Movement.Components;
+using ExampleGame.Shared.Movement.Systems;
 using OpenNetcode.Client;
 using OpenNetcode.Client.Components;
 using OpenNetcode.Client.Systems;
-using OpenNetcode.Movement.Components;
-using OpenNetcode.Movement.Systems;
 using OpenNetcode.Shared.Systems;
 using OpenNetcode.Shared.Time;
 using Shared;
-using Shared.Components;
 using Unity.Entities;
 using Unity.Transforms;
 using UnityEngine;
 
 [assembly: RegisterGenericComponentType(typeof(PredictedMove<EntityPosition, CharacterInput>))]
-namespace Client
+namespace ExampleGame.Client
 {
     public class ClientBootstrap : IWorldBootstrap
     {
@@ -35,7 +33,7 @@ namespace Client
             Entity clientEntity = CreateLocalPlayer(ref entityManager, playerPrefab);
             ClientInitialization.Initialize<EntityPosition, CharacterInput>(World, clientEntity, networkedPrefabs);
             var tickSystem = World.GetExistingSystem<TickSystem>();
-            tickSystem.AddPreSimulationSystem(new Client.Generated.TickClientSnapshotSystem<EntityPosition, CharacterInput>(
+            tickSystem.AddPreSimulationSystem(new global::Client.Generated.TickClientSnapshotSystem<EntityPosition, CharacterInput>(
                 World.GetExistingSystem<ClientNetworkSystem>()));
 
             SharedBootstrap.AddSystem<SimulationSystemGroup>(World, new PlayerInputSystem());

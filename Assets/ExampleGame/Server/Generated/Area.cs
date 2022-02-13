@@ -1,13 +1,10 @@
 using System;
-using OpenNetcode.Movement.Components;
 using OpenNetcode.Shared;
 using OpenNetcode.Shared.Time;
-using Server.Generated;
 
 //<using>
 //<generated>
-using OpenNetcode.Movement.Components;
-using Shared.Components;
+using ExampleGame.Shared.Movement.Components;
 using ExampleGame.Shared.Components;
 //</generated>
 
@@ -30,6 +27,7 @@ namespace Server.Generated
 //<generated>
         public BaseLines<EntityPosition> EntityPositionBaseLine;
         public BaseLines<EntityVelocity> EntityVelocityBaseLine;
+        public BaseLines<PathComponent> PathComponentBaseLine;
 //</generated>
 
         public Area(int capacity)
@@ -42,6 +40,7 @@ namespace Server.Generated
 //<generated>
             EntityPositionBaseLine = new BaseLines<EntityPosition>(capacity, TimeConfig.BaseSnapshotEvery);
             EntityVelocityBaseLine = new BaseLines<EntityVelocity>(capacity, TimeConfig.BaseSnapshotEvery);
+            PathComponentBaseLine = new BaseLines<PathComponent>(capacity, TimeConfig.BaseSnapshotEvery);
 //</generated>
         }
 
@@ -54,6 +53,7 @@ namespace Server.Generated
 //<generated>
             EntityPositionBaseLine.Dispose();
             EntityVelocityBaseLine.Dispose();
+            PathComponentBaseLine.Dispose();
 //</generated>
         }
     }

@@ -4,7 +4,7 @@ using Unity.Mathematics;
 using Unity.Networking.Transport;
 using UnityEngine;
 
-namespace OpenNetcode.Movement.Components
+namespace ExampleGame.Shared.Movement.Components
 {
     [GenerateAuthoringComponent]
     public struct CharacterInput : INetworkedComponent

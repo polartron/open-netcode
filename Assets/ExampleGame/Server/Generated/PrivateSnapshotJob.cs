@@ -1,9 +1,7 @@
-using OpenNetcode.Movement.Components;
 using OpenNetcode.Server.Components;
 using OpenNetcode.Shared;
 using OpenNetcode.Shared.Components;
 using OpenNetcode.Shared.Utils;
-using Shared.Components;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
@@ -12,8 +10,7 @@ using Unity.Networking.Transport;
 
 //<using>
 //<generated>
-using OpenNetcode.Movement.Components;
-using Shared.Components;
+using ExampleGame.Shared.Movement.Components;
 using ExampleGame.Shared.Components;
 //</generated>
 
@@ -40,6 +37,7 @@ namespace Server.Generated
 //<generated>
         [ReadOnly] public ComponentDataFromEntity<EntityPosition> EntityPositionComponents;
         [ReadOnly] public ComponentDataFromEntity<EntityVelocity> EntityVelocityComponents;
+        [ReadOnly] public ComponentDataFromEntity<PathComponent> PathComponentComponents;
 //</generated>
         //<privatetemplate>
         //[ReadOnly] public ComponentDataFromEntity<##TYPE##> ##TYPE##Components;
@@ -124,6 +122,11 @@ namespace Server.Generated
                         var entityVelocity = EntityVelocityComponents[targetEntity];
                         entityVelocity.WriteSnapshot(ref writer, CompressionModel, default);
                     }
+                    if ((updateMask & (1 << 2)) != 0 && PathComponentComponents.HasComponent(targetEntity))
+                    {
+                        var pathComponent = PathComponentComponents[targetEntity];
+                        pathComponent.WriteSnapshot(ref writer, CompressionModel, default);
+                    }
 //</generated>
                         
                     //<privatetemplate>
@@ -134,7 +137,7 @@ namespace Server.Generated
                     //}
                     //</privatetemplate>
 //<generated>
-                    if ((updateMask & (1 << 2)) != 0 && EntityHealthComponents.HasComponent(targetEntity))
+                    if ((updateMask & (1 << 3)) != 0 && EntityHealthComponents.HasComponent(targetEntity))
                     {
                         var entityHealth = EntityHealthComponents[targetEntity];
                         entityHealth.WriteSnapshot(ref writer, CompressionModel, default);

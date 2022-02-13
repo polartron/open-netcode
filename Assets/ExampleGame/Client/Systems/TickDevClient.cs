@@ -7,7 +7,7 @@ using Unity.Entities;
 using Unity.Networking.Transport;
 using UnityEngine;
 
-namespace Client.Systems
+namespace ExampleGame.Client.Systems
 {
     [DisableAutoCreation]    
     [UpdateInGroup(typeof(TickPreSimulationSystemGroup))]

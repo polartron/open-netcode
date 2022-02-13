@@ -7,8 +7,7 @@ using Unity.Jobs;
 
 //<using>
 //<generated>
-using OpenNetcode.Movement.Components;
-using Shared.Components;
+using ExampleGame.Shared.Movement.Components;
 using ExampleGame.Shared.Components;
 //</generated>
 
@@ -29,6 +28,7 @@ namespace Client.Generated
 //<generated>
         [ReadOnly] public BufferFromEntity<SnapshotBufferElement<EntityPosition>> EntityPositionBuffer;
         [ReadOnly] public BufferFromEntity<SnapshotBufferElement<EntityVelocity>> EntityVelocityBuffer;
+        [ReadOnly] public BufferFromEntity<SnapshotBufferElement<PathComponent>> PathComponentBuffer;
 //</generated>
         [ReadOnly] public ComponentDataFromEntity<NetworkedPrefab> NetworkedPrefabFromEntity;
 
@@ -53,6 +53,8 @@ namespace Client.Generated
             int entityPositionIndex = 0;
             NativeArray<EntityVelocity> entityVelocitys = new NativeArray<EntityVelocity>(entitySnapshots.Length, Allocator.Temp);
             int entityVelocityIndex = 0;
+            NativeArray<PathComponent> pathComponents = new NativeArray<PathComponent>(entitySnapshots.Length, Allocator.Temp);
+            int pathComponentIndex = 0;
 //</generated>
 
             for (int i = 0; i < entitySnapshots.Length; i++)
@@ -89,6 +91,13 @@ namespace Client.Generated
                     snapshot.EntityVelocityIndex = entityVelocityIndex;
                     entityVelocityIndex++;
                 }
+                if ((mask & (1 << 2)) != 0)
+                {
+                    var buffer = PathComponentBuffer[snapshot.Entity];
+                    pathComponents[pathComponentIndex] = buffer[Tick % buffer.Length].Value;
+                    snapshot.PathComponentIndex = pathComponentIndex;
+                    pathComponentIndex++;
+                }
 //</generated>
                 entities[i] = snapshot;
             }
@@ -101,6 +110,7 @@ namespace Client.Generated
 //<generated>
             area.EntityPositionBaseLine.UpdateBaseline(entityPositions, SnapshotIndex, entityPositionIndex);
             area.EntityVelocityBaseLine.UpdateBaseline(entityVelocitys, SnapshotIndex, entityVelocityIndex);
+            area.PathComponentBaseLine.UpdateBaseline(pathComponents, SnapshotIndex, pathComponentIndex);
 //</generated>
         }
     }

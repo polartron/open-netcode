@@ -1,4 +1,4 @@
-﻿using OpenNetcode.Movement.Components;
+﻿using ExampleGame.Shared.Movement.Components;
 using OpenNetcode.Shared.Systems;
 using Unity.Collections;
 using Unity.Entities;

@@ -1,6 +1,3 @@
-using OpenNetcode.Movement.Components;
-using OpenNetcode.Shared.Components;
-using Shared.Components;
 using Unity.Entities;
 
 //<using>
@@ -13,7 +10,7 @@ namespace Server.Generated
         public Entity Entity;
         public int ComponentInterestMask;
 
-        public static int Observe<T>(int mask) where T : unmanaged, ISnapshotComponent<T>
+        public static int Observe<T>(int mask) where T : unmanaged
         {
             //<template>
             //if (typeof(T) == typeof(##TYPE##))

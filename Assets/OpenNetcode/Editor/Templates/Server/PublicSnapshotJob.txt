@@ -1,6 +1,5 @@
 using System;
 using ExampleGame.Shared.Components;
-using OpenNetcode.Movement.Components;
 using OpenNetcode.Shared;
 using OpenNetcode.Shared.Utils;
 using Unity.Burst;
