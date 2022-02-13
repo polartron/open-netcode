@@ -1,3 +1,4 @@
+using Client.Generated;
 using ExampleGame.Client.Components;
 using ExampleGame.Client.Systems;
 using ExampleGame.Shared.Components;
@@ -33,7 +34,7 @@ namespace ExampleGame.Client
             Entity clientEntity = CreateLocalPlayer(ref entityManager, playerPrefab);
             ClientInitialization.Initialize<EntityPosition, CharacterInput>(World, clientEntity, networkedPrefabs);
             var tickSystem = World.GetExistingSystem<TickSystem>();
-            tickSystem.AddPreSimulationSystem(new global::Client.Generated.TickClientSnapshotSystem<EntityPosition, CharacterInput>(
+            tickSystem.AddPreSimulationSystem(new TickClientSnapshotSystem<EntityPosition, CharacterInput>(
                 World.GetExistingSystem<ClientNetworkSystem>()));
 
             SharedBootstrap.AddSystem<SimulationSystemGroup>(World, new PlayerInputSystem());
@@ -82,12 +83,6 @@ namespace ExampleGame.Client
             for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
             {
                 entityHealthBuffer.Add(default);
-            }
-            
-            var bumpEventBuffer = entityManager.AddBuffer<SnapshotBufferElement<BumpEvent>>(entity);
-            for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
-            {
-                bumpEventBuffer.Add(default);
             }
 
             blobAssetStore.Dispose();

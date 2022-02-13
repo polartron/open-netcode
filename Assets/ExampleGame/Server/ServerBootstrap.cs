@@ -4,6 +4,7 @@ using ExampleGame.Shared.Movement.Systems;
 using OpenNetcode.Server;
 using OpenNetcode.Server.Systems;
 using OpenNetcode.Shared.Systems;
+using Server.Generated;
 using Shared;
 using Unity.Entities;
 using UnityEngine;
@@ -23,7 +24,7 @@ namespace ExampleGame.Server
             var networkedPrefabs = Resources.Load<NetworkedPrefabs>("Networked Prefabs");
             ServerInitialization.Initialize<CharacterInput>(World, networkedPrefabs);
             var tickSystem = World.GetExistingSystem<TickSystem>();
-            tickSystem.AddPostSimulationSystem(new global::Server.Generated.TickServerSnapshotSystem(World.GetExistingSystem<ServerNetworkSystem>()));
+            tickSystem.AddPostSimulationSystem(new TickServerSnapshotSystem(World.GetExistingSystem<ServerNetworkSystem>()));
 
             var networkedPrefabSystem = World.GetExistingSystem<NetworkedPrefabSystem>();
 
