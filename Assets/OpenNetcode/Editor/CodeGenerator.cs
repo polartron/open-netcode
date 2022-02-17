@@ -15,17 +15,54 @@ namespace OpenNetcode.Editor
         private static string ClientTemplatesPath = "OpenNetcode/Editor/Templates/Client/";
         private static string ServerTemplatesPath = "OpenNetcode/Editor/Templates/Server/";
 
-        private static string ClientGeneratedPath = "ExampleGame/Client/Generated/";
-        private static string ServerGeneratedPath = "ExampleGame/Server/Generated/";
-        private static string SharedGeneratedPath = "ExampleGame/Shared/Generated/";
+        private static ProjectSettings LoadProjectSettings()
+        {
+            string path = "Assets/Project Settings.asset";
+            ProjectSettings settings = AssetDatabase.LoadAssetAtPath<ProjectSettings>("Assets/Project Settings.asset");
+
+            if (settings == null)
+            {
+                Debug.LogError("Could not load project settings at " + path);
+            }
+
+            bool directoryNotFound = false;
+
+            if (!Directory.Exists(Path.Combine(Application.dataPath, settings.CodeGenerationPaths.Client)))
+            {
+                Debug.LogError("Directory does not exist at " + Path.Combine(Application.dataPath, settings.CodeGenerationPaths.Client));
+                directoryNotFound = true;
+            }
+            
+            if (!Directory.Exists(Path.Combine(Application.dataPath, settings.CodeGenerationPaths.Server)))
+            {
+                Debug.LogError("Directory does not exist at " + Path.Combine(Application.dataPath, settings.CodeGenerationPaths.Server));
+                directoryNotFound = true;
+            }
+            
+            if (!Directory.Exists(Path.Combine(Application.dataPath, settings.CodeGenerationPaths.Shared)))
+            {
+                Debug.LogError("Directory does not exist at " + Path.Combine(Application.dataPath, settings.CodeGenerationPaths.Shared));
+                directoryNotFound = true;
+            }
+
+            if (directoryNotFound)
+                return null;
+            
+            return settings;
+        }
 
         [MenuItem("OpenNetcode/Clear Generated Code")]
         public static void ClearGeneratedCode()
         {
-            GenerateTemplate(ClientTemplatesPath, ClientGeneratedPath, "*.txt", ".cs");
-            GenerateTemplate(ServerTemplatesPath, ServerGeneratedPath, "*.txt", ".cs");
+            ProjectSettings settings = LoadProjectSettings();
 
-            foreach (FileInfo file in new DirectoryInfo(Path.Combine(Application.dataPath, SharedGeneratedPath)).GetFiles())
+            if (settings == null)
+                return;
+            
+            GenerateTemplate(ClientTemplatesPath, settings.CodeGenerationPaths.Client, "*.txt", ".cs");
+            GenerateTemplate(ServerTemplatesPath, settings.CodeGenerationPaths.Server, "*.txt", ".cs");
+
+            foreach (FileInfo file in new DirectoryInfo(Path.Combine(Application.dataPath, settings.CodeGenerationPaths.Shared)).GetFiles())
             {
                 file.Delete();
             }
@@ -36,8 +73,13 @@ namespace OpenNetcode.Editor
         [MenuItem("OpenNetcode/Development/Generate Templates")]
         public static void GenerateTemplates()
         {
-            GenerateTemplate(ClientGeneratedPath, ClientTemplatesPath, "*.cs", ".txt");
-            GenerateTemplate(ServerGeneratedPath, ServerTemplatesPath, "*.cs", ".txt");
+            ProjectSettings setting = LoadProjectSettings();
+
+            if (setting == null)
+                return;
+            
+            GenerateTemplate(setting.CodeGenerationPaths.Client, ClientTemplatesPath, "*.cs", ".txt");
+            GenerateTemplate(setting.CodeGenerationPaths.Server, ServerTemplatesPath, "*.cs", ".txt");
 
             AssetDatabase.Refresh();
         }
@@ -109,7 +151,7 @@ namespace ##NAMESPACE##
             }
 ";
 
-        private static void GenerateSnapshotCodeForComponent(Type type)
+        private static void GenerateSnapshotCodeForComponent(Type type, string generatedFolder)
         {
             string text = ComponentTemplate;
             text = text.Replace("##NAMESPACE##", type.Namespace);
@@ -140,7 +182,7 @@ namespace ##NAMESPACE##
                 readIndex += read.Length;
             }
 
-            string generatedPath = Path.Combine(SharedGeneratedPath, type.Name + ".Generated.cs");
+            string generatedPath = Path.Combine(generatedFolder, type.Name + ".Generated.cs");
             
             using (var fs = File.Create(Path.Combine(Application.dataPath, generatedPath)))
             {
@@ -154,17 +196,22 @@ namespace ##NAMESPACE##
         [MenuItem("OpenNetcode/Generate Code")]
         public static void Generate()
         {
+            ProjectSettings settings = LoadProjectSettings();
+
+            if (settings == null)
+                return;
+            
             List<Type> publicSnapshots = new List<Type>();
             List<Type> privateSnapshots = new List<Type>();
             List<Type> publicEvents = new List<Type>();
             
-            foreach (FileInfo file in new DirectoryInfo(Path.Combine(Application.dataPath, SharedGeneratedPath)).GetFiles())
+            foreach (FileInfo file in new DirectoryInfo(Path.Combine(Application.dataPath, settings.CodeGenerationPaths.Shared)).GetFiles())
             {
                 file.Delete();
             }
 
-            if (!Directory.Exists(Path.Combine(Application.dataPath, SharedGeneratedPath)))
-                Directory.CreateDirectory(Path.Combine(Application.dataPath, SharedGeneratedPath));
+            if (!Directory.Exists(Path.Combine(Application.dataPath, settings.CodeGenerationPaths.Shared)))
+                Directory.CreateDirectory(Path.Combine(Application.dataPath, settings.CodeGenerationPaths.Shared));
 
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
@@ -172,19 +219,19 @@ namespace ##NAMESPACE##
                 {
                     if (type.GetCustomAttributes(typeof(PublicSnapshot), true).Length > 0)
                     {
-                        GenerateSnapshotCodeForComponent(type);
+                        GenerateSnapshotCodeForComponent(type, settings.CodeGenerationPaths.Shared);
                         publicSnapshots.Add(type);
                     }
 
                     if (type.GetCustomAttributes(typeof(PrivateSnapshot), true).Length > 0)
                     {
-                        GenerateSnapshotCodeForComponent(type);
+                        GenerateSnapshotCodeForComponent(type, settings.CodeGenerationPaths.Shared);
                         privateSnapshots.Add(type);
                     }
 
                     if (type.GetCustomAttributes(typeof(PublicEvent), true).Length > 0)
                     {
-                        GenerateSnapshotCodeForComponent(type);
+                        GenerateSnapshotCodeForComponent(type, settings.CodeGenerationPaths.Shared);
                         publicEvents.Add(type);
                     }
                 }
@@ -197,7 +244,7 @@ namespace ##NAMESPACE##
                 foreach (var template in files)
                 {
                     string fileName = Path.GetFileNameWithoutExtension(template);
-                    CreateTemplate(template, Path.Combine(ServerGeneratedPath, fileName + ".cs"), publicSnapshots,
+                    CreateTemplate(template, Path.Combine(settings.CodeGenerationPaths.Server, fileName + ".cs"), publicSnapshots,
                         privateSnapshots, publicEvents);
                 }
             }
@@ -208,7 +255,7 @@ namespace ##NAMESPACE##
                 foreach (var template in files)
                 {
                     string fileName = Path.GetFileNameWithoutExtension(template);
-                    CreateTemplate(template, Path.Combine(ClientGeneratedPath, fileName + ".cs"), publicSnapshots,
+                    CreateTemplate(template, Path.Combine(settings.CodeGenerationPaths.Client, fileName + ".cs"), publicSnapshots,
                         privateSnapshots, publicEvents);
                 }
             }

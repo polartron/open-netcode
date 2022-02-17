@@ -16,9 +16,9 @@ namespace Client.Generated
         
         public ClientArea(int capacity)
         {
-            ClientEntitySnapshotBaseLine = new BaseLines<ClientEntitySnapshot>(capacity, TimeConfig.BaseSnapshotEvery);
+            ClientEntitySnapshotBaseLine = new BaseLines<ClientEntitySnapshot>(capacity, TimeConfig.SnapshotsPerSecond);
             //<template>
-            //##TYPE##BaseLine = new BaseLines<##TYPE##>(capacity, TimeConfig.BaseSnapshotEvery);
+            //##TYPE##BaseLine = new BaseLines<##TYPE##>(capacity, TimeConfig.SnapshotsPerSecond);
             //</template>
         }
 

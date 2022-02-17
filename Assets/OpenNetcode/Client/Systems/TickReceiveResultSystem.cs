@@ -116,13 +116,13 @@ namespace OpenNetcode.Client.Systems
                                     {
                                         //We missed input. Dilate hard.
                                         _dilationMs += (TimeConfig.FixedDeltaTime * 100f);
-                                        _dilationMs = Mathf.Clamp(_dilationMs, 0, TimeConfig.MaxDilationMs);
+                                        _dilationMs = Mathf.Clamp(_dilationMs, 0, TimeConfig.CommandBufferLengthMs);
                                     }
                                     else
                                     {
                                         //We got input. Slowly remove dilation.
                                         _dilationMs -= (TimeConfig.FixedDeltaTime * 2f);
-                                        _dilationMs = Mathf.Clamp(_dilationMs, 0, TimeConfig.MaxDilationMs);
+                                        _dilationMs = Mathf.Clamp(_dilationMs, 0, TimeConfig.CommandBufferLengthMs);
                                     }
 
                                     double predictedTimeMs = serverTimeMs + rttHalf + TimeConfig.CommandBufferLengthMs + _dilationMs;

@@ -33,14 +33,14 @@ namespace Server.Generated
         public Area(int capacity)
         {
             _capacity = capacity;
-            EntitySnapshotBaseLine = new BaseLines<ServerEntitySnapshot>(capacity, TimeConfig.BaseSnapshotEvery);
+            EntitySnapshotBaseLine = new BaseLines<ServerEntitySnapshot>(capacity, TimeConfig.SnapshotsPerSecond);
             //<template>
-            //##TYPE##BaseLine = new BaseLines<##TYPE##>(capacity, TimeConfig.BaseSnapshotEvery);
+            //##TYPE##BaseLine = new BaseLines<##TYPE##>(capacity, TimeConfig.SnapshotsPerSecond);
             //</template>
 //<generated>
-            EntityPositionBaseLine = new BaseLines<EntityPosition>(capacity, TimeConfig.BaseSnapshotEvery);
-            EntityVelocityBaseLine = new BaseLines<EntityVelocity>(capacity, TimeConfig.BaseSnapshotEvery);
-            PathComponentBaseLine = new BaseLines<PathComponent>(capacity, TimeConfig.BaseSnapshotEvery);
+            EntityPositionBaseLine = new BaseLines<EntityPosition>(capacity, TimeConfig.SnapshotsPerSecond);
+            EntityVelocityBaseLine = new BaseLines<EntityVelocity>(capacity, TimeConfig.SnapshotsPerSecond);
+            PathComponentBaseLine = new BaseLines<PathComponent>(capacity, TimeConfig.SnapshotsPerSecond);
 //</generated>
         }
 

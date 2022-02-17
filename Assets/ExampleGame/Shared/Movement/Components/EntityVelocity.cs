@@ -5,17 +5,10 @@ using Unity.Entities;
 
 namespace ExampleGame.Shared.Movement.Components
 {
-
-    public enum CustomEnum
-    {
-        One,
-        Two
-    }
     [GenerateAuthoringComponent]
     [PublicSnapshot]
     public partial struct EntityVelocity : IComponentData
     {
         public GameUnits Value;
-        public CustomEnum CustomEnum;
     }
 }
