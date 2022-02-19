@@ -64,7 +64,6 @@ namespace ExampleGame.Client
 
             entityManager.AddComponent<Translation>(entity);
             entityManager.AddComponent<ClientEntityTag>(entity);
-            entityManager.AddComponent<CachedTranslation>(entity);
 
             Debug.Log($"<color=green> Created client entity with ID = {entity.Index}</color>");
             var entityPositionBuffer = entityManager.AddBuffer<SnapshotBufferElement<EntityPosition>>(entity);

@@ -12,17 +12,9 @@ namespace ExampleGame.Client.Systems
     [DisableAutoCreation]
     public class PlayerInputSystem : SystemBase
     {
-        private NetworkCompressionModel _compressionModel;
-
-        protected override void OnCreate()
-        {
-            _compressionModel = new NetworkCompressionModel(Allocator.Persistent);
-            base.OnCreate();
-        }
-
         protected override void OnUpdate()
         {
-            Vector2 input = Vector3.zero;
+            Vector2 input = Vector3.zero; // Get joystick movement
             Vector2 move = new Vector2(input.x, input.y);
                 
             if (Input.GetKey(KeyCode.W))
@@ -44,22 +36,13 @@ namespace ExampleGame.Client.Systems
             {
                 move.x -= 1;
             }
-
-            // Use input as if it's been received by the server.
-            // If we don't do this the prediction will be wrong because
-            // the server works with compressed input.
-                
-            DataStreamWriter writer = new DataStreamWriter(10, Allocator.Temp);
+            
+            var clientData = GetSingleton<ClientData>();
+            
             CharacterInput predictedInput = new CharacterInput()
             {
                 Move = move
             };
-                
-            predictedInput.Write(ref writer, _compressionModel);
-            DataStreamReader reader = new DataStreamReader(writer.AsNativeArray());
-            predictedInput.Read(ref reader, _compressionModel);
-
-            var clientData = GetSingleton<ClientData>();
             
             EntityManager.SetComponentData(clientData.LocalPlayer, predictedInput);
         }

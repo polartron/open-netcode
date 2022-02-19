@@ -25,6 +25,9 @@ namespace OpenNetcode.Client.Systems
         {
             var clientData = GetSingleton<ClientData>();
             Entity clientEntity = clientData.LocalPlayer;
+
+            if (clientEntity == Entity.Null)
+                return;
             
             int tick = GetSingleton<TickData>().Value;    
             TInput input = EntityManager.GetComponentData<TInput>(clientEntity);

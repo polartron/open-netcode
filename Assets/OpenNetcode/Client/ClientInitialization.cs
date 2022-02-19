@@ -38,6 +38,7 @@ namespace OpenNetcode.Client
 
             IClientNetworkSystem clientNetworkSystem = clientWorld.AddSystem(new ClientNetworkSystem());
         
+            tickSystem.AddPreSimulationSystem(new TickCompressInputSystem<TInput>());
             tickSystem.AddPreSimulationSystem(new TickClientReceiveSystem(clientNetworkSystem));
             tickSystem.AddPreSimulationSystem(new TickReceiveClientInfoSystem(clientNetworkSystem));
             tickSystem.AddPreSimulationSystem(new TickReceiveResultSystem(clientNetworkSystem));
