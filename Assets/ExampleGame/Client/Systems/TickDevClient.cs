@@ -25,7 +25,7 @@ namespace ExampleGame.Client.Systems
 
         protected override void OnUpdate()
         {
-            if (Input.GetKeyDown(KeyCode.Q) && !_client.Connected && !_connecting)
+            if (!_client.Connected && !_connecting)
             {
                 _connecting = true;
                 _client.Connect("0.0.0.0", 27015, b =>
