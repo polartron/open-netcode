@@ -3,7 +3,7 @@
 Open Netcode is a feature rich networking package for Unity DOTS.
 
 
-**State:** Early Preview. I'm waiting for Unity DOTS 0.50 to release so that I can get the package to an alpha stage. Don't use this for anything yet. 
+**State:** Early Preview. I'm waiting for Unity DOTS 0.50 to release so I can get the package to an alpha stage. Don't use this for anything yet. 
 
 ## Main Features
 - Clientside Prediction & Server Reconciliation
