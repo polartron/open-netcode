@@ -37,6 +37,7 @@ using ExampleGame.Shared.Components;
 //</events>
 //<generated>
 [assembly: RegisterGenericComponentType(typeof(SnapshotBufferElement<BumpEvent>))]
+[assembly: RegisterGenericComponentType(typeof(SavedInput<CharacterInput>))]
 //</generated>
 namespace Client.Generated
 {
@@ -61,7 +62,6 @@ namespace Client.Generated
 
         protected override void OnCreate()
         {
-            World.GetExistingSystem<TickPredictionSystem<TPrediction, TInput>>().OnRollback += Rollback;
             _networkedPrefabSystem = World.GetExistingSystem<NetworkedPrefabSystem>();
             _areas = new NativeHashMap<int, ClientArea>(1000, Allocator.Persistent);
             _snapshotEntities = new NativeHashMap<int, ClientEntitySnapshot>(10000, Allocator.Persistent);
@@ -84,32 +84,6 @@ namespace Client.Generated
             _areas.Dispose();
 
             base.OnDestroy();
-        }
-
-        public void Rollback(Entity entity, int tick)
-        {
-            //<template>
-            //DoRollback<##TYPE##>(entity, tick);
-            //</template>
-//<generated>
-            DoRollback<EntityPosition>(entity, tick);
-            DoRollback<EntityVelocity>(entity, tick);
-            DoRollback<PathComponent>(entity, tick);
-//</generated>
-        }
-
-        private void DoRollback<T>(in Entity entity, int tick) where T : unmanaged, IComponentData
-        {
-            if (!EntityManager.HasComponent<SnapshotBufferElement<T>>(entity))
-                return;
-
-            var buffer = EntityManager.GetBuffer<SnapshotBufferElement<T>>(entity);
-            var component = buffer[tick % buffer.Length];
-
-            if (component.Tick == tick)
-            {
-                EntityManager.SetComponentData(entity, component.Value);
-            }
         }
 
         protected override void OnUpdate()

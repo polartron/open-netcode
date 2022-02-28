@@ -1,5 +1,6 @@
 using Client.Generated;
 using ExampleGame.Client.Components;
+using ExampleGame.Client.Generated;
 using ExampleGame.Client.Systems;
 using ExampleGame.Shared.Components;
 using ExampleGame.Shared.Movement.Components;
@@ -14,7 +15,7 @@ using Unity.Entities;
 using Unity.Transforms;
 using UnityEngine;
 
-[assembly: RegisterGenericComponentType(typeof(PredictedMove<EntityPosition, CharacterInput>))]
+[assembly: RegisterGenericComponentType(typeof(Prediction<EntityPosition>))]
 namespace ExampleGame.Client
 {
     public class ClientBootstrap : IWorldBootstrap
@@ -36,6 +37,9 @@ namespace ExampleGame.Client
             var tickSystem = World.GetExistingSystem<TickSystem>();
             tickSystem.AddPreSimulationSystem(new TickClientSnapshotSystem<EntityPosition, CharacterInput>(
                 World.GetExistingSystem<ClientNetworkSystem>()));
+            tickSystem.AddPreSimulationSystem(new TickPredictionSystem());
+            tickSystem.AddPreSimulationSystem(new TickInputSystem(World.GetExistingSystem<ClientNetworkSystem>()));
+            tickSystem.AddSimulationSystem(new TickSavePredictionSystem());
 
             SharedBootstrap.AddSystem<SimulationSystemGroup>(World, new PlayerInputSystem());
             SharedBootstrap.AddSystem<SimulationSystemGroup>(World, new InterpolationSystem());
@@ -83,6 +87,19 @@ namespace ExampleGame.Client
             {
                 entityHealthBuffer.Add(default);
             }
+            
+            var entityPositionPrediction = entityManager.AddBuffer<Prediction<EntityPosition>>(entity);
+            for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
+            {
+                entityPositionPrediction.Add(default);
+            }
+            
+            var characterInputSave = entityManager.AddBuffer<SavedInput<CharacterInput>>(entity);
+            for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
+            {
+                characterInputSave.Add(default);
+            }
+
 
             blobAssetStore.Dispose();
 

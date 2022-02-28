@@ -12,6 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56ca039a44660944ea031aa65d446990, type: 3}
   m_Name: Project Settings
   m_EditorClassIdentifier: 
-  Client: ExampleGame/Client/Generated/
-  Server: ExampleGame/Server/Generated/
-  Shared: ExampleGame/Shared/Generated/
+  CodeGenerationPaths:
+    Client: ExampleGame/Client/Generated/
+    Server: ExampleGame/Server/Generated/
+    Shared: ExampleGame/Shared/Generated/
+  TickSettings:
+    TicksPerSecond: 1
+    SnapshotsPerSecond: 3

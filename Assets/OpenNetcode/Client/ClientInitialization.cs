@@ -17,13 +17,6 @@ namespace OpenNetcode.Client
             where TPrediction : unmanaged, INetworkedComponent
             where TInput : unmanaged, INetworkedComponent
         {
-            var predictedMoves = clientWorld.EntityManager.AddBuffer<PredictedMove<TPrediction, TInput>>(localPlayer);
-            
-            for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
-            {
-                predictedMoves.Add(default);
-            }
-
             TickSystem tickSystem = clientWorld.AddSystem(new TickSystem(TimeConfig.TicksPerSecond, (long) (Time.time * 1000f)));
             clientWorld.GetExistingSystem<SimulationSystemGroup>().AddSystemToUpdateList(tickSystem);
             clientWorld.AddSystem(new FloatingOriginSystem(new float3(0f, 0f, 0f)));
@@ -36,18 +29,12 @@ namespace OpenNetcode.Client
                 LocalPlayer = localPlayer
             });
 
-            IClientNetworkSystem clientNetworkSystem = clientWorld.AddSystem(new ClientNetworkSystem());
+            ClientNetworkSystem clientNetworkSystem = clientWorld.AddSystem(new ClientNetworkSystem());
         
-            tickSystem.AddPreSimulationSystem(new TickCompressInputSystem<TInput>());
             tickSystem.AddPreSimulationSystem(new TickClientReceiveSystem(clientNetworkSystem));
             tickSystem.AddPreSimulationSystem(new TickReceiveClientInfoSystem(clientNetworkSystem));
             tickSystem.AddPreSimulationSystem(new TickReceiveResultSystem(clientNetworkSystem));
             tickSystem.AddPostSimulationSystem(new TickClientSendSystem(clientNetworkSystem));
-            tickSystem.AddPreSimulationSystem(new TickSendInputSystem<TPrediction, TInput>(clientNetworkSystem));
-            tickSystem.AddPreSimulationSystem(new TickPredictionSystem<TPrediction, TInput>());
-            tickSystem.AddSimulationSystem(new TickSavePredictedResultSystem<TPrediction, TInput>());
-            
-            
         }
     }
 }

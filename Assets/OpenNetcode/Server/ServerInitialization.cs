@@ -22,7 +22,7 @@ namespace OpenNetcode.Server
             
             entityManager.CreateEntity(ComponentType.ReadOnly<TickData>());
 
-            IServerNetworkSystem server = serverWorld.AddSystem(new ServerNetworkSystem());
+            ServerNetworkSystem server = serverWorld.AddSystem(new ServerNetworkSystem());
             
             tickSystem.AddPreSimulationSystem(new TickServerReceiveSystem(server));
             tickSystem.AddPreSimulationSystem(new TickInputBufferSystem<TInput>(server));
