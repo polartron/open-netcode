@@ -8,6 +8,7 @@ namespace ExampleGame.Shared.Movement.Components
 {
     [GenerateAuthoringComponent]
     [PublicSnapshot]
+    [Predict]
     public partial struct EntityPosition : INetworkedComponent
     {
         public GameUnits Value;

@@ -21,7 +21,7 @@ namespace Server.Generated
 
         public BaseLines<ServerEntitySnapshot> EntitySnapshotBaseLine;
 
-        //<template>
+        //<template:publicsnapshot>
         //public BaseLines<##TYPE##> ##TYPE##BaseLine;
         //</template>
 //<generated>
@@ -34,7 +34,7 @@ namespace Server.Generated
         {
             _capacity = capacity;
             EntitySnapshotBaseLine = new BaseLines<ServerEntitySnapshot>(capacity, TimeConfig.SnapshotsPerSecond);
-            //<template>
+            //<template:publicsnapshot>
             //##TYPE##BaseLine = new BaseLines<##TYPE##>(capacity, TimeConfig.SnapshotsPerSecond);
             //</template>
 //<generated>
@@ -47,7 +47,7 @@ namespace Server.Generated
         public void Dispose()
         {
             EntitySnapshotBaseLine.Dispose();
-            //<template>
+            //<template:publicsnapshot>
             //##TYPE##BaseLine.Dispose();
             //</template>
 //<generated>

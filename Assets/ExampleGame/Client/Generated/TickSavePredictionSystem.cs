@@ -1,11 +1,16 @@
 ﻿using ExampleGame.Shared.Movement.Components;
 using OpenNetcode.Client.Components;
-using OpenNetcode.Shared.Components;
 using OpenNetcode.Shared.Systems;
 using OpenNetcode.Shared.Time;
 using Unity.Entities;
 
-namespace ExampleGame.Client.Generated
+//<using>
+//<generated>
+using ExampleGame.Shared.Movement.Components;
+using ExampleGame.Shared.Components;
+//</generated>
+
+namespace Client.Generated
 {
     [DisableAutoCreation]
     [UpdateInGroup(typeof(TickSimulationSystemGroup), OrderLast = true)]
@@ -17,14 +22,28 @@ namespace ExampleGame.Client.Generated
             int index = tick % TimeConfig.TicksPerSecond;
             Entity clientEntity = GetSingleton<ClientData>().LocalPlayer;
             
-            var prediction = EntityManager.GetComponentData<EntityPosition>(clientEntity);
-            var predictedMoves = EntityManager.GetBuffer<Prediction<EntityPosition>>(clientEntity);
+            //<template:predicted>
+            //var ##TYPELOWER##Prediction = EntityManager.GetComponentData<##TYPE##>(clientEntity);
+            //var ##TYPELOWER##Predictions = EntityManager.GetBuffer<Prediction<##TYPE##>>(clientEntity);
+            //
+            //##TYPELOWER##Predictions[index] = new Prediction<##TYPE##>()
+            //{
+            //    Tick = tick,
+            //    Value = ##TYPELOWER##Prediction
+            //};
+            //</template>
+//<generated>
+            var entityPositionPrediction = EntityManager.GetComponentData<EntityPosition>(clientEntity);
+            var entityPositionPredictions = EntityManager.GetBuffer<Prediction<EntityPosition>>(clientEntity);
             
-            predictedMoves[index] = new Prediction<EntityPosition>()
+            entityPositionPredictions[index] = new Prediction<EntityPosition>()
             {
                 Tick = tick,
-                Value = prediction
+                Value = entityPositionPrediction
             };
+//</generated>
+            
+            
         }
     }
 }

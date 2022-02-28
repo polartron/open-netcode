@@ -15,7 +15,7 @@ namespace ExampleGame.Server.Generated
     public struct ClearEventsJob : IJobEntityBatch
     {
         [ReadOnly] public EntityTypeHandle EntityTypeHandle;
-        //<events>
+        //<template:publicevent>
         //public BufferFromEntity<##TYPE##> ##TYPE##BufferFromEntity;
         //</events>
 //<generated>
@@ -30,7 +30,7 @@ namespace ExampleGame.Server.Generated
             {
                 var entity = entities[i];
 
-                //<events>
+                //<template:publicevent>
                 //if (##TYPE##BufferFromEntity.HasComponent(entity))
                 //{
                 //    ##TYPE##BufferFromEntity[entity].Clear();

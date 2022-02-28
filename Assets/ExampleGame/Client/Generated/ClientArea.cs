@@ -14,7 +14,7 @@ namespace Client.Generated
     public struct ClientArea : IDisposable
     {
         public BaseLines<ClientEntitySnapshot> ClientEntitySnapshotBaseLine;
-        //<template>
+        //<template:publicsnapshot>
         //public BaseLines<##TYPE##> ##TYPE##BaseLine;
         //</template>
 //<generated>
@@ -26,7 +26,7 @@ namespace Client.Generated
         public ClientArea(int capacity)
         {
             ClientEntitySnapshotBaseLine = new BaseLines<ClientEntitySnapshot>(capacity, TimeConfig.SnapshotsPerSecond);
-            //<template>
+            //<template:publicsnapshot>
             //##TYPE##BaseLine = new BaseLines<##TYPE##>(capacity, TimeConfig.SnapshotsPerSecond);
             //</template>
 //<generated>
@@ -39,7 +39,7 @@ namespace Client.Generated
         public void Dispose()
         {
             ClientEntitySnapshotBaseLine.Dispose();
-            //<template>
+            //<template:publicsnapshot>
             //##TYPE##BaseLine.Dispose();
             //</template>
 //<generated>

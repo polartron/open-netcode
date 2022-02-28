@@ -33,11 +33,11 @@ namespace Client.Generated
         //<template>
         //public BufferFromEntity<SnapshotBufferElement<##TYPE##>> ##TYPE##Buffer;
         //</template>
-        //<privatetemplate>
+        //<template:privatesnapshot>
         //public BufferFromEntity<SnapshotBufferElement<##TYPE##>> ##TYPE##Buffer;
-        //</privatetemplate>
+        //</template>
 
-        //<events>
+        //<template:publicevent>
         //public BufferFromEntity<SnapshotBufferElement<##TYPE##>> ##TYPE##Buffer;
         //</events>
         private struct ComponentBuffers
@@ -214,7 +214,7 @@ namespace Client.Generated
                     //</template>
                     int eventMask = (int) reader.ReadRawBits(eventMaskBits); // What type of events?
 
-                    //<events>
+                    //<template:publicevent>
                     //if (!ParseEvent<##TYPE##>(eventMask, ##INDEXOFFSET##, tick, ##INDEX##, ref componentBuffers, hasCreatedBuffer,
                     //    serverEntity,
                     //    ref reader, ref ##TYPE##Buffer, CompressionModel))
@@ -370,16 +370,16 @@ namespace Client.Generated
             //}
             //</template>
             
-            //<privatetemplate>
+            //<template:privatesnapshot>
             //if (created)
             //{
             //    var ##TYPELOWER##Buffer = EntityCommandBuffer.AddBuffer<SnapshotBufferElement<##TYPE##>>(entity);
             //    for (int i = 0; i < TimeConfig.SnapshotsPerSecond; i++)
             //        ##TYPELOWER##Buffer.Add(default);
             //}
-            //</privatetemplate>
+            //</template>
             
-            //<events>
+            //<template:publicevent>
             //if (created)
             //{
             //    var ##TYPELOWER##Buffer = EntityCommandBuffer.AddBuffer<SnapshotBufferElement<##TYPE##>>(entity);
@@ -409,12 +409,12 @@ namespace Client.Generated
             //    mask = mask | (1 << ##INDEX##);
             //}
             //</template>
-            //<privatetemplate>
+            //<template:privatesnapshot>
             //if (componentTypes.Contains(ComponentType.ReadWrite<##TYPE##>()))
             //{
             //    mask = mask | (1 << ##INDEX##);
             //}
-            //</privatetemplate>
+            //</template>
 
             var snapshot = new ClientEntitySnapshot()
             {

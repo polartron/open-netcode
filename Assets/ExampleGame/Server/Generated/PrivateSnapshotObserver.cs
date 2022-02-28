@@ -16,7 +16,7 @@ namespace Server.Generated
 
         public static int Observe<T>(int mask) where T : unmanaged
         {
-            //<template>
+            //<template:publicsnapshot>
             //if (typeof(T) == typeof(##TYPE##))
             //{
             //    return mask | (1 << ##INDEX##);
@@ -36,12 +36,12 @@ namespace Server.Generated
                 return mask | (1 << 2);
             }
 //</generated>
-            //<privatetemplate>
+            //<template:privatesnapshot>
             //if (typeof(T) == typeof(##TYPE##))
             //{
             //    return mask | (1 << ##INDEX##);
             //}
-            //</privatetemplate>
+            //</template>
 //<generated>
             if (typeof(T) == typeof(EntityHealth))
             {

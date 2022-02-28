@@ -17,10 +17,10 @@ using OpenNetcode.Shared.Time;
 //<template>
 //[assembly: RegisterGenericComponentType(typeof(SnapshotBufferElement<##TYPE##>))]
 //</template>
-//<privatetemplate>
+//<template:privatesnapshot>
 //[assembly: RegisterGenericComponentType(typeof(SnapshotBufferElement<##TYPE##>))]
-//</privatetemplate>
-//<events>
+//</template>
+//<template:publicevent>
 //[assembly: RegisterGenericComponentType(typeof(SnapshotBufferElement<##TYPE##>))]
 //</events>
 namespace Client.Generated
@@ -217,12 +217,12 @@ namespace Client.Generated
                     //    componentMask = componentMask | (1 << ##INDEX##);
                     //}
                     //</template>
-                    //<privatetemplate>
+                    //<template:privatesnapshot>
                     //if (EntityManager.HasComponent(entity, typeof(##TYPE##)))
                     //{
                     //    componentMask = componentMask | (1 << ##INDEX##);
                     //}
-                    //</privatetemplate>
+                    //</template>
 
                     //<template>
                     //if (!EntityManager.HasComponent<SnapshotBufferElement<##TYPE##>>(entity))
@@ -232,14 +232,14 @@ namespace Client.Generated
                     //        buffer.Add(default);
                     //}
                     //</template>
-                    //<privatetemplate>
+                    //<template:privatesnapshot>
                     //if (!EntityManager.HasComponent<SnapshotBufferElement<##TYPE##>>(entity))
                     //{
                     //    var buffer = EntityManager.AddBuffer<SnapshotBufferElement<##TYPE##>>(entity);
                     //    for (int b = 0; b < TimeConfig.SnapshotsPerSecond; b++)
                     //        buffer.Add(default);
                     //}
-                    //</privatetemplate>
+                    //</template>
                     var clientEntitySnapshot = new ClientEntitySnapshot()
                     {
                         Entity = entity,
@@ -258,12 +258,12 @@ namespace Client.Generated
                 //    ReadBufferElement<##TYPE##>(ref reader, observedSnapshot.Entity, snapshotTick);
                 //}
                 //</template>
-                //<privatetemplate>
+                //<template:privatesnapshot>
                 //if ((updateMask & (1 << ##INDEX##)) != 0)
                 //{
                 //    ReadBufferElement<##TYPE##>(ref reader, observedSnapshot.Entity, snapshotTick);
                 //}
-                //</privatetemplate>
+                //</template>
             }
         }
 
@@ -318,10 +318,10 @@ namespace Client.Generated
                 //<template>
                 //##TYPE##Buffer = GetBufferFromEntity<SnapshotBufferElement<##TYPE##>>(),
                 //</template>
-                //<privatetemplate>
+                //<template:privatesnapshot>
                 //##TYPE##Buffer = GetBufferFromEntity<SnapshotBufferElement<##TYPE##>>(),
-                //</privatetemplate>
-                //<events>
+                //</template>
+                //<template:publicevent>
                 //##TYPE##Buffer = GetBufferFromEntity<SnapshotBufferElement<##TYPE##>>(),
                 //</events>
             };

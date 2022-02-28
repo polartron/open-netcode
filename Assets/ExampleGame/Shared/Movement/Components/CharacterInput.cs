@@ -1,4 +1,5 @@
-﻿using OpenNetcode.Shared.Components;
+﻿using OpenNetcode.Shared.Attributes;
+using OpenNetcode.Shared.Components;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Networking.Transport;
@@ -7,6 +8,7 @@ using UnityEngine;
 namespace ExampleGame.Shared.Movement.Components
 {
     [GenerateAuthoringComponent]
+    [NetworkedInput]
     public struct CharacterInput : INetworkedComponent
     {
         public float2 Move;
@@ -14,12 +16,12 @@ namespace ExampleGame.Shared.Movement.Components
         
         public void Write(ref DataStreamWriter writer, in NetworkCompressionModel compressionModel)
         {
-            writer.WritePackedUInt(Compress(Move, Rotation), compressionModel);
+            writer.WriteRawBits(Compress(Move, Rotation), 18);
         }
         
         public void Read(ref DataStreamReader reader, in NetworkCompressionModel compressionModel)
         {
-            Decompress(reader.ReadPackedUInt(compressionModel), out Move, out Rotation);
+            Decompress(reader.ReadRawBits(18), out Move, out Rotation);
         }
 
         public int Hash()
@@ -27,6 +29,12 @@ namespace ExampleGame.Shared.Movement.Components
             return Move.GetHashCode() ^ Rotation.GetHashCode();
         }
 
+        
+        // Compression to get input down to 5 + 5 + 8 = 18 bits
+        // Movement component each gets 32 different values (5 bits)
+        // Rotation component gets 256 different values (8 bits)
+        // If you need more precision, use more bits.
+        
         public static void Decompress(uint compressedInput, out float2 input, out float rotation01, int inputBits = 5, int rotationBits = 8)
         {
             uint y = (compressedInput >> 13) & (uint) (1 << inputBits) - 1;
@@ -73,7 +81,5 @@ namespace ExampleGame.Shared.Movement.Components
             uint shifted = m << i;
             return cleared | shifted;
         }
-
-
     }
 }

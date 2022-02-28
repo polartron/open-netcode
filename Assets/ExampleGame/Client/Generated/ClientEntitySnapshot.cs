@@ -16,7 +16,7 @@ namespace Client.Generated
         public int Type;
         public int ComponentMask;
 
-        //<template>
+        //<template:publicsnapshot>
         //public int ##TYPE##Index;
         //</template>
 //<generated>

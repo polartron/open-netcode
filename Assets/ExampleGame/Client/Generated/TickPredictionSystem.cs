@@ -6,7 +6,7 @@ using OpenNetcode.Shared.Systems;
 using OpenNetcode.Shared.Time;
 using Unity.Entities;
 
-namespace ExampleGame.Client.Generated
+namespace Client.Generated
 {
     [DisableAutoCreation]
     [UpdateInGroup(typeof(TickPreSimulationSystemGroup), OrderLast = true)]
@@ -22,7 +22,7 @@ namespace ExampleGame.Client.Generated
         
         public void Rollback(Entity entity, int tick)
         {
-            //<template>
+            //<template:publicsnapshot>
             //DoRollback<##TYPE##>(entity, tick);
             //</template>
 //<generated>
@@ -46,19 +46,18 @@ namespace ExampleGame.Client.Generated
             }
         }
 
-        private bool IsPredictionError<T>(in ClientData clientData, in Entity entity, out DynamicBuffer<Prediction<T>> predictions, out SnapshotBufferElement<T> result) where T : unmanaged, INetworkedComponent
+        private bool IsPredictionError<T>(in ClientData clientData, in Entity entity, out int errorTick) where T : unmanaged, INetworkedComponent
         {
-            predictions = default;
             var resultBuffer = EntityManager.GetBuffer<SnapshotBufferElement<T>>(entity);
             var resultElement = resultBuffer[clientData.LastReceivedSnapshotTick % resultBuffer.Length];
-            result = resultElement;
+            errorTick = resultElement.Tick;
 
             if (resultElement.Tick != clientData.LastReceivedSnapshotTick)
             {
                 return false;
             }
             
-            predictions = EntityManager.GetBuffer<Prediction<T>>(entity);
+            var predictions = EntityManager.GetBuffer<Prediction<T>>(entity);
             int predictedIndex = resultElement.Tick % predictions.Length;
             var predicted = predictions[predictedIndex];
             
@@ -93,22 +92,36 @@ namespace ExampleGame.Client.Generated
             bool rollback = false;
             int rollbackFromTick = 0;
             
-            if (IsPredictionError<EntityPosition>(clientData, clientEntity, out var predictions, out var result))
+            //<template:predicted>
+            //if (IsPredictionError<##TYPE##>(clientData, clientEntity, out int ##TYPELOWER##ErrorTick))
+            //{
+            //    rollbackFromTick = ##TYPELOWER##ErrorTick;
+            //    rollback = true;
+            //}
+            //</template>
+//<generated>
+            if (IsPredictionError<EntityPosition>(clientData, clientEntity, out int entityPositionErrorTick))
             {
-                rollbackFromTick = result.Tick;
+                rollbackFromTick = entityPositionErrorTick;
                 rollback = true;
             }
+//</generated>
             
             int predictedIndex = rollbackFromTick % TimeConfig.TicksPerSecond;
 
             if (rollback)
             {
                 Rollback(clientEntity, rollbackFromTick);
-                
                 int rollbackTicks = tick - rollbackFromTick;
                 
+                //<template:input>
+                //var ##TYPELOWER##Cached = EntityManager.GetComponentData<##TYPE##>(clientEntity);
+                //var ##TYPELOWER##Saved = EntityManager.GetBuffer<SavedInput<##TYPE##>>(clientEntity);
+                //</template>
+//<generated>
                 var characterInputCached = EntityManager.GetComponentData<CharacterInput>(clientEntity);
                 var characterInputSaved = EntityManager.GetBuffer<SavedInput<CharacterInput>>(clientEntity);
+//</generated>
                 
                 for (int i = 1; i < rollbackTicks; i++)
                 {
@@ -119,7 +132,12 @@ namespace ExampleGame.Client.Generated
                     
                     int index = (predictedIndex + i) % TimeConfig.TicksPerSecond;
                     
+                    //<template:input>
+                    //EntityManager.SetComponentData(clientEntity, ##TYPELOWER##Saved[index].Value);
+                    //</template>
+//<generated>
                     EntityManager.SetComponentData(clientEntity, characterInputSaved[index].Value);
+//</generated>
                     
                     _tickSystem.StepSimulation();
                 }
@@ -129,7 +147,12 @@ namespace ExampleGame.Client.Generated
                     Value = tick
                 });
                 
+                //<template:input>
+                //EntityManager.SetComponentData(clientEntity, ##TYPELOWER##Cached);
+                //</template>
+//<generated>
                 EntityManager.SetComponentData(clientEntity, characterInputCached);
+//</generated>
             }
         }
     }

@@ -31,7 +31,7 @@ namespace Server.Generated
         //<template>
         //[ReadOnly] public ComponentDataFromEntity<##TYPE##> ##TYPE##FromEntity;
         //</template>
-        //<events>
+        //<template:publicevent>
         //[ReadOnly] public BufferFromEntity<##TYPE##> ##TYPE##BufferFromEntity;
         //</events>
 
@@ -183,7 +183,7 @@ namespace Server.Generated
                     
                     writer.WriteRawBits((uint) eventMask, eventMaskBits); // Event mask
 
-                    //<events>
+                    //<template:publicevent>
                     //if ((eventMask & (1 << ##INDEX##)) != 0)
                     //{
                     //    var buffer = ##TYPE##BufferFromEntity[current.Entity];

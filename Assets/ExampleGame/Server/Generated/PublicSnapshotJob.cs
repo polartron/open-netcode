@@ -32,7 +32,7 @@ namespace Server.Generated
         [ReadOnly] public NetworkCompressionModel CompressionModel;
         [ReadOnly] public NativeMultiHashMap<int, ServerEntitySnapshot> PlayerSnapshots;
 
-        //<template>
+        //<template:publicsnapshot>
         //[ReadOnly] public ComponentDataFromEntity<##TYPE##> ##TYPE##FromEntity;
         //</template>
 //<generated>
@@ -40,7 +40,7 @@ namespace Server.Generated
         [ReadOnly] public ComponentDataFromEntity<EntityVelocity> EntityVelocityFromEntity;
         [ReadOnly] public ComponentDataFromEntity<PathComponent> PathComponentFromEntity;
 //</generated>
-        //<events>
+        //<template:publicevent>
         //[ReadOnly] public BufferFromEntity<##TYPE##> ##TYPE##BufferFromEntity;
         //</events>
 //<generated>
@@ -85,7 +85,7 @@ namespace Server.Generated
         {
             NativeArray<ServerEntitySnapshot> entities =
                 new NativeArray<ServerEntitySnapshot>(entitySnapshots.Length, Allocator.Temp);
-            //<template>
+            //<template:publicsnapshot>
             //NativeArray<##TYPE##> ##TYPELOWER##Components = new NativeArray<##TYPE##>(entitySnapshots.Length, Allocator.Temp);
             //int ##TYPELOWER##Index = 0;
             //</template>
@@ -103,7 +103,7 @@ namespace Server.Generated
                 ServerEntitySnapshot snapshot = entitySnapshots[i];
                 int mask = snapshot.ComponentMask;
 
-                //<template>
+                //<template:publicsnapshot>
                 //if ((mask & (1 << ##INDEX##)) != 0)
                 //{
                 //    ##TYPELOWER##Components[##TYPELOWER##Index] = ##TYPE##FromEntity[snapshot.Entity];
@@ -136,7 +136,7 @@ namespace Server.Generated
             }
 
             area.EntitySnapshotBaseLine.UpdateBaseline(entities, tick, entitySnapshots.Length);
-            //<template>
+            //<template:publicsnapshot>
             //area.##TYPE##BaseLine.UpdateBaseline(##TYPELOWER##Components, tick, ##TYPELOWER##Index);
             //</template>
 //<generated>
@@ -196,7 +196,7 @@ namespace Server.Generated
                 lastIndex = removeOrAdd.Index;
             }
 
-            //<template>
+            //<template:publicsnapshot>
             //var base##TYPELOWER## = Area.##TYPE##BaseLine.GetBaseline(PlayerSnapshotIndex);
             //</template>
 //<generated>
@@ -212,7 +212,7 @@ namespace Server.Generated
                 int componentMask = current.ComponentMask;
                 int eventMask = current.EventMask;
 
-                //<template>
+                //<template:publicsnapshot>
                 //if ((componentMask & (1 << ##INDEX##)) != 0)
                 //{
                 //    ##TYPE## component = ##TYPE##FromEntity[current.Entity];
@@ -246,7 +246,7 @@ namespace Server.Generated
                 if (eventMask != 0)
                 {
                     int eventMaskBits = 0;
-                    //<template>
+                    //<template:publicsnapshot>
                     //eventMaskBits = ##EVENTMASKBITS##;
                     //</template>
 //<generated>
@@ -258,7 +258,7 @@ namespace Server.Generated
                     
                     writer.WriteRawBits((uint) eventMask, eventMaskBits); // Event mask
 
-                    //<events>
+                    //<template:publicevent>
                     //if ((eventMask & (1 << ##INDEX##)) != 0)
                     //{
                     //    var buffer = ##TYPE##BufferFromEntity[current.Entity];

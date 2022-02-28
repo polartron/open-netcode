@@ -1,5 +1,6 @@
 ﻿using ExampleGame.Shared.Movement.Components;
 using OpenNetcode.Client.Components;
+using OpenNetcode.Client.Systems;
 using OpenNetcode.Shared;
 using OpenNetcode.Shared.Components;
 using OpenNetcode.Shared.Messages;
@@ -8,9 +9,8 @@ using OpenNetcode.Shared.Time;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Networking.Transport;
-using UnityEngine;
 
-namespace OpenNetcode.Client.Systems
+namespace Client.Generated
 {
     [DisableAutoCreation]
     [UpdateInGroup(typeof(TickPreSimulationSystemGroup))]
@@ -20,7 +20,12 @@ namespace OpenNetcode.Client.Systems
         private TickReceiveResultSystem _tickReceiveResultSystem;
         private NetworkCompressionModel _compressionModel;
 
+        //<template:input>
+        //private NativeArray<##TYPE##> _##TYPELOWER##History = new NativeArray<##TYPE##>(5, Allocator.Persistent);
+        //</template>
+//<generated>
         private NativeArray<CharacterInput> _characterInputHistory = new NativeArray<CharacterInput>(5, Allocator.Persistent);
+//</generated>
 
         public TickInputSystem(IClientNetworkSystem clientNetworkSystem)
         {
@@ -37,7 +42,12 @@ namespace OpenNetcode.Client.Systems
 
         protected override void OnDestroy()
         {
+            //<template:input>
+            //_##TYPELOWER##History.Dispose();
+            //</template>
+//<generated>
             _characterInputHistory.Dispose();
+//</generated>
             
             base.OnDestroy();
         }
@@ -91,8 +101,14 @@ namespace OpenNetcode.Client.Systems
 
             var writer = new DataStreamWriter(1000, Allocator.Temp);
             
+            //<template:input>
+            //CompressInput<##TYPE##>(clientEntity);
+            //AddInputPacket<##TYPE##>(tickData.Value, clientData, clientEntity, ref writer, ref _##TYPELOWER##History);
+            //</template>
+//<generated>
             CompressInput<CharacterInput>(clientEntity);
             AddInputPacket<CharacterInput>(tickData.Value, clientData, clientEntity, ref writer, ref _characterInputHistory);
+//</generated>
             
             _clientNetworkSystem.Send(Packets.WrapPacket(writer));
             _tickReceiveResultSystem.AddSentInput(GetSingleton<TickData>().Value, (float) Time.ElapsedTime);

@@ -34,7 +34,7 @@ namespace Client.Generated
         public NativeHashMap<int, ClientEntitySnapshot> SnapshotEntities;
         public NativeHashMap<int, ClientEntitySnapshot> ObservedEntities;
         
-        //<template>
+        //<template:publicsnapshot>
         //public BufferFromEntity<SnapshotBufferElement<##TYPE##>> ##TYPE##Buffer;
         //</template>
 //<generated>
@@ -42,14 +42,14 @@ namespace Client.Generated
         public BufferFromEntity<SnapshotBufferElement<EntityVelocity>> EntityVelocityBuffer;
         public BufferFromEntity<SnapshotBufferElement<PathComponent>> PathComponentBuffer;
 //</generated>
-        //<privatetemplate>
+        //<template:privatesnapshot>
         //public BufferFromEntity<SnapshotBufferElement<##TYPE##>> ##TYPE##Buffer;
-        //</privatetemplate>
+        //</template>
 //<generated>
         public BufferFromEntity<SnapshotBufferElement<EntityHealth>> EntityHealthBuffer;
 //</generated>
 
-        //<events>
+        //<template:publicevent>
         //public BufferFromEntity<SnapshotBufferElement<##TYPE##>> ##TYPE##Buffer;
         //</events>
 //<generated>
@@ -98,7 +98,7 @@ namespace Client.Generated
 
             var baseEntities = Area.ClientEntitySnapshotBaseLine.GetBaseline(baseLine);
 
-            //<template>
+            //<template:publicsnapshot>
             //var base##TYPE## = Area.##TYPE##BaseLine.GetBaseline(baseLine);
             //</template>
 //<generated>
@@ -216,7 +216,7 @@ namespace Client.Generated
                 bool hasCreatedBuffer = entityComponentBuffers.ContainsKey(serverEntity.ServerId);
                 ComponentBuffers componentBuffers = hasCreatedBuffer ? entityComponentBuffers[serverEntity.ServerId] : default;
 
-                //<template>
+                //<template:publicsnapshot>
                 //if (!ParseComponent<##TYPE##>(tick, ##INDEX##, activeEntity.BaseEntity.##TYPE##Index, ref componentBuffers,
                 //    hasCreatedBuffer, serverEntity, activeEntity, ref reader,
                 //    base##TYPE##, ref ##TYPE##Buffer, CompressionModel))
@@ -252,7 +252,7 @@ namespace Client.Generated
                 if (Convert.ToBoolean(reader.ReadRawBits(1))) // We have events
                 {
                     int eventMaskBits = 0;
-                    //<template>
+                    //<template:publicsnapshot>
                     //eventMaskBits = ##EVENTMASKBITS##;
                     //</template>
 //<generated>
@@ -262,7 +262,7 @@ namespace Client.Generated
 //</generated>
                     int eventMask = (int) reader.ReadRawBits(eventMaskBits); // What type of events?
 
-                    //<events>
+                    //<template:publicevent>
                     //if (!ParseEvent<##TYPE##>(eventMask, ##INDEXOFFSET##, tick, ##INDEX##, ref componentBuffers, hasCreatedBuffer,
                     //    serverEntity,
                     //    ref reader, ref ##TYPE##Buffer, CompressionModel))
@@ -403,7 +403,7 @@ namespace Client.Generated
             });
 
             int componentBufferLength = 0;
-            //<template>
+            //<template:publicsnapshot>
             //componentBufferLength = ##COMPONENTBUFFERLENGTH##;
             //</template>
 //<generated>
@@ -413,7 +413,7 @@ namespace Client.Generated
 //</generated>
             var componentBuffers = new ComponentBuffers(componentBufferLength);
             
-            //<template>
+            //<template:publicsnapshot>
             //if (created)
             //{
             //    var ##TYPELOWER##Buffer = EntityCommandBuffer.AddBuffer<SnapshotBufferElement<##TYPE##>>(entity);
@@ -482,14 +482,14 @@ namespace Client.Generated
             }
 //</generated>
             
-            //<privatetemplate>
+            //<template:privatesnapshot>
             //if (created)
             //{
             //    var ##TYPELOWER##Buffer = EntityCommandBuffer.AddBuffer<SnapshotBufferElement<##TYPE##>>(entity);
             //    for (int i = 0; i < TimeConfig.SnapshotsPerSecond; i++)
             //        ##TYPELOWER##Buffer.Add(default);
             //}
-            //</privatetemplate>
+            //</template>
 //<generated>
             if (created)
             {
@@ -499,7 +499,7 @@ namespace Client.Generated
             }
 //</generated>
             
-            //<events>
+            //<template:publicevent>
             //if (created)
             //{
             //    var ##TYPELOWER##Buffer = EntityCommandBuffer.AddBuffer<SnapshotBufferElement<##TYPE##>>(entity);
@@ -541,7 +541,7 @@ namespace Client.Generated
             int mask = 0;
             var componentTypes = archetype.GetComponentTypes(Allocator.Temp);
 
-            //<template>
+            //<template:publicsnapshot>
             //if (componentTypes.Contains(ComponentType.ReadWrite<##TYPE##>()))
             //{
             //    mask = mask | (1 << ##INDEX##);
@@ -561,12 +561,12 @@ namespace Client.Generated
                 mask = mask | (1 << 2);
             }
 //</generated>
-            //<privatetemplate>
+            //<template:privatesnapshot>
             //if (componentTypes.Contains(ComponentType.ReadWrite<##TYPE##>()))
             //{
             //    mask = mask | (1 << ##INDEX##);
             //}
-            //</privatetemplate>
+            //</template>
 //<generated>
             if (componentTypes.Contains(ComponentType.ReadWrite<EntityHealth>()))
             {

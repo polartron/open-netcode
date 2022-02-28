@@ -126,9 +126,9 @@ namespace Server.Generated
                     //<template>
                     //##TYPE##Components = GetComponentDataFromEntity<##TYPE##>(true),
                     //</template>
-                    //<privatetemplate>
+                    //<template:privatesnapshot>
                     //##TYPE##Components = GetComponentDataFromEntity<##TYPE##>(true),
-                    //</privatetemplate>
+                    //</template>
                 };
 
                 Dependency = privateSnapshotJob.ScheduleParallel(_playersQuery, Dependency);
@@ -162,7 +162,7 @@ namespace Server.Generated
                 //<template>
                 //##TYPE##Components = GetComponentDataFromEntity<##TYPE##>(true),
                 //</template>
-                //<events>
+                //<template:publicevent>
                 //##TYPE##BufferFromEntity = GetBufferFromEntity<BumpEvent>(true),
                 //</events>
             };
@@ -217,7 +217,7 @@ namespace Server.Generated
                             //<template>
                             //##TYPE##FromEntity = GetComponentDataFromEntity<##TYPE##>(true),
                             //</template>
-                            //<events>
+                            //<template:publicevent>
                             //##TYPE##BufferFromEntity = GetBufferFromEntity<##TYPE##>(true),
                             //</events>
                             CompressionModel = _compressionModel,
@@ -248,7 +248,7 @@ namespace Server.Generated
             ClearEventsJob clearEventsJob = new ClearEventsJob()
             {
                 EntityTypeHandle = GetEntityTypeHandle(),
-                //<events>
+                //<template:publicevent>
                 //##TYPE##BufferFromEntity = GetBufferFromEntity<##TYPE##>()
                 //</events>
             };

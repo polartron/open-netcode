@@ -18,7 +18,7 @@ using ExampleGame.Shared.Movement.Components;
 using ExampleGame.Shared.Components;
 //</generated>
 
-//<template>
+//<template:publicsnapshot>
 //[assembly: RegisterGenericComponentType(typeof(SnapshotBufferElement<##TYPE##>))]
 //</template>
 //<generated>
@@ -26,13 +26,13 @@ using ExampleGame.Shared.Components;
 [assembly: RegisterGenericComponentType(typeof(SnapshotBufferElement<EntityVelocity>))]
 [assembly: RegisterGenericComponentType(typeof(SnapshotBufferElement<PathComponent>))]
 //</generated>
-//<privatetemplate>
+//<template:privatesnapshot>
 //[assembly: RegisterGenericComponentType(typeof(SnapshotBufferElement<##TYPE##>))]
-//</privatetemplate>
+//</template>
 //<generated>
 [assembly: RegisterGenericComponentType(typeof(SnapshotBufferElement<EntityHealth>))]
 //</generated>
-//<events>
+//<template:publicevent>
 //[assembly: RegisterGenericComponentType(typeof(SnapshotBufferElement<##TYPE##>))]
 //</events>
 //<generated>
@@ -205,7 +205,7 @@ namespace Client.Generated
                     
                     int componentMask = 0;
 
-                    //<template>
+                    //<template:publicsnapshot>
                     //if (EntityManager.HasComponent(entity, typeof(##TYPE##)))
                     //{
                     //    componentMask = componentMask | (1 << ##INDEX##);
@@ -225,12 +225,12 @@ namespace Client.Generated
                         componentMask = componentMask | (1 << 2);
                     }
 //</generated>
-                    //<privatetemplate>
+                    //<template:privatesnapshot>
                     //if (EntityManager.HasComponent(entity, typeof(##TYPE##)))
                     //{
                     //    componentMask = componentMask | (1 << ##INDEX##);
                     //}
-                    //</privatetemplate>
+                    //</template>
 //<generated>
                     if (EntityManager.HasComponent(entity, typeof(EntityHealth)))
                     {
@@ -238,7 +238,7 @@ namespace Client.Generated
                     }
 //</generated>
 
-                    //<template>
+                    //<template:publicsnapshot>
                     //if (!EntityManager.HasComponent<SnapshotBufferElement<##TYPE##>>(entity))
                     //{
                     //    var buffer = EntityManager.AddBuffer<SnapshotBufferElement<##TYPE##>>(entity);
@@ -266,14 +266,14 @@ namespace Client.Generated
                             buffer.Add(default);
                     }
 //</generated>
-                    //<privatetemplate>
+                    //<template:privatesnapshot>
                     //if (!EntityManager.HasComponent<SnapshotBufferElement<##TYPE##>>(entity))
                     //{
                     //    var buffer = EntityManager.AddBuffer<SnapshotBufferElement<##TYPE##>>(entity);
                     //    for (int b = 0; b < TimeConfig.SnapshotsPerSecond; b++)
                     //        buffer.Add(default);
                     //}
-                    //</privatetemplate>
+                    //</template>
 //<generated>
                     if (!EntityManager.HasComponent<SnapshotBufferElement<EntityHealth>>(entity))
                     {
@@ -294,7 +294,7 @@ namespace Client.Generated
 
                 ClientEntitySnapshot observedSnapshot = _observedEntities[index];
 
-                //<template>
+                //<template:publicsnapshot>
                 //if ((updateMask & (1 << ##INDEX##)) != 0)
                 //{
                 //    ReadBufferElement<##TYPE##>(ref reader, observedSnapshot.Entity, snapshotTick);
@@ -314,12 +314,12 @@ namespace Client.Generated
                     ReadBufferElement<PathComponent>(ref reader, observedSnapshot.Entity, snapshotTick);
                 }
 //</generated>
-                //<privatetemplate>
+                //<template:privatesnapshot>
                 //if ((updateMask & (1 << ##INDEX##)) != 0)
                 //{
                 //    ReadBufferElement<##TYPE##>(ref reader, observedSnapshot.Entity, snapshotTick);
                 //}
-                //</privatetemplate>
+                //</template>
 //<generated>
                 if ((updateMask & (1 << 3)) != 0)
                 {
@@ -377,7 +377,7 @@ namespace Client.Generated
                 ObservedEntities = _observedEntities,
                 SnapshotEntities = _snapshotEntities,
                 EntityCommandBuffer = ecb,
-                //<template>
+                //<template:publicsnapshot>
                 //##TYPE##Buffer = GetBufferFromEntity<SnapshotBufferElement<##TYPE##>>(),
                 //</template>
 //<generated>
@@ -385,13 +385,13 @@ namespace Client.Generated
                 EntityVelocityBuffer = GetBufferFromEntity<SnapshotBufferElement<EntityVelocity>>(),
                 PathComponentBuffer = GetBufferFromEntity<SnapshotBufferElement<PathComponent>>(),
 //</generated>
-                //<privatetemplate>
+                //<template:privatesnapshot>
                 //##TYPE##Buffer = GetBufferFromEntity<SnapshotBufferElement<##TYPE##>>(),
-                //</privatetemplate>
+                //</template>
 //<generated>
                 EntityHealthBuffer = GetBufferFromEntity<SnapshotBufferElement<EntityHealth>>(),
 //</generated>
-                //<events>
+                //<template:publicevent>
                 //##TYPE##Buffer = GetBufferFromEntity<SnapshotBufferElement<##TYPE##>>(),
                 //</events>
 //<generated>
@@ -438,7 +438,7 @@ namespace Client.Generated
                 SnapshotIndex = snapshotIndex,
                 Tick = tick,
                 NetworkedPrefabFromEntity = GetComponentDataFromEntity<NetworkedPrefab>(true),
-                //<template>
+                //<template:publicsnapshot>
                 //##TYPE##Buffer = GetBufferFromEntity<SnapshotBufferElement<##TYPE##>>(true),
                 //</template>
 //<generated>

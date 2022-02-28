@@ -22,7 +22,7 @@ namespace Server.Generated
         [ReadOnly] public NativeHashSet<int> ActiveAreas;
         [WriteOnly] public NativeMultiHashMap<int, ServerEntitySnapshot>.ParallelWriter EntitiesInAreas;
 
-        //<template>
+        //<template:publicsnapshot>
         //[ReadOnly] public ComponentDataFromEntity<##TYPE##> ##TYPE##Components;
         //</template>
 //<generated>
@@ -30,7 +30,7 @@ namespace Server.Generated
         [ReadOnly] public ComponentDataFromEntity<EntityVelocity> EntityVelocityComponents;
         [ReadOnly] public ComponentDataFromEntity<PathComponent> PathComponentComponents;
 //</generated>
-        //<events>
+        //<template:publicevent>
         //[ReadOnly] public BufferFromEntity<##TYPE##> ##TYPE##BufferFromEntity;
         //</events>
 //<generated>
@@ -55,7 +55,7 @@ namespace Server.Generated
 
                 int componentMask = 0;
 
-                //<template>
+                //<template:publicsnapshot>
                 //if (##TYPE##Components.HasComponent(entity))
                 //{
                 //    componentMask = componentMask | (1 << ##INDEX##);
@@ -79,7 +79,7 @@ namespace Server.Generated
 
                 int eventMask = 0;
 
-                //<events>
+                //<template:publicevent>
                 //if (##TYPE##BufferFromEntity.HasComponent(entity) && ##TYPE##BufferFromEntity[entity].Length > 0)
                 //{
                 //    eventMask = eventMask | (1 << ##INDEX##);

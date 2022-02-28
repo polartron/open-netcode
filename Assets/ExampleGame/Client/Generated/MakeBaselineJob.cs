@@ -22,7 +22,7 @@ namespace Client.Generated
 
         [ReadOnly] public NativeHashMap<int, ClientEntitySnapshot> Entities;
 
-        //<template>
+        //<template:publicsnapshot>
         //[ReadOnly] public BufferFromEntity<SnapshotBufferElement<##TYPE##>> ##TYPE##Buffer;
         //</template>
 //<generated>
@@ -44,7 +44,7 @@ namespace Client.Generated
             NativeArray<ClientEntitySnapshot> entities =
                 new NativeArray<ClientEntitySnapshot>(entitySnapshots.Length, Allocator.Temp);
 
-            //<template>
+            //<template:publicsnapshot>
             //NativeArray<##TYPE##> ##TYPELOWER##s = new NativeArray<##TYPE##>(entitySnapshots.Length, Allocator.Temp);
             //int ##TYPELOWER##Index = 0;
             //</template>
@@ -67,7 +67,7 @@ namespace Client.Generated
                     snapshot.Type = NetworkedPrefabFromEntity[snapshot.Entity].Index;
                 }
 
-                //<template>
+                //<template:publicsnapshot>
                 //if ((mask & (1 << ##INDEX##)) != 0)
                 //{
                 //    var buffer = ##TYPE##Buffer[snapshot.Entity];
@@ -104,7 +104,7 @@ namespace Client.Generated
 
             area.ClientEntitySnapshotBaseLine.UpdateBaseline(entities, SnapshotIndex, entitySnapshots.Length);
 
-            //<template>
+            //<template:publicsnapshot>
             //area.##TYPE##BaseLine.UpdateBaseline(##TYPELOWER##s, SnapshotIndex, ##TYPELOWER##Index);
             //</template>
 //<generated>

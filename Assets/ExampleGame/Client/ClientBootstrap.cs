@@ -1,6 +1,5 @@
 using Client.Generated;
 using ExampleGame.Client.Components;
-using ExampleGame.Client.Generated;
 using ExampleGame.Client.Systems;
 using ExampleGame.Shared.Components;
 using ExampleGame.Shared.Movement.Components;

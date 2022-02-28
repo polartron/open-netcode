@@ -16,7 +16,7 @@ namespace Server.Generated
         public int EventMask;
         public int PrefabType;
 
-        //<template>
+        //<template:publicsnapshot>
         //public int ##TYPE##Index;
         //</template>
 //<generated>

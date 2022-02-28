@@ -31,7 +31,7 @@ namespace Server.Generated
         [ReadOnly] public ComponentTypeHandle<SpatialHash> SpatialHashHandle;
         public ComponentTypeHandle<PlayerBaseLine> PlayerBaseLineHandle;
         [ReadOnly] public BufferTypeHandle<PrivateSnapshotObserver> PrivateSnapshotObserverHandle;
-        //<template>
+        //<template:publicsnapshot>
         //[ReadOnly] public ComponentDataFromEntity<##TYPE##> ##TYPE##Components;
         //</template>
 //<generated>
@@ -39,9 +39,9 @@ namespace Server.Generated
         [ReadOnly] public ComponentDataFromEntity<EntityVelocity> EntityVelocityComponents;
         [ReadOnly] public ComponentDataFromEntity<PathComponent> PathComponentComponents;
 //</generated>
-        //<privatetemplate>
+        //<template:privatesnapshot>
         //[ReadOnly] public ComponentDataFromEntity<##TYPE##> ##TYPE##Components;
-        //</privatetemplate>
+        //</template>
 //<generated>
         [ReadOnly] public ComponentDataFromEntity<EntityHealth> EntityHealthComponents;
 //</generated>
@@ -104,7 +104,7 @@ namespace Server.Generated
                     int updateMask = target.ComponentInterestMask;
                     writer.WritePackedInt(updateMask, CompressionModel);
 
-                    //<template>
+                    //<template:publicsnapshot>
                     //if ((updateMask & (1 << ##INDEX##)) != 0 && ##TYPE##Components.HasComponent(targetEntity))
                     //{
                     //    var ##TYPELOWER## = ##TYPE##Components[targetEntity];
@@ -129,13 +129,13 @@ namespace Server.Generated
                     }
 //</generated>
                         
-                    //<privatetemplate>
+                    //<template:privatesnapshot>
                     //if ((updateMask & (1 << ##INDEX##)) != 0 && ##TYPE##Components.HasComponent(targetEntity))
                     //{
                     //    var ##TYPELOWER## = ##TYPE##Components[targetEntity];
                     //    ##TYPELOWER##.WriteSnapshot(ref writer, CompressionModel, default);
                     //}
-                    //</privatetemplate>
+                    //</template>
 //<generated>
                     if ((updateMask & (1 << 3)) != 0 && EntityHealthComponents.HasComponent(targetEntity))
                     {

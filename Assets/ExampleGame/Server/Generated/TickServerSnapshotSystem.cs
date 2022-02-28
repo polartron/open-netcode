@@ -127,7 +127,7 @@ namespace Server.Generated
                     NetworkedPrefabFromEntityHandle = GetComponentDataFromEntity<NetworkedPrefab>(true),
                     PlayerBaseLineHandle = GetComponentTypeHandle<PlayerBaseLine>(),
                     SpatialHashHandle = spatialHashHandle,
-                    //<template>
+                    //<template:publicsnapshot>
                     //##TYPE##Components = GetComponentDataFromEntity<##TYPE##>(true),
                     //</template>
 //<generated>
@@ -135,9 +135,9 @@ namespace Server.Generated
                     EntityVelocityComponents = GetComponentDataFromEntity<EntityVelocity>(true),
                     PathComponentComponents = GetComponentDataFromEntity<PathComponent>(true),
 //</generated>
-                    //<privatetemplate>
+                    //<template:privatesnapshot>
                     //##TYPE##Components = GetComponentDataFromEntity<##TYPE##>(true),
-                    //</privatetemplate>
+                    //</template>
 //<generated>
                     EntityHealthComponents = GetComponentDataFromEntity<EntityHealth>(true),
 //</generated>
@@ -171,7 +171,7 @@ namespace Server.Generated
                 NetworkedPrefabHandle = GetComponentTypeHandle<NetworkedPrefab>(true),
                 EntityTypeHandle = GetEntityTypeHandle(),
                 SpatialHashHandle = spatialHashHandle,
-                //<template>
+                //<template:publicsnapshot>
                 //##TYPE##Components = GetComponentDataFromEntity<##TYPE##>(true),
                 //</template>
 //<generated>
@@ -179,7 +179,7 @@ namespace Server.Generated
                 EntityVelocityComponents = GetComponentDataFromEntity<EntityVelocity>(true),
                 PathComponentComponents = GetComponentDataFromEntity<PathComponent>(true),
 //</generated>
-                //<events>
+                //<template:publicevent>
                 //##TYPE##BufferFromEntity = GetBufferFromEntity<BumpEvent>(true),
                 //</events>
 //<generated>
@@ -234,7 +234,7 @@ namespace Server.Generated
                             SnapshotIndex = snapshotIndex,
                             PlayerSnapshotIndex = player.SnapshotIndex,
                             PlayerSnapshots = entitiesInAreas,
-                            //<template>
+                            //<template:publicsnapshot>
                             //##TYPE##FromEntity = GetComponentDataFromEntity<##TYPE##>(true),
                             //</template>
 //<generated>
@@ -242,7 +242,7 @@ namespace Server.Generated
                             EntityVelocityFromEntity = GetComponentDataFromEntity<EntityVelocity>(true),
                             PathComponentFromEntity = GetComponentDataFromEntity<PathComponent>(true),
 //</generated>
-                            //<events>
+                            //<template:publicevent>
                             //##TYPE##BufferFromEntity = GetBufferFromEntity<##TYPE##>(true),
                             //</events>
 //<generated>
@@ -276,7 +276,7 @@ namespace Server.Generated
             ClearEventsJob clearEventsJob = new ClearEventsJob()
             {
                 EntityTypeHandle = GetEntityTypeHandle(),
-                //<events>
+                //<template:publicevent>
                 //##TYPE##BufferFromEntity = GetBufferFromEntity<##TYPE##>()
                 //</events>
 //<generated>

@@ -193,6 +193,15 @@ namespace ##NAMESPACE##
             Debug.Log(text);
         }
 
+        private class CodeGenerationData
+        {
+            public List<Type> PublicSnapshots = new List<Type>();
+            public List<Type> PrivateSnapshots = new List<Type>();
+            public List<Type> PublicEvents = new List<Type>();
+            public List<Type> Inputs = new List<Type>();
+            public List<Type> Predictions = new List<Type>();
+        }
+
         [MenuItem("OpenNetcode/Generate Code")]
         public static void Generate()
         {
@@ -201,10 +210,8 @@ namespace ##NAMESPACE##
             if (settings == null)
                 return;
             
-            List<Type> publicSnapshots = new List<Type>();
-            List<Type> privateSnapshots = new List<Type>();
-            List<Type> publicEvents = new List<Type>();
-            
+            CodeGenerationData data = new CodeGenerationData();
+
             foreach (FileInfo file in new DirectoryInfo(Path.Combine(Application.dataPath, settings.CodeGenerationPaths.Shared)).GetFiles())
             {
                 file.Delete();
@@ -220,19 +227,19 @@ namespace ##NAMESPACE##
                     if (type.GetCustomAttributes(typeof(PublicSnapshot), true).Length > 0)
                     {
                         GenerateSnapshotCodeForComponent(type, settings.CodeGenerationPaths.Shared);
-                        publicSnapshots.Add(type);
+                        data.PublicSnapshots.Add(type);
                     }
 
                     if (type.GetCustomAttributes(typeof(PrivateSnapshot), true).Length > 0)
                     {
                         GenerateSnapshotCodeForComponent(type, settings.CodeGenerationPaths.Shared);
-                        privateSnapshots.Add(type);
+                        data.PrivateSnapshots.Add(type);
                     }
 
                     if (type.GetCustomAttributes(typeof(PublicEvent), true).Length > 0)
                     {
                         GenerateSnapshotCodeForComponent(type, settings.CodeGenerationPaths.Shared);
-                        publicEvents.Add(type);
+                        data.PublicEvents.Add(type);
                     }
                 }
             }
@@ -244,8 +251,7 @@ namespace ##NAMESPACE##
                 foreach (var template in files)
                 {
                     string fileName = Path.GetFileNameWithoutExtension(template);
-                    CreateTemplate(template, Path.Combine(settings.CodeGenerationPaths.Server, fileName + ".cs"), publicSnapshots,
-                        privateSnapshots, publicEvents);
+                    CreateTemplate(template, Path.Combine(settings.CodeGenerationPaths.Server, fileName + ".cs"), data);
                 }
             }
             {
@@ -255,8 +261,7 @@ namespace ##NAMESPACE##
                 foreach (var template in files)
                 {
                     string fileName = Path.GetFileNameWithoutExtension(template);
-                    CreateTemplate(template, Path.Combine(settings.CodeGenerationPaths.Client, fileName + ".cs"), publicSnapshots,
-                        privateSnapshots, publicEvents);
+                    CreateTemplate(template, Path.Combine(settings.CodeGenerationPaths.Client, fileName + ".cs"), data);
                 }
             }
 
@@ -277,24 +282,23 @@ namespace ##NAMESPACE##
             return count;
         }
 
-        private static void CreateTemplate(string filePath, string generatedPath, List<Type> publicSnapshots,
-            List<Type> privateSnapshots, List<Type> publicEvents)
+        private static void CreateTemplate(string filePath, string generatedPath, CodeGenerationData data)
         {
             string text = File.ReadAllText(filePath);
 
             HashSet<string> namespaces = new HashSet<string>();
 
-            foreach (var type in publicSnapshots)
+            foreach (var type in data.PublicSnapshots)
             {
                 namespaces.Add(type.Namespace);
             }
 
-            foreach (var type in privateSnapshots)
+            foreach (var type in data.PrivateSnapshots)
             {
                 namespaces.Add(type.Namespace);
             }
 
-            foreach (var type in publicEvents)
+            foreach (var type in data.PublicEvents)
             {
                 namespaces.Add(type.Namespace);
             }
@@ -313,17 +317,14 @@ namespace ##NAMESPACE##
                 namespaceIndex += insert.Length;
             }
 
-
-            int eventMaskBits = CountBits((uint) publicEvents.Count);
-            int componentBufferLength = publicEvents.Count + publicSnapshots.Count;
+            int eventMaskBits = CountBits((uint) data.PublicEvents.Count);
+            int componentBufferLength = data.PublicEvents.Count + data.PublicSnapshots.Count;
 
             text = text.Insert(namespaceIndex, "//</generated>\n");
 
-            text = Replace(text, "<template>", "</template>", publicSnapshots, eventMaskBits, componentBufferLength);
-            text = Replace(text, "<privatetemplate>", "</privatetemplate>", privateSnapshots, eventMaskBits,
-                componentBufferLength, publicSnapshots.Count);
-            text = Replace(text, "<events>", "</events>", publicEvents, eventMaskBits, componentBufferLength, 0,
-                publicSnapshots.Count);
+            text = Replace(text, "<template:publicsnapshot>", "</template>", data.PublicSnapshots, eventMaskBits, componentBufferLength);
+            text = Replace(text, "<template:privatesnapshot>", "</template>", data.PrivateSnapshots, eventMaskBits, componentBufferLength, data.PublicSnapshots.Count);
+            text = Replace(text, "<template:publicevent>", "</template>", data.PublicEvents, eventMaskBits, componentBufferLength, 0, data.PublicSnapshots.Count);
 
             Debug.Log("Generated " + Path.Combine(Application.dataPath, generatedPath));
 

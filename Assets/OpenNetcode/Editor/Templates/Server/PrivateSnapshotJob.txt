@@ -30,9 +30,9 @@ namespace Server.Generated
         //<template>
         //[ReadOnly] public ComponentDataFromEntity<##TYPE##> ##TYPE##Components;
         //</template>
-        //<privatetemplate>
+        //<template:privatesnapshot>
         //[ReadOnly] public ComponentDataFromEntity<##TYPE##> ##TYPE##Components;
-        //</privatetemplate>
+        //</template>
             
         public void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
         {
@@ -100,13 +100,13 @@ namespace Server.Generated
                     //}
                     //</template>
                         
-                    //<privatetemplate>
+                    //<template:privatesnapshot>
                     //if ((updateMask & (1 << ##INDEX##)) != 0 && ##TYPE##Components.HasComponent(targetEntity))
                     //{
                     //    var ##TYPELOWER## = ##TYPE##Components[targetEntity];
                     //    ##TYPELOWER##.WriteSnapshot(ref writer, CompressionModel, default);
                     //}
-                    //</privatetemplate>
+                    //</template>
                 }
                     
                     
