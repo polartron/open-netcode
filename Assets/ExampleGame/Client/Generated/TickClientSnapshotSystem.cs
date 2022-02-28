@@ -1,5 +1,3 @@
-using System;
-using ExampleGame.Shared.Components;
 using UnityEngine;
 using Unity.Collections;
 using Unity.Entities;
@@ -34,9 +32,14 @@ using ExampleGame.Shared.Components;
 //</generated>
 //<template:publicevent>
 //[assembly: RegisterGenericComponentType(typeof(SnapshotBufferElement<##TYPE##>))]
-//</events>
+//</template>
 //<generated>
 [assembly: RegisterGenericComponentType(typeof(SnapshotBufferElement<BumpEvent>))]
+//</generated>
+//<template:input>
+//[assembly: RegisterGenericComponentType(typeof(SavedInput<##TYPE##>))]
+//</template>
+//<generated>
 [assembly: RegisterGenericComponentType(typeof(SavedInput<CharacterInput>))]
 //</generated>
 namespace Client.Generated
@@ -393,7 +396,7 @@ namespace Client.Generated
 //</generated>
                 //<template:publicevent>
                 //##TYPE##Buffer = GetBufferFromEntity<SnapshotBufferElement<##TYPE##>>(),
-                //</events>
+                //</template>
 //<generated>
                 BumpEventBuffer = GetBufferFromEntity<SnapshotBufferElement<BumpEvent>>(),
 //</generated>

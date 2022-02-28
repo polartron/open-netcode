@@ -10,7 +10,7 @@ namespace ExampleGame.Shared.Components
         {
             //<write>
             writer.WriteRawBits(Convert.ToUInt32(Value != baseSnapshot.Value), 1);
-            if(Value != baseSnapshot.Value) Value.Write(ref writer, compressionModel, baseSnapshot.Value);
+            if(!Value.Equals(baseSnapshot.Value)) Value.Write(ref writer, compressionModel, baseSnapshot.Value);
 
         }
 

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Shared.Coordinates;
 using Unity.Collections;
+using Unity.Mathematics;
 using Unity.Networking.Transport;
 using UnityEngine;
 
@@ -75,6 +76,36 @@ public static class TypeExtensions
         writer.WritePackedFixedString512Delta(value, baseline, compressionModel);
     }
 
+    public static void Write(this float2 value, ref DataStreamWriter writer,
+        in NetworkCompressionModel compressionModel, in float2 baseline)
+    {
+        value.x.Write(ref writer, compressionModel, baseline.x);
+        value.y.Write(ref writer, compressionModel, baseline.y);
+    }
+    
+    public static void Write(this float3 value, ref DataStreamWriter writer,
+        in NetworkCompressionModel compressionModel, in float3 baseline)
+    {
+        value.x.Write(ref writer, compressionModel, baseline.x);
+        value.y.Write(ref writer, compressionModel, baseline.y);
+        value.z.Write(ref writer, compressionModel, baseline.z);
+    }
+    
+    public static void Write(this int2 value, ref DataStreamWriter writer,
+        in NetworkCompressionModel compressionModel, in int2 baseline)
+    {
+        value.x.Write(ref writer, compressionModel, baseline.x);
+        value.y.Write(ref writer, compressionModel, baseline.y);
+    }
+    
+    public static void Write(this int3 value, ref DataStreamWriter writer,
+        in NetworkCompressionModel compressionModel, in int3 baseline)
+    {
+        value.x.Write(ref writer, compressionModel, baseline.x);
+        value.y.Write(ref writer, compressionModel, baseline.y);
+        value.z.Write(ref writer, compressionModel, baseline.z);
+    }
+
     // Read
     
     public static void Read(this ref GameUnits value, ref DataStreamReader reader, in NetworkCompressionModel compressionModel, in GameUnits baseline)
@@ -91,6 +122,19 @@ public static class TypeExtensions
     public static void Read(this ref int value, ref DataStreamReader reader, in NetworkCompressionModel compressionModel, int baseline)
     {
         value = reader.ReadPackedIntDelta(baseline, compressionModel);
+    }
+    
+    public static void Read(this ref int2 value, ref DataStreamReader reader, in NetworkCompressionModel compressionModel, in int2 baseline)
+    {
+        value.x = reader.ReadPackedIntDelta(baseline.x, compressionModel);
+        value.y = reader.ReadPackedIntDelta(baseline.y, compressionModel);
+    }
+    
+    public static void Read(this ref int3 value, ref DataStreamReader reader, in NetworkCompressionModel compressionModel, in int3 baseline)
+    {
+        value.x = reader.ReadPackedIntDelta(baseline.x, compressionModel);
+        value.y = reader.ReadPackedIntDelta(baseline.y, compressionModel);
+        value.z = reader.ReadPackedIntDelta(baseline.z, compressionModel);
     }
     
     public static void Read(this ref uint value, ref DataStreamReader reader, in NetworkCompressionModel compressionModel, uint baseline)
@@ -123,6 +167,19 @@ public static class TypeExtensions
         value = reader.ReadPackedFloatDelta(baseline, compressionModel);
     }
     
+    public static void Read(this ref float2 value, ref DataStreamReader reader, in NetworkCompressionModel compressionModel, in float2 baseline)
+    {
+        value.x = reader.ReadPackedFloatDelta(baseline.x, compressionModel);
+        value.y = reader.ReadPackedFloatDelta(baseline.y, compressionModel);
+    }
+    
+    public static void Read(this ref float3 value, ref DataStreamReader reader, in NetworkCompressionModel compressionModel, in float3 baseline)
+    {
+        value.x = reader.ReadPackedFloatDelta(baseline.x, compressionModel);
+        value.y = reader.ReadPackedFloatDelta(baseline.y, compressionModel);
+        value.z = reader.ReadPackedFloatDelta(baseline.z, compressionModel);
+    }
+    
     public static void Read(this ref FixedString32Bytes value, ref DataStreamReader reader, in NetworkCompressionModel compressionModel, in FixedString32Bytes baseline)
     {
         value = reader.ReadPackedFixedString32Delta(baseline, compressionModel);
@@ -142,4 +199,6 @@ public static class TypeExtensions
     {
         value = reader.ReadPackedFixedString512Delta(baseline, compressionModel);
     }
+    
+
 }

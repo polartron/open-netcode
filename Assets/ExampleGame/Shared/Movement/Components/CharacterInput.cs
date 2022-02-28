@@ -9,7 +9,7 @@ namespace ExampleGame.Shared.Movement.Components
 {
     [GenerateAuthoringComponent]
     [NetworkedInput]
-    public struct CharacterInput : INetworkedComponent
+    public partial struct CharacterInput : INetworkedComponent
     {
         public float2 Move;
         public float Rotation;

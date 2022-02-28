@@ -42,7 +42,7 @@ namespace Server.Generated
 //</generated>
         //<template:publicevent>
         //[ReadOnly] public BufferFromEntity<##TYPE##> ##TYPE##BufferFromEntity;
-        //</events>
+        //</template>
 //<generated>
         [ReadOnly] public BufferFromEntity<BumpEvent> BumpEventBufferFromEntity;
 //</generated>
@@ -269,7 +269,7 @@ namespace Server.Generated
                     //        buffer[b].WriteSnapshot(ref writer, CompressionModel, default);
                     //    }
                     //}
-                    //</events>
+                    //</template>
 //<generated>
                     if ((eventMask & (1 << 0)) != 0)
                     {

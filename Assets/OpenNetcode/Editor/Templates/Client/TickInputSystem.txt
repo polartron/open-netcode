@@ -10,10 +10,6 @@ using Unity.Entities;
 using Unity.Networking.Transport;
 
 //<using>
-//<generated>
-using ExampleGame.Shared.Movement.Components;
-using ExampleGame.Shared.Components;
-//</generated>
 
 namespace Client.Generated
 {
@@ -28,9 +24,6 @@ namespace Client.Generated
         //<template:input>
         //private NativeArray<##TYPE##> _##TYPELOWER##History = new NativeArray<##TYPE##>(5, Allocator.Persistent);
         //</template>
-//<generated>
-        private NativeArray<CharacterInput> _characterInputHistory = new NativeArray<CharacterInput>(5, Allocator.Persistent);
-//</generated>
 
         public TickInputSystem(IClientNetworkSystem clientNetworkSystem)
         {
@@ -50,9 +43,6 @@ namespace Client.Generated
             //<template:input>
             //_##TYPELOWER##History.Dispose();
             //</template>
-//<generated>
-            _characterInputHistory.Dispose();
-//</generated>
             
             base.OnDestroy();
         }
@@ -110,10 +100,6 @@ namespace Client.Generated
             //CompressInput<##TYPE##>(clientEntity);
             //AddInputPacket<##TYPE##>(tickData.Value, clientData, clientEntity, ref writer, ref _##TYPELOWER##History);
             //</template>
-//<generated>
-            CompressInput<CharacterInput>(clientEntity);
-            AddInputPacket<CharacterInput>(tickData.Value, clientData, clientEntity, ref writer, ref _characterInputHistory);
-//</generated>
             
             _clientNetworkSystem.Send(Packets.WrapPacket(writer));
             _tickReceiveResultSystem.AddSentInput(GetSingleton<TickData>().Value, (float) Time.ElapsedTime);

@@ -123,7 +123,7 @@ namespace Server.Generated
                     NetworkedPrefabFromEntityHandle = GetComponentDataFromEntity<NetworkedPrefab>(true),
                     PlayerBaseLineHandle = GetComponentTypeHandle<PlayerBaseLine>(),
                     SpatialHashHandle = spatialHashHandle,
-                    //<template>
+                    //<template:publicsnapshot>
                     //##TYPE##Components = GetComponentDataFromEntity<##TYPE##>(true),
                     //</template>
                     //<template:privatesnapshot>
@@ -159,12 +159,12 @@ namespace Server.Generated
                 NetworkedPrefabHandle = GetComponentTypeHandle<NetworkedPrefab>(true),
                 EntityTypeHandle = GetEntityTypeHandle(),
                 SpatialHashHandle = spatialHashHandle,
-                //<template>
+                //<template:publicsnapshot>
                 //##TYPE##Components = GetComponentDataFromEntity<##TYPE##>(true),
                 //</template>
                 //<template:publicevent>
                 //##TYPE##BufferFromEntity = GetBufferFromEntity<BumpEvent>(true),
-                //</events>
+                //</template>
             };
 
             Dependency = addEntitiesToAreas.ScheduleParallel(_entitiesQuery, 4, Dependency);
@@ -214,12 +214,12 @@ namespace Server.Generated
                             SnapshotIndex = snapshotIndex,
                             PlayerSnapshotIndex = player.SnapshotIndex,
                             PlayerSnapshots = entitiesInAreas,
-                            //<template>
+                            //<template:publicsnapshot>
                             //##TYPE##FromEntity = GetComponentDataFromEntity<##TYPE##>(true),
                             //</template>
                             //<template:publicevent>
                             //##TYPE##BufferFromEntity = GetBufferFromEntity<##TYPE##>(true),
-                            //</events>
+                            //</template>
                             CompressionModel = _compressionModel,
                             JobIndex = jobIndex++,
                             Results = publicSnapshotResults.AsParallelWriter()
@@ -250,7 +250,7 @@ namespace Server.Generated
                 EntityTypeHandle = GetEntityTypeHandle(),
                 //<template:publicevent>
                 //##TYPE##BufferFromEntity = GetBufferFromEntity<##TYPE##>()
-                //</events>
+                //</template>
             };
             
             Dependency = clearEventsJob.Schedule(_entitiesQuery);

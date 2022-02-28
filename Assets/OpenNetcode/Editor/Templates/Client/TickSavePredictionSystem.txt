@@ -4,10 +4,6 @@ using OpenNetcode.Shared.Time;
 using Unity.Entities;
 
 //<using>
-//<generated>
-using ExampleGame.Shared.Movement.Components;
-using ExampleGame.Shared.Components;
-//</generated>
 
 namespace Client.Generated
 {
@@ -31,16 +27,6 @@ namespace Client.Generated
             //    Value = ##TYPELOWER##Prediction
             //};
             //</template>
-//<generated>
-            var entityPositionPrediction = EntityManager.GetComponentData<EntityPosition>(clientEntity);
-            var entityPositionPredictions = EntityManager.GetBuffer<Prediction<EntityPosition>>(clientEntity);
-            
-            entityPositionPredictions[index] = new Prediction<EntityPosition>()
-            {
-                Tick = tick,
-                Value = entityPositionPrediction
-            };
-//</generated>
             
             
         }

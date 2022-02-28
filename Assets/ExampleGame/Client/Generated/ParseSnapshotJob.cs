@@ -51,7 +51,7 @@ namespace Client.Generated
 
         //<template:publicevent>
         //public BufferFromEntity<SnapshotBufferElement<##TYPE##>> ##TYPE##Buffer;
-        //</events>
+        //</template>
 //<generated>
         public BufferFromEntity<SnapshotBufferElement<BumpEvent>> BumpEventBuffer;
 //</generated>
@@ -270,7 +270,7 @@ namespace Client.Generated
                     //    Success[0] = false;
                     //    return;
                     //}
-                    //</events>
+                    //</template>
 //<generated>
                     if (!ParseEvent<BumpEvent>(eventMask, 3, tick, 0, ref componentBuffers, hasCreatedBuffer,
                         serverEntity,
@@ -516,7 +516,7 @@ namespace Client.Generated
             //        componentBuffers.Set(array.GetUnsafePtr(), array.Length, ##INDEXOFFSET## + ##INDEX##);
             //    }
             //}
-            //</events>
+            //</template>
 //<generated>
             if (created)
             {

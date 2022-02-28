@@ -25,6 +25,15 @@ namespace OpenNetcode.Editor
                 Debug.LogError("Could not load project settings at " + path);
             }
 
+            if (!Directory.Exists(Path.Combine(Application.dataPath, settings.CodeGenerationPaths.Client)))
+                Directory.CreateDirectory(Path.Combine(Application.dataPath, settings.CodeGenerationPaths.Client));
+            
+            if (!Directory.Exists(Path.Combine(Application.dataPath, settings.CodeGenerationPaths.Server)))
+                Directory.CreateDirectory(Path.Combine(Application.dataPath, settings.CodeGenerationPaths.Server));
+            
+            if (!Directory.Exists(Path.Combine(Application.dataPath, settings.CodeGenerationPaths.Shared)))
+                Directory.CreateDirectory(Path.Combine(Application.dataPath, settings.CodeGenerationPaths.Shared));
+
             bool directoryNotFound = false;
 
             if (!Directory.Exists(Path.Combine(Application.dataPath, settings.CodeGenerationPaths.Client)))
@@ -123,7 +132,7 @@ namespace ##NAMESPACE##
 
         private static string WriteTemplate =
             @"            writer.WriteRawBits(Convert.ToUInt32(##NAME## != baseSnapshot.##NAME##), 1);
-            if(##NAME## != baseSnapshot.##NAME##) ##NAME##.Write(ref writer, compressionModel, baseSnapshot.##NAME##);
+            if(!##NAME##.Equals(baseSnapshot.##NAME##)) ##NAME##.Write(ref writer, compressionModel, baseSnapshot.##NAME##);
 
 ";
 
@@ -137,7 +146,7 @@ namespace ##NAMESPACE##
         
         private static string WriteEnumTemplate =
             @"            writer.WriteRawBits(Convert.ToUInt32(##NAME## != baseSnapshot.##NAME##), 1);
-            if(##NAME## != baseSnapshot.##NAME##) ((int) ##NAME##).Write(ref writer, compressionModel, (int) baseSnapshot.##NAME##);
+            if(!##NAME##.Equals(baseSnapshot.##NAME##)) ((int) ##NAME##).Write(ref writer, compressionModel, (int) baseSnapshot.##NAME##);
 
 ";
         private static string ReadEnumTemplate =
@@ -212,13 +221,12 @@ namespace ##NAMESPACE##
             
             CodeGenerationData data = new CodeGenerationData();
 
+            
+            
             foreach (FileInfo file in new DirectoryInfo(Path.Combine(Application.dataPath, settings.CodeGenerationPaths.Shared)).GetFiles())
             {
                 file.Delete();
             }
-
-            if (!Directory.Exists(Path.Combine(Application.dataPath, settings.CodeGenerationPaths.Shared)))
-                Directory.CreateDirectory(Path.Combine(Application.dataPath, settings.CodeGenerationPaths.Shared));
 
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
@@ -240,6 +248,18 @@ namespace ##NAMESPACE##
                     {
                         GenerateSnapshotCodeForComponent(type, settings.CodeGenerationPaths.Shared);
                         data.PublicEvents.Add(type);
+                    }
+                    
+                    if (type.GetCustomAttributes(typeof(Predict), true).Length > 0)
+                    {
+                        GenerateSnapshotCodeForComponent(type, settings.CodeGenerationPaths.Shared);
+                        data.Predictions.Add(type);
+                    }
+                    
+                    if (type.GetCustomAttributes(typeof(NetworkedInput), true).Length > 0)
+                    {
+                        GenerateSnapshotCodeForComponent(type, settings.CodeGenerationPaths.Shared);
+                        data.Inputs.Add(type);
                     }
                 }
             }
@@ -325,6 +345,8 @@ namespace ##NAMESPACE##
             text = Replace(text, "<template:publicsnapshot>", "</template>", data.PublicSnapshots, eventMaskBits, componentBufferLength);
             text = Replace(text, "<template:privatesnapshot>", "</template>", data.PrivateSnapshots, eventMaskBits, componentBufferLength, data.PublicSnapshots.Count);
             text = Replace(text, "<template:publicevent>", "</template>", data.PublicEvents, eventMaskBits, componentBufferLength, 0, data.PublicSnapshots.Count);
+            text = Replace(text, "<template:input>", "</template>", data.Inputs, eventMaskBits, componentBufferLength);
+            text = Replace(text, "<template:predicted>", "</template>", data.Predictions, eventMaskBits, componentBufferLength);
 
             Debug.Log("Generated " + Path.Combine(Application.dataPath, generatedPath));
 

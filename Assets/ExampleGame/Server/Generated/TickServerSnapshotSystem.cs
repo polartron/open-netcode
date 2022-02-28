@@ -181,7 +181,7 @@ namespace Server.Generated
 //</generated>
                 //<template:publicevent>
                 //##TYPE##BufferFromEntity = GetBufferFromEntity<BumpEvent>(true),
-                //</events>
+                //</template>
 //<generated>
                 BumpEventBufferFromEntity = GetBufferFromEntity<BumpEvent>(true),
 //</generated>
@@ -244,7 +244,7 @@ namespace Server.Generated
 //</generated>
                             //<template:publicevent>
                             //##TYPE##BufferFromEntity = GetBufferFromEntity<##TYPE##>(true),
-                            //</events>
+                            //</template>
 //<generated>
                             BumpEventBufferFromEntity = GetBufferFromEntity<BumpEvent>(true),
 //</generated>
@@ -278,7 +278,7 @@ namespace Server.Generated
                 EntityTypeHandle = GetEntityTypeHandle(),
                 //<template:publicevent>
                 //##TYPE##BufferFromEntity = GetBufferFromEntity<##TYPE##>()
-                //</events>
+                //</template>
 //<generated>
                 BumpEventBufferFromEntity = GetBufferFromEntity<BumpEvent>()
 //</generated>

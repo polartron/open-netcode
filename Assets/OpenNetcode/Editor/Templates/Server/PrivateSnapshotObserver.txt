@@ -12,7 +12,7 @@ namespace Server.Generated
 
         public static int Observe<T>(int mask) where T : unmanaged
         {
-            //<template>
+            //<template:publicsnapshot>
             //if (typeof(T) == typeof(##TYPE##))
             //{
             //    return mask | (1 << ##INDEX##);

@@ -5,10 +5,6 @@ using OpenNetcode.Shared.Time;
 using Unity.Entities;
 
 //<using>
-//<generated>
-using ExampleGame.Shared.Movement.Components;
-using ExampleGame.Shared.Components;
-//</generated>
 
 namespace Client.Generated
 {
@@ -29,11 +25,6 @@ namespace Client.Generated
             //<template:publicsnapshot>
             //DoRollback<##TYPE##>(entity, tick);
             //</template>
-//<generated>
-            DoRollback<EntityPosition>(entity, tick);
-            DoRollback<EntityVelocity>(entity, tick);
-            DoRollback<PathComponent>(entity, tick);
-//</generated>
         }
         
         private void DoRollback<T>(in Entity entity, int tick) where T : unmanaged, IComponentData
@@ -103,13 +94,6 @@ namespace Client.Generated
             //    rollback = true;
             //}
             //</template>
-//<generated>
-            if (IsPredictionError<EntityPosition>(clientData, clientEntity, out int entityPositionErrorTick))
-            {
-                rollbackFromTick = entityPositionErrorTick;
-                rollback = true;
-            }
-//</generated>
             
             int predictedIndex = rollbackFromTick % TimeConfig.TicksPerSecond;
 
@@ -122,10 +106,6 @@ namespace Client.Generated
                 //var ##TYPELOWER##Cached = EntityManager.GetComponentData<##TYPE##>(clientEntity);
                 //var ##TYPELOWER##Saved = EntityManager.GetBuffer<SavedInput<##TYPE##>>(clientEntity);
                 //</template>
-//<generated>
-                var characterInputCached = EntityManager.GetComponentData<CharacterInput>(clientEntity);
-                var characterInputSaved = EntityManager.GetBuffer<SavedInput<CharacterInput>>(clientEntity);
-//</generated>
                 
                 for (int i = 1; i < rollbackTicks; i++)
                 {
@@ -139,9 +119,6 @@ namespace Client.Generated
                     //<template:input>
                     //EntityManager.SetComponentData(clientEntity, ##TYPELOWER##Saved[index].Value);
                     //</template>
-//<generated>
-                    EntityManager.SetComponentData(clientEntity, characterInputSaved[index].Value);
-//</generated>
                     
                     _tickSystem.StepSimulation();
                 }
@@ -154,9 +131,6 @@ namespace Client.Generated
                 //<template:input>
                 //EntityManager.SetComponentData(clientEntity, ##TYPELOWER##Cached);
                 //</template>
-//<generated>
-                EntityManager.SetComponentData(clientEntity, characterInputCached);
-//</generated>
             }
         }
     }

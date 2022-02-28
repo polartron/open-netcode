@@ -27,7 +27,7 @@ namespace Server.Generated
         [ReadOnly] public ComponentTypeHandle<SpatialHash> SpatialHashHandle;
         public ComponentTypeHandle<PlayerBaseLine> PlayerBaseLineHandle;
         [ReadOnly] public BufferTypeHandle<PrivateSnapshotObserver> PrivateSnapshotObserverHandle;
-        //<template>
+        //<template:publicsnapshot>
         //[ReadOnly] public ComponentDataFromEntity<##TYPE##> ##TYPE##Components;
         //</template>
         //<template:privatesnapshot>
@@ -92,7 +92,7 @@ namespace Server.Generated
                     int updateMask = target.ComponentInterestMask;
                     writer.WritePackedInt(updateMask, CompressionModel);
 
-                    //<template>
+                    //<template:publicsnapshot>
                     //if ((updateMask & (1 << ##INDEX##)) != 0 && ##TYPE##Components.HasComponent(targetEntity))
                     //{
                     //    var ##TYPELOWER## = ##TYPE##Components[targetEntity];

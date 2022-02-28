@@ -32,7 +32,7 @@ namespace Server.Generated
 //</generated>
         //<template:publicevent>
         //[ReadOnly] public BufferFromEntity<##TYPE##> ##TYPE##BufferFromEntity;
-        //</events>
+        //</template>
 //<generated>
         [ReadOnly] public BufferFromEntity<BumpEvent> BumpEventBufferFromEntity;
 //</generated>
@@ -84,7 +84,7 @@ namespace Server.Generated
                 //{
                 //    eventMask = eventMask | (1 << ##INDEX##);
                 //}
-                //</events>
+                //</template>
 //<generated>
                 if (BumpEventBufferFromEntity.HasComponent(entity) && BumpEventBufferFromEntity[entity].Length > 0)
                 {

@@ -1,5 +1,3 @@
-using System;
-using ExampleGame.Shared.Components;
 using UnityEngine;
 using Unity.Collections;
 using Unity.Entities;
@@ -14,7 +12,7 @@ using OpenNetcode.Shared.Time;
 
 //<using>
 
-//<template>
+//<template:publicsnapshot>
 //[assembly: RegisterGenericComponentType(typeof(SnapshotBufferElement<##TYPE##>))]
 //</template>
 //<template:privatesnapshot>
@@ -22,7 +20,10 @@ using OpenNetcode.Shared.Time;
 //</template>
 //<template:publicevent>
 //[assembly: RegisterGenericComponentType(typeof(SnapshotBufferElement<##TYPE##>))]
-//</events>
+//</template>
+//<template:input>
+//[assembly: RegisterGenericComponentType(typeof(SavedInput<##TYPE##>))]
+//</template>
 namespace Client.Generated
 {
     [UpdateInGroup(typeof(TickPreSimulationSystemGroup), OrderFirst = true)]
@@ -46,7 +47,6 @@ namespace Client.Generated
 
         protected override void OnCreate()
         {
-            World.GetExistingSystem<TickPredictionSystem<TPrediction, TInput>>().OnRollback += Rollback;
             _networkedPrefabSystem = World.GetExistingSystem<NetworkedPrefabSystem>();
             _areas = new NativeHashMap<int, ClientArea>(1000, Allocator.Persistent);
             _snapshotEntities = new NativeHashMap<int, ClientEntitySnapshot>(10000, Allocator.Persistent);
@@ -69,27 +69,6 @@ namespace Client.Generated
             _areas.Dispose();
 
             base.OnDestroy();
-        }
-
-        public void Rollback(Entity entity, int tick)
-        {
-            //<template>
-            //DoRollback<##TYPE##>(entity, tick);
-            //</template>
-        }
-
-        private void DoRollback<T>(in Entity entity, int tick) where T : unmanaged, IComponentData
-        {
-            if (!EntityManager.HasComponent<SnapshotBufferElement<T>>(entity))
-                return;
-
-            var buffer = EntityManager.GetBuffer<SnapshotBufferElement<T>>(entity);
-            var component = buffer[tick % buffer.Length];
-
-            if (component.Tick == tick)
-            {
-                EntityManager.SetComponentData(entity, component.Value);
-            }
         }
 
         protected override void OnUpdate()
@@ -211,7 +190,7 @@ namespace Client.Generated
                     
                     int componentMask = 0;
 
-                    //<template>
+                    //<template:publicsnapshot>
                     //if (EntityManager.HasComponent(entity, typeof(##TYPE##)))
                     //{
                     //    componentMask = componentMask | (1 << ##INDEX##);
@@ -224,7 +203,7 @@ namespace Client.Generated
                     //}
                     //</template>
 
-                    //<template>
+                    //<template:publicsnapshot>
                     //if (!EntityManager.HasComponent<SnapshotBufferElement<##TYPE##>>(entity))
                     //{
                     //    var buffer = EntityManager.AddBuffer<SnapshotBufferElement<##TYPE##>>(entity);
@@ -252,7 +231,7 @@ namespace Client.Generated
 
                 ClientEntitySnapshot observedSnapshot = _observedEntities[index];
 
-                //<template>
+                //<template:publicsnapshot>
                 //if ((updateMask & (1 << ##INDEX##)) != 0)
                 //{
                 //    ReadBufferElement<##TYPE##>(ref reader, observedSnapshot.Entity, snapshotTick);
@@ -315,7 +294,7 @@ namespace Client.Generated
                 ObservedEntities = _observedEntities,
                 SnapshotEntities = _snapshotEntities,
                 EntityCommandBuffer = ecb,
-                //<template>
+                //<template:publicsnapshot>
                 //##TYPE##Buffer = GetBufferFromEntity<SnapshotBufferElement<##TYPE##>>(),
                 //</template>
                 //<template:privatesnapshot>
@@ -323,7 +302,7 @@ namespace Client.Generated
                 //</template>
                 //<template:publicevent>
                 //##TYPE##Buffer = GetBufferFromEntity<SnapshotBufferElement<##TYPE##>>(),
-                //</events>
+                //</template>
             };
             
             Dependency = parseSnapshotJob.Schedule(Dependency);
@@ -365,7 +344,7 @@ namespace Client.Generated
                 SnapshotIndex = snapshotIndex,
                 Tick = tick,
                 NetworkedPrefabFromEntity = GetComponentDataFromEntity<NetworkedPrefab>(true),
-                //<template>
+                //<template:publicsnapshot>
                 //##TYPE##Buffer = GetBufferFromEntity<SnapshotBufferElement<##TYPE##>>(true),
                 //</template>
             };

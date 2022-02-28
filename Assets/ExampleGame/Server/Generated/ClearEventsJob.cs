@@ -17,7 +17,7 @@ namespace ExampleGame.Server.Generated
         [ReadOnly] public EntityTypeHandle EntityTypeHandle;
         //<template:publicevent>
         //public BufferFromEntity<##TYPE##> ##TYPE##BufferFromEntity;
-        //</events>
+        //</template>
 //<generated>
         public BufferFromEntity<BumpEvent> BumpEventBufferFromEntity;
 //</generated>
@@ -35,7 +35,7 @@ namespace ExampleGame.Server.Generated
                 //{
                 //    ##TYPE##BufferFromEntity[entity].Clear();
                 //}
-                //</events>
+                //</template>
 //<generated>
                 if (BumpEventBufferFromEntity.HasComponent(entity))
                 {

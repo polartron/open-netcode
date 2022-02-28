@@ -10,10 +10,10 @@ namespace ExampleGame.Shared.Movement.Components
         {
             //<write>
             writer.WriteRawBits(Convert.ToUInt32(Value != baseSnapshot.Value), 1);
-            if(Value != baseSnapshot.Value) Value.Write(ref writer, compressionModel, baseSnapshot.Value);
+            if(!Value.Equals(baseSnapshot.Value)) Value.Write(ref writer, compressionModel, baseSnapshot.Value);
 
             writer.WriteRawBits(Convert.ToUInt32(Test != baseSnapshot.Test), 1);
-            if(Test != baseSnapshot.Test) Test.Write(ref writer, compressionModel, baseSnapshot.Test);
+            if(!Test.Equals(baseSnapshot.Test)) Test.Write(ref writer, compressionModel, baseSnapshot.Test);
 
         }
 
