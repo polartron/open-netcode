@@ -9,7 +9,7 @@ namespace ExampleGame.Shared.Movement.Components
 {
     [GenerateAuthoringComponent]
     [NetworkedInput]
-    public partial struct CharacterInput : INetworkedComponent
+    public partial struct MovementInput : INetworkedComponent
     {
         public float2 Move;
         public float Rotation;
@@ -29,7 +29,6 @@ namespace ExampleGame.Shared.Movement.Components
             return Move.GetHashCode() ^ Rotation.GetHashCode();
         }
 
-        
         // Compression to get input down to 5 + 5 + 8 = 18 bits
         // Movement component each gets 32 different values (5 bits)
         // Rotation component gets 256 different values (8 bits)

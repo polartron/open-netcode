@@ -29,7 +29,7 @@ namespace Client.Generated
         //private NativeArray<##TYPE##> _##TYPELOWER##History = new NativeArray<##TYPE##>(5, Allocator.Persistent);
         //</template>
 //<generated>
-        private NativeArray<CharacterInput> _characterInputHistory = new NativeArray<CharacterInput>(5, Allocator.Persistent);
+        private NativeArray<MovementInput> _movementInputHistory = new NativeArray<MovementInput>(5, Allocator.Persistent);
 //</generated>
 
         public TickInputSystem(IClientNetworkSystem clientNetworkSystem)
@@ -51,7 +51,7 @@ namespace Client.Generated
             //_##TYPELOWER##History.Dispose();
             //</template>
 //<generated>
-            _characterInputHistory.Dispose();
+            _movementInputHistory.Dispose();
 //</generated>
             
             base.OnDestroy();
@@ -111,8 +111,8 @@ namespace Client.Generated
             //AddInputPacket<##TYPE##>(tickData.Value, clientData, clientEntity, ref writer, ref _##TYPELOWER##History);
             //</template>
 //<generated>
-            CompressInput<CharacterInput>(clientEntity);
-            AddInputPacket<CharacterInput>(tickData.Value, clientData, clientEntity, ref writer, ref _characterInputHistory);
+            CompressInput<MovementInput>(clientEntity);
+            AddInputPacket<MovementInput>(tickData.Value, clientData, clientEntity, ref writer, ref _movementInputHistory);
 //</generated>
             
             _clientNetworkSystem.Send(Packets.WrapPacket(writer));

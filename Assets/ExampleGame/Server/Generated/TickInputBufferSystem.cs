@@ -1,27 +1,39 @@
-﻿using OpenNetcode.Server.Components;
+using OpenNetcode.Server.Components;
 using OpenNetcode.Shared;
 using OpenNetcode.Shared.Components;
 using OpenNetcode.Shared.Messages;
 using OpenNetcode.Shared.Systems;
 using OpenNetcode.Shared.Time;
 using OpenNetcode.Shared.Utils;
-using Shared.Time;
+using OpenNetcode.Server.Systems;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
 using Unity.Networking.Transport;
 
-namespace OpenNetcode.Server.Systems
+//<using>
+//<generated>
+using ExampleGame.Shared.Movement.Components;
+using ExampleGame.Shared.Components;
+//</generated>
+
+namespace Server.Generated
 {
     [UpdateInGroup(typeof(TickPreSimulationSystemGroup))]
     [UpdateAfter(typeof(TickServerReceiveSystem))]
-    public class TickInputBufferSystem<T> : SystemBase where T : unmanaged, INetworkedComponent, IComponentData
+    public class TickInputBufferSystem : SystemBase
     {
         public struct InputBufferData
         {
-            public InputMessage<T> Input;
+            //<template:input>
+            //public InputMessage<##TYPE##> ##TYPE##Message;
+            //</template>
+//<generated>
+            public InputMessage<MovementInput> MovementInputMessage;
+//</generated>
             public double ArrivedTime;
+            public int Tick;
         }
 
         private IServerNetworkSystem _server;
@@ -49,10 +61,16 @@ namespace OpenNetcode.Server.Systems
             
             _inputs  = new NativeArray<InputBufferData>(TimeConfig.TicksPerSecond * maxPlayers, Allocator.Persistent);
             _playersQuery = GetEntityQuery(
-                ComponentType.ReadOnly<T>(),
+                //<template:input>
+                //ComponentType.ReadOnly<##TYPE##>(),
+                //</template>
+//<generated>
+                ComponentType.ReadOnly<MovementInput>(),
+//</generated>
                 ComponentType.ReadOnly<ProcessedInput>(),
                 ComponentType.ReadOnly<PlayerControlledTag>(),
                 ComponentType.ReadOnly<ServerNetworkedEntity>()
+
             );
 
             _compressionModel = new NetworkCompressionModel(Allocator.Persistent);
@@ -71,7 +89,12 @@ namespace OpenNetcode.Server.Systems
         protected override void OnUpdate()
         {
             var packets = _server.ReceivePackets;
-            var inputMessages = new NativeMultiHashMap<int, InputMessage<T>>(100, Allocator.Temp);
+            //<template:input>
+            //var ##TYPELOWER##Messages = new NativeMultiHashMap<int, InputMessage<##TYPE##>>(100, Allocator.Temp);
+            //</template>
+//<generated>
+            var movementInputMessages = new NativeMultiHashMap<int, InputMessage<MovementInput>>(100, Allocator.Temp);
+//</generated>
             
             if(packets.TryGetFirstValue((int) PacketType.Input, out PacketArrayWrapper wrapper, out NativeMultiHashMapIterator<int> iterator))
             {
@@ -79,11 +102,40 @@ namespace OpenNetcode.Server.Systems
                 {
                     var array = wrapper.GetArray<byte>();
                     var reader = new DataStreamReader(array);
-                    InputMessage<T>.Read(ref inputMessages, ref reader, _compressionModel, wrapper.InternalId);
+                    //<template:input>
+                    //InputMessage<##TYPE##>.Read(ref ##TYPELOWER##Messages, ref reader, _compressionModel, wrapper.InternalId);
+                    //</template>
+//<generated>
+                    InputMessage<MovementInput>.Read(ref movementInputMessages, ref reader, _compressionModel, wrapper.InternalId);
+//</generated>
                 } while (packets.TryGetNextValue(out wrapper, ref iterator));
             }
+
             
-            foreach (var inputMessage in inputMessages)
+            //<template:input>
+            //foreach (var inputMessage in ##TYPELOWER##Messages)
+            //{
+            //    if (!_connectionIndex.ContainsKey(inputMessage.Key))
+            //    {
+            //        _connectionIndex[inputMessage.Key] = _freeIndexes[0];
+            //        _freeIndexes.RemoveAt(0);
+            //    }
+//
+            //    int offset = _connectionIndex[inputMessage.Key] * TimeConfig.TicksPerSecond;
+            //    int index = (inputMessage.Value.Tick + TimeConfig.TicksPerSecond) % TimeConfig.TicksPerSecond;
+            //
+            //    if (_inputs[offset + index].##TYPE##Message.Tick != inputMessage.Value.Tick)
+            //    {
+            //        var inputBufferData = _inputs[offset + index];
+            //        inputBufferData.##TYPE##Message = inputMessage.Value;
+            //        inputBufferData.ArrivedTime = Time.ElapsedTime;
+            //        inputBufferData.Tick = inputMessage.Value.Tick;
+            //        _inputs[offset + index] = inputBufferData;
+            //    }
+            //}
+            //</template>
+//<generated>
+            foreach (var inputMessage in movementInputMessages)
             {
                 if (!_connectionIndex.ContainsKey(inputMessage.Key))
                 {
@@ -94,20 +146,20 @@ namespace OpenNetcode.Server.Systems
                 int offset = _connectionIndex[inputMessage.Key] * TimeConfig.TicksPerSecond;
                 int index = (inputMessage.Value.Tick + TimeConfig.TicksPerSecond) % TimeConfig.TicksPerSecond;
             
-                if (_inputs[offset + index].Input.Tick != inputMessage.Value.Tick)
+                if (_inputs[offset + index].MovementInputMessage.Tick != inputMessage.Value.Tick)
                 {
-                    _inputs[offset + index] = new InputBufferData()
-                    {
-                        Input = inputMessage.Value,
-                        ArrivedTime = Time.ElapsedTime
-                    };
+                    var inputBufferData = _inputs[offset + index];
+                    inputBufferData.MovementInputMessage = inputMessage.Value;
+                    inputBufferData.ArrivedTime = Time.ElapsedTime;
+                    inputBufferData.Tick = inputMessage.Value.Tick;
+                    _inputs[offset + index] = inputBufferData;
                 }
             }
+//</generated>
             
             NativeHashMap<int, int> connectionIndex = _connectionIndex;
             NativeArray<InputBufferData> inputs = _inputs;
             Dependency = Schedule(inputs, connectionIndex, Dependency);
-            
             Dependency.Complete();
         }
         
@@ -122,8 +174,13 @@ namespace OpenNetcode.Server.Systems
                 tick = tick,
                 NetworkEntityTypeHandle = GetComponentTypeHandle<ServerNetworkedEntity>(true),
                 ProcessedInputTypeHandle = GetBufferTypeHandle<ProcessedInput>(),
-                PlayerInputTypeHandle = GetComponentTypeHandle<T>(),
-                PlayerBaseLineTypeHandle = GetComponentTypeHandle<PlayerBaseLine>()
+                PlayerBaseLineTypeHandle = GetComponentTypeHandle<PlayerBaseLine>(),
+                //<template:input>
+                //##TYPE##TypeHandle = GetComponentTypeHandle<##TYPE##>(),
+                //</template>
+//<generated>
+                MovementInputTypeHandle = GetComponentTypeHandle<MovementInput>(),
+//</generated>
             };
             
             return job.ScheduleParallel(_playersQuery, 4, Dependency);
@@ -136,14 +193,24 @@ namespace OpenNetcode.Server.Systems
             [ReadOnly] public NativeHashMap<int, int> connectionIndex;
             [ReadOnly] public int tick;
             
-            public ComponentTypeHandle<T> PlayerInputTypeHandle;
+            //<template:input>
+            //public ComponentTypeHandle<##TYPE##> ##TYPE##TypeHandle;
+            //</template>
+//<generated>
+            public ComponentTypeHandle<MovementInput> MovementInputTypeHandle;
+//</generated>
             public ComponentTypeHandle<PlayerBaseLine> PlayerBaseLineTypeHandle;
             public BufferTypeHandle<ProcessedInput> ProcessedInputTypeHandle;
             [ReadOnly] public ComponentTypeHandle<ServerNetworkedEntity> NetworkEntityTypeHandle;
 
             public void Execute(ArchetypeChunk batchInChunk, int batchIndex)
             {
-                var chunkPlayerInputs = batchInChunk.GetNativeArray(PlayerInputTypeHandle);
+                //<template:input>
+                //var chunk##TYPE## = batchInChunk.GetNativeArray(##TYPE##TypeHandle);
+                //</template>
+//<generated>
+                var chunkMovementInput = batchInChunk.GetNativeArray(MovementInputTypeHandle);
+//</generated>
                 var chunkPlayerBaseLines = batchInChunk.GetNativeArray(PlayerBaseLineTypeHandle);
                 var chunkProcessedInput = batchInChunk.GetBufferAccessor(ProcessedInputTypeHandle);
                 var chunkNetworkEntities = batchInChunk.GetNativeArray(NetworkEntityTypeHandle);
@@ -160,12 +227,19 @@ namespace OpenNetcode.Server.Systems
                     int index = (tick + TimeConfig.TicksPerSecond) % TimeConfig.TicksPerSecond;
                     var element = inputs[offset + index];
                     
-                    if (element.Input.Tick == tick)
+                    if (element.Tick == tick)
                     {
-                        chunkPlayerInputs[i] = element.Input.Input;
                         var playerBaseLine = chunkPlayerBaseLines[i];
-                        playerBaseLine.BaseLine = element.Input.LastReceivedSnapshotTick;
-                        playerBaseLine.Version = element.Input.Version;
+                        //<template:input>
+                        //chunk##TYPE##[i] = element.##TYPE##Message.Input;
+                        //playerBaseLine.BaseLine = element.##TYPE##Message.LastReceivedSnapshotTick;
+                        //playerBaseLine.Version = element.##TYPE##Message.Version;
+                        //</template>
+//<generated>
+                        chunkMovementInput[i] = element.MovementInputMessage.Input;
+                        playerBaseLine.BaseLine = element.MovementInputMessage.LastReceivedSnapshotTick;
+                        playerBaseLine.Version = element.MovementInputMessage.Version;
+//</generated>
                         chunkPlayerBaseLines[i] = playerBaseLine;
 
                         processedInputs.Add(new ProcessedInput()

@@ -9,7 +9,6 @@ using Shared;
 using Unity.Entities;
 using UnityEngine;
 
-[assembly: RegisterGenericJobType(typeof(TickInputBufferSystem<CharacterInput>.UpdatePlayerInputJob))]
 namespace ExampleGame.Server
 {
     public class ServerBootstrap : IWorldBootstrap
@@ -22,9 +21,10 @@ namespace ExampleGame.Server
             World = SharedBootstrap.CreateWorld(Name);
 
             var networkedPrefabs = Resources.Load<NetworkedPrefabs>("Networked Prefabs");
-            ServerInitialization.Initialize<CharacterInput>(World, networkedPrefabs);
+            ServerInitialization.Initialize(World, networkedPrefabs);
             var tickSystem = World.GetExistingSystem<TickSystem>();
             tickSystem.AddPostSimulationSystem(new TickServerSnapshotSystem(World.GetExistingSystem<ServerNetworkSystem>()));
+            tickSystem.AddPreSimulationSystem(new TickInputBufferSystem(World.GetExistingSystem<ServerNetworkSystem>()));
 
             var networkedPrefabSystem = World.GetExistingSystem<NetworkedPrefabSystem>();
 

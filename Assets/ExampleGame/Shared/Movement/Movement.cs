@@ -6,7 +6,7 @@ namespace ExampleGame.Shared.Movement
 {
     public static class Movement
     {
-        public static void CalculateVelocity(ref Vector3 velocity, in MovementConfig config, in CharacterInput input, float deltaTime)
+        public static void CalculateVelocity(ref Vector3 velocity, in MovementConfig config, in MovementInput input, float deltaTime)
         {
             Vector2 moveVector = input.Move;
 

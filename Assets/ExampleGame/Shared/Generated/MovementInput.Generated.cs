@@ -4,9 +4,9 @@ using OpenNetcode.Shared.Components;
 
 namespace ExampleGame.Shared.Movement.Components
 {
-    public partial struct CharacterInput : ISnapshotComponent<CharacterInput>
+    public partial struct MovementInput : ISnapshotComponent<MovementInput>
     {
-        public void WriteSnapshot(ref DataStreamWriter writer, in NetworkCompressionModel compressionModel, in CharacterInput baseSnapshot)
+        public void WriteSnapshot(ref DataStreamWriter writer, in NetworkCompressionModel compressionModel, in MovementInput baseSnapshot)
         {
             //<write>
             writer.WriteRawBits(Convert.ToUInt32(Move != baseSnapshot.Move), 1);
@@ -17,7 +17,7 @@ namespace ExampleGame.Shared.Movement.Components
 
         }
 
-        public void ReadSnapshot(ref DataStreamReader reader, in NetworkCompressionModel compressionModel, in CharacterInput baseSnapshot)
+        public void ReadSnapshot(ref DataStreamReader reader, in NetworkCompressionModel compressionModel, in MovementInput baseSnapshot)
         {
             //<read>
             if (reader.ReadRawBits(1) == 0)

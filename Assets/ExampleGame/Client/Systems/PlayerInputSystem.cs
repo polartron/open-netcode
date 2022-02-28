@@ -39,7 +39,7 @@ namespace ExampleGame.Client.Systems
             
             var clientData = GetSingleton<ClientData>();
             
-            CharacterInput predictedInput = new CharacterInput()
+            MovementInput predictedInput = new MovementInput()
             {
                 Move = move
             };

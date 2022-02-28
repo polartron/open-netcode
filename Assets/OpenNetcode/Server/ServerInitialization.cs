@@ -10,8 +10,7 @@ namespace OpenNetcode.Server
 {
     public static class ServerInitialization
     {
-        public static void Initialize<TInput>(in World serverWorld,in NetworkedPrefabs networkedPrefabs)
-            where TInput : unmanaged, INetworkedComponent
+        public static void Initialize(in World serverWorld,in NetworkedPrefabs networkedPrefabs)
         {
             var entityManager = serverWorld.EntityManager;
             
@@ -25,7 +24,6 @@ namespace OpenNetcode.Server
             ServerNetworkSystem server = serverWorld.AddSystem(new ServerNetworkSystem());
             
             tickSystem.AddPreSimulationSystem(new TickServerReceiveSystem(server));
-            tickSystem.AddPreSimulationSystem(new TickInputBufferSystem<TInput>(server));
             tickSystem.AddPostSimulationSystem(new TickSendResultSystem(server));
             tickSystem.AddPostSimulationSystem(new TickServerSendSystem(server));
         }

@@ -40,7 +40,7 @@ using ExampleGame.Shared.Components;
 //[assembly: RegisterGenericComponentType(typeof(SavedInput<##TYPE##>))]
 //</template>
 //<generated>
-[assembly: RegisterGenericComponentType(typeof(SavedInput<CharacterInput>))]
+[assembly: RegisterGenericComponentType(typeof(SavedInput<MovementInput>))]
 //</generated>
 namespace Client.Generated
 {

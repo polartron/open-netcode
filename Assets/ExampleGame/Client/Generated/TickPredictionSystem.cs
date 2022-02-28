@@ -123,8 +123,8 @@ namespace Client.Generated
                 //var ##TYPELOWER##Saved = EntityManager.GetBuffer<SavedInput<##TYPE##>>(clientEntity);
                 //</template>
 //<generated>
-                var characterInputCached = EntityManager.GetComponentData<CharacterInput>(clientEntity);
-                var characterInputSaved = EntityManager.GetBuffer<SavedInput<CharacterInput>>(clientEntity);
+                var movementInputCached = EntityManager.GetComponentData<MovementInput>(clientEntity);
+                var movementInputSaved = EntityManager.GetBuffer<SavedInput<MovementInput>>(clientEntity);
 //</generated>
                 
                 for (int i = 1; i < rollbackTicks; i++)
@@ -140,7 +140,7 @@ namespace Client.Generated
                     //EntityManager.SetComponentData(clientEntity, ##TYPELOWER##Saved[index].Value);
                     //</template>
 //<generated>
-                    EntityManager.SetComponentData(clientEntity, characterInputSaved[index].Value);
+                    EntityManager.SetComponentData(clientEntity, movementInputSaved[index].Value);
 //</generated>
                     
                     _tickSystem.StepSimulation();
@@ -155,7 +155,7 @@ namespace Client.Generated
                 //EntityManager.SetComponentData(clientEntity, ##TYPELOWER##Cached);
                 //</template>
 //<generated>
-                EntityManager.SetComponentData(clientEntity, characterInputCached);
+                EntityManager.SetComponentData(clientEntity, movementInputCached);
 //</generated>
             }
         }

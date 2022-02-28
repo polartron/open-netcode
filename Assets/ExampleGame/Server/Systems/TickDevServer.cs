@@ -41,7 +41,7 @@ namespace ExampleGame.Server.Systems
             var entityManager = EntityManager;
             var ecb = new EntityCommandBuffer();
             
-            Entities.ForEach((ref CharacterInput input, ref Translation translation, ref DynamicBuffer<BumpEvent> bumpEvents, in Entity entity, in WanderingAiTag wanderingAiTag) =>
+            Entities.ForEach((ref MovementInput input, ref Translation translation, ref DynamicBuffer<BumpEvent> bumpEvents, in Entity entity, in WanderingAiTag wanderingAiTag) =>
             {
                 if (input.Move.x == 0f && input.Move.y == 0f)
                 {

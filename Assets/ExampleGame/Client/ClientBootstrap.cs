@@ -32,9 +32,9 @@ namespace ExampleGame.Client
             EntityManager entityManager = World.EntityManager;
 
             Entity clientEntity = CreateLocalPlayer(ref entityManager, playerPrefab);
-            ClientInitialization.Initialize<EntityPosition, CharacterInput>(World, clientEntity, networkedPrefabs);
+            ClientInitialization.Initialize<EntityPosition, MovementInput>(World, clientEntity, networkedPrefabs);
             var tickSystem = World.GetExistingSystem<TickSystem>();
-            tickSystem.AddPreSimulationSystem(new TickClientSnapshotSystem<EntityPosition, CharacterInput>(
+            tickSystem.AddPreSimulationSystem(new TickClientSnapshotSystem<EntityPosition, MovementInput>(
                 World.GetExistingSystem<ClientNetworkSystem>()));
             tickSystem.AddPreSimulationSystem(new TickPredictionSystem());
             tickSystem.AddPreSimulationSystem(new TickInputSystem(World.GetExistingSystem<ClientNetworkSystem>()));
@@ -93,7 +93,7 @@ namespace ExampleGame.Client
                 entityPositionPrediction.Add(default);
             }
             
-            var characterInputSave = entityManager.AddBuffer<SavedInput<CharacterInput>>(entity);
+            var characterInputSave = entityManager.AddBuffer<SavedInput<MovementInput>>(entity);
             for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
             {
                 characterInputSave.Add(default);

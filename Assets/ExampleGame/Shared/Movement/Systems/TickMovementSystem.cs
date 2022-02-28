@@ -24,7 +24,7 @@ namespace ExampleGame.Shared.Movement.Systems
                 ComponentType.ReadWrite<EntityVelocity>(),
                 ComponentType.ReadWrite<EntityPosition>(),
                 ComponentType.ReadOnly<MovementConfig>(),
-                ComponentType.ReadOnly<CharacterInput>());
+                ComponentType.ReadOnly<MovementInput>());
 
             _pathingEntitiesQuery = GetEntityQuery(
                 ComponentType.ReadWrite<Translation>(),
@@ -45,7 +45,7 @@ namespace ExampleGame.Shared.Movement.Systems
                 TranslationTypeHandle = GetComponentTypeHandle<Translation>(),
                 CharacterPositionTypeHandle = GetComponentTypeHandle<EntityPosition>(),
                 CharacterVelocityTypeHandle = GetComponentTypeHandle<EntityVelocity>(),
-                PlayerInputTypeHandle = GetComponentTypeHandle<CharacterInput>(true),
+                PlayerInputTypeHandle = GetComponentTypeHandle<MovementInput>(true),
                 MovementConfigTypeHandle = GetComponentTypeHandle<MovementConfig>(true),
             };
 
@@ -102,7 +102,7 @@ namespace ExampleGame.Shared.Movement.Systems
             public ComponentTypeHandle<EntityPosition> CharacterPositionTypeHandle;
             public ComponentTypeHandle<EntityVelocity> CharacterVelocityTypeHandle;
             [ReadOnly] public ComponentTypeHandle<MovementConfig> MovementConfigTypeHandle;
-            [ReadOnly] public ComponentTypeHandle<CharacterInput> PlayerInputTypeHandle;
+            [ReadOnly] public ComponentTypeHandle<MovementInput> PlayerInputTypeHandle;
             [ReadOnly] public FloatingOrigin floatingOrigin;
 
             public void Execute(ArchetypeChunk batchInChunk, int batchIndex)
