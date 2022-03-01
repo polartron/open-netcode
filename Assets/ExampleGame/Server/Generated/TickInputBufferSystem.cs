@@ -138,7 +138,6 @@ namespace Server.Generated
             Packets.ReadPacketType(ref reader);
             int count = (int) reader.ReadRawBits(3);
             int tick = (int) reader.ReadPackedUInt(compressionModel);
-            
             int lastReceivedSnapshotTick = (int) reader.ReadPackedUInt(compressionModel);
             int version = (int) reader.ReadPackedUInt(compressionModel);
 
@@ -216,6 +215,14 @@ namespace Server.Generated
                     int index = (tick + TimeConfig.TicksPerSecond) % TimeConfig.TicksPerSecond;
                     var element = inputs[offset + index];
 
+                    if (element.Tick >= tick)
+                    {
+                        var playerBaseLine = chunkPlayerBaseLines[i];
+                        playerBaseLine.BaseLine = element.BaseLine;
+                        playerBaseLine.Version = element.Version;
+                        chunkPlayerBaseLines[i] = playerBaseLine;
+                    }
+                    
                     if (element.Tick == tick)
                     {
                         //<template:input>
@@ -224,11 +231,6 @@ namespace Server.Generated
 //<generated>
                         chunkMovementInput[i] = element.MovementInput;
 //</generated>
-                        var playerBaseLine = chunkPlayerBaseLines[i];
-                        playerBaseLine.BaseLine = element.BaseLine;
-                        playerBaseLine.Version = element.Version;
-                        chunkPlayerBaseLines[i] = playerBaseLine;
-
                         processedInputs.Add(new ProcessedInput()
                         {
                             ArrivedTime = element.ArrivedTime,

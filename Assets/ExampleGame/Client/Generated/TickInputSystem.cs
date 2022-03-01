@@ -82,7 +82,7 @@ namespace Client.Generated
             Packets.WritePacketType(PacketType.Input, ref writer);
             writer.WriteRawBits((uint) movementInputSorted.Length, 3);
             writer.WritePackedUInt((uint) tick, _compressionModel);
-            writer.WritePackedUInt((uint) clientData.LastReceivedSnapshotTick, _compressionModel);
+            writer.WritePackedUInt((uint) clientData.LastReceivedSnapshotIndex, _compressionModel);
             writer.WritePackedUInt((uint) clientData.Version, _compressionModel);
 
             MovementInput lastMovementInput = new MovementInput();
