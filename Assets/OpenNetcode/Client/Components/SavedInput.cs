@@ -6,7 +6,7 @@ namespace OpenNetcode.Client.Components
 {
     [InternalBufferCapacity(TimeConfig.TicksPerSecond)]
     public struct SavedInput<T> : IBufferElementData
-        where T : unmanaged, INetworkedComponent
+        where T : unmanaged, IComponentData
     {
         public T Value;
     }

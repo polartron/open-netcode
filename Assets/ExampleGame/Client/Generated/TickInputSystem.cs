@@ -13,6 +13,9 @@ using Unity.Networking.Transport;
 //<generated>
 using ExampleGame.Shared.Movement.Components;
 using ExampleGame.Shared.Components;
+using Unity.Burst;
+using UnityEngine;
+
 //</generated>
 
 namespace Client.Generated
@@ -57,40 +60,53 @@ namespace Client.Generated
             base.OnDestroy();
         }
 
-        private void AddInputPacket<T>(int tick, in ClientData clientData, in Entity entity, ref DataStreamWriter writer, ref NativeArray<T> history) where T : unmanaged, INetworkedComponent
+        private bool WriteInput(int tick, in ClientData clientData, in Entity entity, ref DataStreamWriter writer)
         {
-            T input = EntityManager.GetComponentData<T>(entity);
+            MovementInput currentMovementInput = EntityManager.GetComponentData<MovementInput>(entity);
+            int length = _movementInputHistory.Length;
+            _movementInputHistory[tick % length] = currentMovementInput;
+            var savedMovementInput = EntityManager.GetBuffer<SavedInput<MovementInput>>(entity);
+            savedMovementInput.Add(new SavedInput<MovementInput>()
+            {
+                Value = currentMovementInput
+            });
 
-            int length = history.Length;
-            
-            history[tick % length] = input;
-
-            NativeArray<T> sorted = new NativeArray<T>(length, Allocator.Temp);
+            NativeArray<MovementInput> movementInputSorted = new NativeArray<MovementInput>(length, Allocator.Temp);
 
             for (int i = 0; i < length; i++)
             {
                 int index = (tick - i + length) % length;
-                sorted[i] = history[index];
+                movementInputSorted[i] = _movementInputHistory[index];
             }
-
-            InputMessage<T>.Write(ref sorted, tick, clientData.LastReceivedSnapshotIndex, clientData.Version,  ref writer, _compressionModel);
-
-            var savedInput = EntityManager.GetBuffer<SavedInput<T>>(entity);
             
-            savedInput.Add(new SavedInput<T>()
+            Packets.WritePacketType(PacketType.Input, ref writer);
+            writer.WriteRawBits((uint) movementInputSorted.Length, 3);
+            writer.WritePackedUInt((uint) tick, _compressionModel);
+            writer.WritePackedUInt((uint) clientData.LastReceivedSnapshotTick, _compressionModel);
+            writer.WritePackedUInt((uint) clientData.Version, _compressionModel);
+
+            MovementInput lastMovementInput = new MovementInput();
+
+            for (int i = 0; i < movementInputSorted.Length; i++)
             {
-                Value = input
-            });
+                var input = movementInputSorted[i];
+                input.WriteSnapshot(ref writer, _compressionModel, lastMovementInput);
+                lastMovementInput = input;
+            }
+            
+            return !writer.HasFailedWrites;
         }
 
-        private void CompressInput<T>(in Entity entity) where T : unmanaged, INetworkedComponent
+        private void CompressInput(in Entity entity)
         {
-            DataStreamWriter writer = new DataStreamWriter(10, Allocator.Temp);
-            T input = EntityManager.GetComponentData<T>(entity);
-            input.Write(ref writer, _compressionModel);
-            DataStreamReader reader = new DataStreamReader(writer.AsNativeArray());
-            input.Read(ref reader, _compressionModel);
-            EntityManager.SetComponentData(entity, input);
+            {
+                DataStreamWriter writer = new DataStreamWriter(10, Allocator.Temp);
+                MovementInput input = EntityManager.GetComponentData<MovementInput>(entity);
+                input.WriteSnapshot(ref writer, _compressionModel, default);
+                DataStreamReader reader = new DataStreamReader(writer.AsNativeArray());
+                input.ReadSnapshot(ref reader, _compressionModel, default);
+                EntityManager.SetComponentData(entity, input);
+            }
         }
 
         protected override void OnUpdate()
@@ -106,14 +122,12 @@ namespace Client.Generated
 
             var writer = new DataStreamWriter(1000, Allocator.Temp);
             
-            //<template:input>
-            //CompressInput<##TYPE##>(clientEntity);
-            //AddInputPacket<##TYPE##>(tickData.Value, clientData, clientEntity, ref writer, ref _##TYPELOWER##History);
-            //</template>
-//<generated>
-            CompressInput<MovementInput>(clientEntity);
-            AddInputPacket<MovementInput>(tickData.Value, clientData, clientEntity, ref writer, ref _movementInputHistory);
-//</generated>
+            CompressInput(clientEntity);
+            
+            if (!WriteInput(tickData.Value, clientData, clientEntity, ref writer))
+            {
+                Debug.Log("Error");
+            }
             
             _clientNetworkSystem.Send(Packets.WrapPacket(writer));
             _tickReceiveResultSystem.AddSentInput(GetSingleton<TickData>().Value, (float) Time.ElapsedTime);

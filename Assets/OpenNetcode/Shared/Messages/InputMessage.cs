@@ -18,8 +18,8 @@ namespace OpenNetcode.Shared.Messages
             writer.WritePackedUInt((uint) tick, compressionModel);
             writer.WritePackedUInt((uint) lastReceivedSnapshotTick, compressionModel);
             writer.WritePackedUInt((uint) version, compressionModel);
-            
-            int lastWrittenHashCode = default(T).Hash();
+
+            int lastWrittenHashCode = default(T).GetHashCode();
 
             for (int i = 0; i < inputs.Length; i++)
             {

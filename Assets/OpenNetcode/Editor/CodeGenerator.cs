@@ -115,7 +115,7 @@ using OpenNetcode.Shared.Components;
 
 namespace ##NAMESPACE##
 {
-    public partial struct ##TYPE## : ISnapshotComponent<##TYPE##>
+    public partial struct ##TYPE## : ISnapshotComponent<##TYPE##>, IEquatable<##TYPE##>
     {
         public void WriteSnapshot(ref DataStreamWriter writer, in NetworkCompressionModel compressionModel, in ##TYPE## baseSnapshot)
         {
@@ -125,6 +125,28 @@ namespace ##NAMESPACE##
         public void ReadSnapshot(ref DataStreamReader reader, in NetworkCompressionModel compressionModel, in ##TYPE## baseSnapshot)
         {
             //<read>
+        }
+
+        public bool Equals(##TYPE## other)
+        {
+            bool equals = true;
+            //<equals>
+            return equals;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is ##TYPE## other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = 17;
+                //<hash>
+                return hash;
+            }
         }
     }
 }
@@ -158,6 +180,14 @@ namespace ##NAMESPACE##
                 temp.Read(ref reader, compressionModel, (int) baseSnapshot.##NAME##);
                 ##NAME## = (##TYPE##) temp;
             }
+";
+
+        private static string EqualsTemplate =
+            @"equals = equals && ##NAME##.Equals(other.##NAME##);
+";
+
+        private static string HashTemplate =
+            @"hash = hash * 23 + ##NAME##.GetHashCode();
 ";
 
         private static void GenerateSnapshotCodeForComponent(Type type, string generatedFolder)

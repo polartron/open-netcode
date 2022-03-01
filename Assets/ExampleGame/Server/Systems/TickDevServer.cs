@@ -21,9 +21,14 @@ namespace ExampleGame.Server.Systems
         {
             var spawner = World.GetExistingSystem<ServerEntitySystem>();
 
-            for (int i = 0; i < 2000; i++)
+            for (int i = 0; i < 50; i++)
             {
                 spawner.SpawnPathingMonster(new Vector3(0, 0, 0) + new Vector3(Random.Range(-10, 10), 0f, Random.Range(-10, 10)));
+            }
+            
+            for (int i = 0; i < 50; i++)
+            {
+                spawner.SpawnMonster(new Vector3(0, 0, 0) + new Vector3(Random.Range(-10, 10), 0f, Random.Range(-10, 10)));
             }
             
             base.OnCreate();

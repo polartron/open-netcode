@@ -46,9 +46,7 @@ namespace Client.Generated
 {
     [UpdateInGroup(typeof(TickPreSimulationSystemGroup), OrderFirst = true)]
     [UpdateAfter(typeof(TickClientReceiveSystem))]
-    public class TickClientSnapshotSystem<TPrediction, TInput> : SystemBase
-        where TPrediction : unmanaged, INetworkedComponent
-        where TInput : unmanaged, INetworkedComponent
+    public class TickClientSnapshotSystem : SystemBase
     {
         private IClientNetworkSystem _client;
         private NativeHashMap<int, ClientEntitySnapshot> _snapshotEntities;

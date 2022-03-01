@@ -13,9 +13,7 @@ namespace OpenNetcode.Client
 {
     public static class ClientInitialization
     {
-        public static void Initialize<TPrediction, TInput>(in World clientWorld, in Entity localPlayer, in NetworkedPrefabs networkedPrefabs)
-            where TPrediction : unmanaged, INetworkedComponent
-            where TInput : unmanaged, INetworkedComponent
+        public static void Initialize(in World clientWorld, in Entity localPlayer, in NetworkedPrefabs networkedPrefabs)
         {
             TickSystem tickSystem = clientWorld.AddSystem(new TickSystem(TimeConfig.TicksPerSecond, (long) (Time.time * 1000f)));
             clientWorld.GetExistingSystem<SimulationSystemGroup>().AddSystemToUpdateList(tickSystem);

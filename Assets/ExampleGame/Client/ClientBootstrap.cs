@@ -32,10 +32,9 @@ namespace ExampleGame.Client
             EntityManager entityManager = World.EntityManager;
 
             Entity clientEntity = CreateLocalPlayer(ref entityManager, playerPrefab);
-            ClientInitialization.Initialize<EntityPosition, MovementInput>(World, clientEntity, networkedPrefabs);
+            ClientInitialization.Initialize(World, clientEntity, networkedPrefabs);
             var tickSystem = World.GetExistingSystem<TickSystem>();
-            tickSystem.AddPreSimulationSystem(new TickClientSnapshotSystem<EntityPosition, MovementInput>(
-                World.GetExistingSystem<ClientNetworkSystem>()));
+            tickSystem.AddPreSimulationSystem(new TickClientSnapshotSystem(World.GetExistingSystem<ClientNetworkSystem>()));
             tickSystem.AddPreSimulationSystem(new TickPredictionSystem());
             tickSystem.AddPreSimulationSystem(new TickInputSystem(World.GetExistingSystem<ClientNetworkSystem>()));
             tickSystem.AddSimulationSystem(new TickSavePredictionSystem());
