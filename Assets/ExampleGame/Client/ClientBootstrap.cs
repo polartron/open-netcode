@@ -92,6 +92,12 @@ namespace ExampleGame.Client
                 entityPositionPrediction.Add(default);
             }
             
+            var entityVelocityPrediction = entityManager.AddBuffer<Prediction<EntityVelocity>>(entity);
+            for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
+            {
+                entityVelocityPrediction.Add(default);
+            }
+            
             var characterInputSave = entityManager.AddBuffer<SavedInput<MovementInput>>(entity);
             for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
             {

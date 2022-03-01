@@ -1,3 +1,4 @@
+using System;
 using OpenNetcode.Client.Components;
 using OpenNetcode.Shared.Components;
 using OpenNetcode.Shared.Systems;
@@ -50,7 +51,7 @@ namespace Client.Generated
             }
         }
 
-        private bool IsPredictionError<T>(in ClientData clientData, in Entity entity, out int errorTick) where T : unmanaged, INetworkedComponent
+        private bool IsPredictionError<T>(in ClientData clientData, in Entity entity, out int errorTick) where T : unmanaged, IEquatable<T>
         {
             var resultBuffer = EntityManager.GetBuffer<SnapshotBufferElement<T>>(entity);
             var resultElement = resultBuffer[clientData.LastReceivedSnapshotTick % resultBuffer.Length];
@@ -70,7 +71,7 @@ namespace Client.Generated
                 return false;
             }
 
-            if (!predicted.Compare(resultElement.Value))
+            if (!predicted.Value.Equals(resultElement.Value))
             {
                 predictions[predictedIndex] = new Prediction<T>()
                 {
@@ -107,6 +108,11 @@ namespace Client.Generated
             if (IsPredictionError<EntityPosition>(clientData, clientEntity, out int entityPositionErrorTick))
             {
                 rollbackFromTick = entityPositionErrorTick;
+                rollback = true;
+            }
+            if (IsPredictionError<EntityVelocity>(clientData, clientEntity, out int entityVelocityErrorTick))
+            {
+                rollbackFromTick = entityVelocityErrorTick;
                 rollback = true;
             }
 //</generated>

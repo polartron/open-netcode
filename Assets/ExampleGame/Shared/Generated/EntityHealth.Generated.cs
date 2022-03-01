@@ -4,7 +4,7 @@ using OpenNetcode.Shared.Components;
 
 namespace ExampleGame.Shared.Components
 {
-    public partial struct EntityHealth : ISnapshotComponent<EntityHealth>
+    public partial struct EntityHealth : ISnapshotComponent<EntityHealth>, IEquatable<EntityHealth>
     {
         public void WriteSnapshot(ref DataStreamWriter writer, in NetworkCompressionModel compressionModel, in EntityHealth baseSnapshot)
         {
@@ -22,6 +22,28 @@ namespace ExampleGame.Shared.Components
             else
                 Value.Read(ref reader, compressionModel, baseSnapshot.Value);
 
+        }
+
+        public bool Equals(EntityHealth other)
+        {
+            bool equals = true;
+            //<equals>
+            return equals;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is EntityHealth other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = 17;
+                //<hash>
+                return hash;
+            }
         }
     }
 }

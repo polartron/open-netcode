@@ -4,7 +4,7 @@ using OpenNetcode.Shared.Components;
 
 namespace ExampleGame.Shared.Movement.Components
 {
-    public partial struct MovementInput : ISnapshotComponent<MovementInput>
+    public partial struct MovementInput : ISnapshotComponent<MovementInput>, IEquatable<MovementInput>
     {
         public void WriteSnapshot(ref DataStreamWriter writer, in NetworkCompressionModel compressionModel, in MovementInput baseSnapshot)
         {
@@ -30,6 +30,28 @@ namespace ExampleGame.Shared.Movement.Components
             else
                 Rotation.Read(ref reader, compressionModel, baseSnapshot.Rotation);
 
+        }
+
+        public bool Equals(MovementInput other)
+        {
+            bool equals = true;
+            //<equals>
+            return equals;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is MovementInput other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = 17;
+                //<hash>
+                return hash;
+            }
         }
     }
 }

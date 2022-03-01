@@ -43,6 +43,13 @@ using ExampleGame.Shared.Components;
 [assembly: RegisterGenericComponentType(typeof(SavedInput<MovementInput>))]
 [assembly: RegisterGenericComponentType(typeof(SavedInput<WeaponInput>))]
 //</generated>
+//<template:predicted>
+//[assembly: RegisterGenericComponentType(typeof(Prediction<##TYPE##>))]
+//</template>
+//<generated>
+[assembly: RegisterGenericComponentType(typeof(Prediction<EntityPosition>))]
+[assembly: RegisterGenericComponentType(typeof(Prediction<EntityVelocity>))]
+//</generated>
 namespace Client.Generated
 {
     [UpdateInGroup(typeof(TickPreSimulationSystemGroup), OrderFirst = true)]

@@ -4,7 +4,7 @@ using OpenNetcode.Shared.Components;
 
 namespace ExampleGame.Shared.Components
 {
-    public partial struct WeaponInput : ISnapshotComponent<WeaponInput>
+    public partial struct WeaponInput : ISnapshotComponent<WeaponInput>, IEquatable<WeaponInput>
     {
         public void WriteSnapshot(ref DataStreamWriter writer, in NetworkCompressionModel compressionModel, in WeaponInput baseSnapshot)
         {
@@ -22,6 +22,28 @@ namespace ExampleGame.Shared.Components
             else
                 WeaponType.Read(ref reader, compressionModel, baseSnapshot.WeaponType);
 
+        }
+
+        public bool Equals(WeaponInput other)
+        {
+            bool equals = true;
+            //<equals>
+            return equals;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is WeaponInput other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = 17;
+                //<hash>
+                return hash;
+            }
         }
     }
 }

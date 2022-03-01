@@ -24,6 +24,9 @@ using OpenNetcode.Shared.Time;
 //<template:input>
 //[assembly: RegisterGenericComponentType(typeof(SavedInput<##TYPE##>))]
 //</template>
+//<template:predicted>
+//[assembly: RegisterGenericComponentType(typeof(Prediction<##TYPE##>))]
+//</template>
 namespace Client.Generated
 {
     [UpdateInGroup(typeof(TickPreSimulationSystemGroup), OrderFirst = true)]

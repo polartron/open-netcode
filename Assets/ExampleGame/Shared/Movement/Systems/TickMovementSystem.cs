@@ -16,6 +16,7 @@ namespace ExampleGame.Shared.Movement.Systems
     {
         private EntityQuery _movingEntitiesQuery;
         private EntityQuery _pathingEntitiesQuery;
+        private TickSystem _tickSystem;
 
         protected override void OnCreate()
         {
@@ -30,6 +31,8 @@ namespace ExampleGame.Shared.Movement.Systems
                 ComponentType.ReadWrite<Translation>(),
                 ComponentType.ReadWrite<EntityPosition>(),
                 ComponentType.ReadOnly<PathComponent>());
+
+            _tickSystem = World.GetExistingSystem<TickSystem>();
 
             base.OnCreate();
         }
@@ -58,7 +61,7 @@ namespace ExampleGame.Shared.Movement.Systems
                 TranslationTypeHandle = GetComponentTypeHandle<Translation>(),
                 CharacterPositionTypeHandle = GetComponentTypeHandle<EntityPosition>(),
                 PathComponentTypeHandle = GetComponentTypeHandle<PathComponent>(true),
-                Tick = tick
+                TickFloat = _tickSystem.TickFloat
             };
 
             Dependency = pathJob.Schedule(_pathingEntitiesQuery, Dependency);
@@ -72,7 +75,7 @@ namespace ExampleGame.Shared.Movement.Systems
             public ComponentTypeHandle<EntityPosition> CharacterPositionTypeHandle;
             [ReadOnly] public ComponentTypeHandle<PathComponent> PathComponentTypeHandle;
             [ReadOnly] public FloatingOrigin floatingOrigin;
-            [ReadOnly] public int Tick;
+            [ReadOnly] public float TickFloat;
             
             public void Execute(ArchetypeChunk batchInChunk, int batchIndex)
             {
@@ -86,7 +89,7 @@ namespace ExampleGame.Shared.Movement.Systems
                     var translation = translations[i];
                     var pathComponent = pathComponents[i];
 
-                    float il = Mathf.InverseLerp(pathComponent.Start, pathComponent.Stop, Tick);
+                    float il = Mathf.InverseLerp(pathComponent.Start, pathComponent.Stop, TickFloat);
                     entityPosition.Value = GameUnits.Lerp(pathComponent.From, pathComponent.To, il);
                     translation.Value = floatingOrigin.GetUnityVector(entityPosition.Value);
                     entityPositions[i] = entityPosition;

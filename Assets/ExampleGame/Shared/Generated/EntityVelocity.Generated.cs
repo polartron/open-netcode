@@ -4,7 +4,7 @@ using OpenNetcode.Shared.Components;
 
 namespace ExampleGame.Shared.Movement.Components
 {
-    public partial struct EntityVelocity : ISnapshotComponent<EntityVelocity>
+    public partial struct EntityVelocity : ISnapshotComponent<EntityVelocity>, IEquatable<EntityVelocity>
     {
         public void WriteSnapshot(ref DataStreamWriter writer, in NetworkCompressionModel compressionModel, in EntityVelocity baseSnapshot)
         {
@@ -22,6 +22,28 @@ namespace ExampleGame.Shared.Movement.Components
             else
                 Value.Read(ref reader, compressionModel, baseSnapshot.Value);
 
+        }
+
+        public bool Equals(EntityVelocity other)
+        {
+            bool equals = true;
+            //<equals>
+            return equals;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is EntityVelocity other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = 17;
+                //<hash>
+                return hash;
+            }
         }
     }
 }

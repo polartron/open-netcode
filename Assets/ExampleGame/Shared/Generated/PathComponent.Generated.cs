@@ -4,7 +4,7 @@ using OpenNetcode.Shared.Components;
 
 namespace ExampleGame.Shared.Movement.Components
 {
-    public partial struct PathComponent : ISnapshotComponent<PathComponent>
+    public partial struct PathComponent : ISnapshotComponent<PathComponent>, IEquatable<PathComponent>
     {
         public void WriteSnapshot(ref DataStreamWriter writer, in NetworkCompressionModel compressionModel, in PathComponent baseSnapshot)
         {
@@ -46,6 +46,28 @@ namespace ExampleGame.Shared.Movement.Components
             else
                 Stop.Read(ref reader, compressionModel, baseSnapshot.Stop);
 
+        }
+
+        public bool Equals(PathComponent other)
+        {
+            bool equals = true;
+            //<equals>
+            return equals;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is PathComponent other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = 17;
+                //<hash>
+                return hash;
+            }
         }
     }
 }

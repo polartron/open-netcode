@@ -40,6 +40,14 @@ namespace Client.Generated
                 Tick = tick,
                 Value = entityPositionPrediction
             };
+            var entityVelocityPrediction = EntityManager.GetComponentData<EntityVelocity>(clientEntity);
+            var entityVelocityPredictions = EntityManager.GetBuffer<Prediction<EntityVelocity>>(clientEntity);
+            
+            entityVelocityPredictions[index] = new Prediction<EntityVelocity>()
+            {
+                Tick = tick,
+                Value = entityVelocityPrediction
+            };
 //</generated>
             
             
