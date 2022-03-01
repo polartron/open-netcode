@@ -9,7 +9,7 @@ namespace ExampleGame.Shared.Components
         public void WriteSnapshot(ref DataStreamWriter writer, in NetworkCompressionModel compressionModel, in EntityHealth baseSnapshot)
         {
             //<write>
-            writer.WriteRawBits(Convert.ToUInt32(Value != baseSnapshot.Value), 1);
+            writer.WriteRawBits(Convert.ToUInt32(!Value.Equals(baseSnapshot.Value)), 1);
             if(!Value.Equals(baseSnapshot.Value)) Value.Write(ref writer, compressionModel, baseSnapshot.Value);
 
         }

@@ -1,7 +1,6 @@
 using OpenNetcode.Server.Components;
 using OpenNetcode.Shared;
 using OpenNetcode.Shared.Components;
-using OpenNetcode.Shared.Messages;
 using OpenNetcode.Shared.Systems;
 using OpenNetcode.Shared.Time;
 using OpenNetcode.Shared.Utils;
@@ -9,15 +8,13 @@ using OpenNetcode.Server.Systems;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Jobs;
 using Unity.Networking.Transport;
+using UnityEngine;
 
 //<using>
 //<generated>
 using ExampleGame.Shared.Movement.Components;
 using ExampleGame.Shared.Components;
-using UnityEngine;
-
 //</generated>
 
 namespace Server.Generated
@@ -29,10 +26,11 @@ namespace Server.Generated
         public struct InputBufferData
         {
             //<template:input>
-            //public InputMessage<##TYPE##> ##TYPE##Message;
+            //public ##TYPE## ##TYPE##;
             //</template>
 //<generated>
             public MovementInput MovementInput;
+            public WeaponInput WeaponInput;
 //</generated>
             public double ArrivedTime;
             public int Tick;
@@ -70,6 +68,7 @@ namespace Server.Generated
                 //</template>
 //<generated>
                 ComponentType.ReadOnly<MovementInput>(),
+                ComponentType.ReadOnly<WeaponInput>(),
 //</generated>
                 ComponentType.ReadOnly<ProcessedInput>(),
                 ComponentType.ReadOnly<PlayerControlledTag>(),
@@ -124,12 +123,11 @@ namespace Server.Generated
                 //</template>
 //<generated>
                 MovementInputTypeHandle = GetComponentTypeHandle<MovementInput>(),
+                WeaponInputTypeHandle = GetComponentTypeHandle<WeaponInput>(),
 //</generated>
             };
             
             Dependency = job.ScheduleParallel(_playersQuery, 4, Dependency);
-            
-            
             Dependency.Complete();
         }
 
@@ -149,20 +147,42 @@ namespace Server.Generated
 
             int offset = _connectionIndex[internalId] * TimeConfig.TicksPerSecond;
 
+            //<template:input>
+            //##TYPE## last##TYPE## = new ##TYPE##();
+            //</template>
+//<generated>
             MovementInput lastMovementInput = new MovementInput();
+            WeaponInput lastWeaponInput = new WeaponInput();
+//</generated>
             
             for (int i = 0; i < count; i++)
             {
-                MovementInput input = new MovementInput();
-                input.ReadSnapshot(ref reader, _compressionModel, lastMovementInput);
-                lastMovementInput = input;
+                //<template:input>
+                //##TYPE## ##TYPELOWER## = new ##TYPE##();
+                //##TYPELOWER##.ReadSnapshot(ref reader, _compressionModel, last##TYPE##);
+                //last##TYPE## = ##TYPELOWER##;
+                //</template>
+//<generated>
+                MovementInput movementInput = new MovementInput();
+                movementInput.ReadSnapshot(ref reader, _compressionModel, lastMovementInput);
+                lastMovementInput = movementInput;
+                WeaponInput weaponInput = new WeaponInput();
+                weaponInput.ReadSnapshot(ref reader, _compressionModel, lastWeaponInput);
+                lastWeaponInput = weaponInput;
+//</generated>
                 
                 int index = (tick - i + TimeConfig.TicksPerSecond) % TimeConfig.TicksPerSecond;
 
                 if (_inputs[offset + index].Tick != tick - i)
                 {
                     var inputBufferData = _inputs[offset + index];
+                    //<template:input>
+                    //inputBufferData.##TYPE## = last##TYPE##;
+                    //</template>
+//<generated>
                     inputBufferData.MovementInput = lastMovementInput;
+                    inputBufferData.WeaponInput = lastWeaponInput;
+//</generated>
                     inputBufferData.ArrivedTime = Time.ElapsedTime;
                     inputBufferData.Tick = tick - i;
                     inputBufferData.Version = version;
@@ -186,6 +206,7 @@ namespace Server.Generated
             //</template>
 //<generated>
             public ComponentTypeHandle<MovementInput> MovementInputTypeHandle;
+            public ComponentTypeHandle<WeaponInput> WeaponInputTypeHandle;
 //</generated>
             public ComponentTypeHandle<PlayerBaseLine> PlayerBaseLineTypeHandle;
             public BufferTypeHandle<ProcessedInput> ProcessedInputTypeHandle;
@@ -198,6 +219,7 @@ namespace Server.Generated
                 //</template>
 //<generated>
                 var chunkMovementInput = batchInChunk.GetNativeArray(MovementInputTypeHandle);
+                var chunkWeaponInput = batchInChunk.GetNativeArray(WeaponInputTypeHandle);
 //</generated>
                 var chunkPlayerBaseLines = batchInChunk.GetNativeArray(PlayerBaseLineTypeHandle);
                 var chunkProcessedInput = batchInChunk.GetBufferAccessor(ProcessedInputTypeHandle);
@@ -226,10 +248,11 @@ namespace Server.Generated
                     if (element.Tick == tick)
                     {
                         //<template:input>
-                        //chunk##TYPE##[i] = element.##TYPE##Message.Input;
+                        //chunk##TYPE##[i] = element.##TYPE##;
                         //</template>
 //<generated>
                         chunkMovementInput[i] = element.MovementInput;
+                        chunkWeaponInput[i] = element.WeaponInput;
 //</generated>
                         processedInputs.Add(new ProcessedInput()
                         {

@@ -125,6 +125,8 @@ namespace Client.Generated
 //<generated>
                 var movementInputCached = EntityManager.GetComponentData<MovementInput>(clientEntity);
                 var movementInputSaved = EntityManager.GetBuffer<SavedInput<MovementInput>>(clientEntity);
+                var weaponInputCached = EntityManager.GetComponentData<WeaponInput>(clientEntity);
+                var weaponInputSaved = EntityManager.GetBuffer<SavedInput<WeaponInput>>(clientEntity);
 //</generated>
                 
                 for (int i = 1; i < rollbackTicks; i++)
@@ -141,6 +143,7 @@ namespace Client.Generated
                     //</template>
 //<generated>
                     EntityManager.SetComponentData(clientEntity, movementInputSaved[index].Value);
+                    EntityManager.SetComponentData(clientEntity, weaponInputSaved[index].Value);
 //</generated>
                     
                     _tickSystem.StepSimulation();
@@ -156,6 +159,7 @@ namespace Client.Generated
                 //</template>
 //<generated>
                 EntityManager.SetComponentData(clientEntity, movementInputCached);
+                EntityManager.SetComponentData(clientEntity, weaponInputCached);
 //</generated>
             }
         }

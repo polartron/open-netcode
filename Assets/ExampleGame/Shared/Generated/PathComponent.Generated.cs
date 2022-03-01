@@ -9,16 +9,16 @@ namespace ExampleGame.Shared.Movement.Components
         public void WriteSnapshot(ref DataStreamWriter writer, in NetworkCompressionModel compressionModel, in PathComponent baseSnapshot)
         {
             //<write>
-            writer.WriteRawBits(Convert.ToUInt32(From != baseSnapshot.From), 1);
+            writer.WriteRawBits(Convert.ToUInt32(!From.Equals(baseSnapshot.From)), 1);
             if(!From.Equals(baseSnapshot.From)) From.Write(ref writer, compressionModel, baseSnapshot.From);
 
-            writer.WriteRawBits(Convert.ToUInt32(To != baseSnapshot.To), 1);
+            writer.WriteRawBits(Convert.ToUInt32(!To.Equals(baseSnapshot.To)), 1);
             if(!To.Equals(baseSnapshot.To)) To.Write(ref writer, compressionModel, baseSnapshot.To);
 
-            writer.WriteRawBits(Convert.ToUInt32(Start != baseSnapshot.Start), 1);
+            writer.WriteRawBits(Convert.ToUInt32(!Start.Equals(baseSnapshot.Start)), 1);
             if(!Start.Equals(baseSnapshot.Start)) Start.Write(ref writer, compressionModel, baseSnapshot.Start);
 
-            writer.WriteRawBits(Convert.ToUInt32(Stop != baseSnapshot.Stop), 1);
+            writer.WriteRawBits(Convert.ToUInt32(!Stop.Equals(baseSnapshot.Stop)), 1);
             if(!Stop.Equals(baseSnapshot.Stop)) Stop.Write(ref writer, compressionModel, baseSnapshot.Stop);
 
         }

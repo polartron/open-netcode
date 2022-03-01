@@ -14,6 +14,7 @@ namespace ExampleGame.Shared.Movement.Components
 
             writer.WriteRawBits(Convert.ToUInt32(!Rotation.Equals(baseSnapshot.Rotation)), 1);
             if(!Rotation.Equals(baseSnapshot.Rotation)) Rotation.Write(ref writer, compressionModel, baseSnapshot.Rotation);
+
         }
 
         public void ReadSnapshot(ref DataStreamReader reader, in NetworkCompressionModel compressionModel, in MovementInput baseSnapshot)

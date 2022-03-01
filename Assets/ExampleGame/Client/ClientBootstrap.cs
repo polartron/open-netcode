@@ -63,11 +63,11 @@ namespace ExampleGame.Client
             entityManager.SetName(entity, "Client Entity");
 #endif
 
-
             entityManager.AddComponent<Translation>(entity);
             entityManager.AddComponent<ClientEntityTag>(entity);
 
             Debug.Log($"<color=green> Created client entity with ID = {entity.Index}</color>");
+            
             var entityPositionBuffer = entityManager.AddBuffer<SnapshotBufferElement<EntityPosition>>(entity);
             for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
             {
@@ -96,6 +96,12 @@ namespace ExampleGame.Client
             for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
             {
                 characterInputSave.Add(default);
+            }
+            
+            var weaponInputSave = entityManager.AddBuffer<SavedInput<WeaponInput>>(entity);
+            for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
+            {
+                weaponInputSave.Add(default);
             }
 
 

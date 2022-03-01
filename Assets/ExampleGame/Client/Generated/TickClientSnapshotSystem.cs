@@ -41,6 +41,7 @@ using ExampleGame.Shared.Components;
 //</template>
 //<generated>
 [assembly: RegisterGenericComponentType(typeof(SavedInput<MovementInput>))]
+[assembly: RegisterGenericComponentType(typeof(SavedInput<WeaponInput>))]
 //</generated>
 namespace Client.Generated
 {

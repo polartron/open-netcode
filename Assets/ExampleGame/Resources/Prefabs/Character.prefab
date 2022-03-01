@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 4760259306954979279}
   - component: {fileID: 5225008313463394940}
   - component: {fileID: -1158846684388280474}
+  - component: {fileID: -4417190379264674326}
   m_Layer: 0
   m_Name: Character
   m_TagString: Untagged
@@ -64,6 +65,7 @@ MonoBehaviour:
     x: 0
     y: 0
     z: 0
+  Test: 0
 --- !u!114 &4760259306954979279
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -112,3 +114,16 @@ MonoBehaviour:
     x: 0
     y: 0
   Rotation: 0
+--- !u!114 &-4417190379264674326
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7386549533439998808}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4cc320fc4c6112b44a93546cb3a56413, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  WeaponType: 0

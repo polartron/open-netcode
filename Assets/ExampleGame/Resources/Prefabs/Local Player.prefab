@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 5750783322352284175}
   - component: {fileID: 4858331513937557869}
   - component: {fileID: -4174353150098051874}
+  - component: {fileID: 7530056299131596742}
   m_Layer: 0
   m_Name: Local Player
   m_TagString: Untagged
@@ -117,6 +118,7 @@ MonoBehaviour:
     x: 0
     y: 0
     z: 0
+  Test: 0
 --- !u!114 &4858331513937557869
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -149,3 +151,16 @@ MonoBehaviour:
   MaxSpeed: 5
   StoppingSpeed: 2
   Friction: 5
+--- !u!114 &7530056299131596742
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3740017222075362302}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4cc320fc4c6112b44a93546cb3a56413, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  WeaponType: 0

@@ -9,10 +9,10 @@ namespace ExampleGame.Shared.Movement.Components
         public void WriteSnapshot(ref DataStreamWriter writer, in NetworkCompressionModel compressionModel, in EntityPosition baseSnapshot)
         {
             //<write>
-            writer.WriteRawBits(Convert.ToUInt32(Value != baseSnapshot.Value), 1);
+            writer.WriteRawBits(Convert.ToUInt32(!Value.Equals(baseSnapshot.Value)), 1);
             if(!Value.Equals(baseSnapshot.Value)) Value.Write(ref writer, compressionModel, baseSnapshot.Value);
 
-            writer.WriteRawBits(Convert.ToUInt32(Test != baseSnapshot.Test), 1);
+            writer.WriteRawBits(Convert.ToUInt32(!Test.Equals(baseSnapshot.Test)), 1);
             if(!Test.Equals(baseSnapshot.Test)) Test.Write(ref writer, compressionModel, baseSnapshot.Test);
 
         }

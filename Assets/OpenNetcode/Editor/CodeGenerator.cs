@@ -131,7 +131,7 @@ namespace ##NAMESPACE##
 ";
 
         private static string WriteTemplate =
-            @"            writer.WriteRawBits(Convert.ToUInt32(##NAME## != baseSnapshot.##NAME##), 1);
+            @"            writer.WriteRawBits(Convert.ToUInt32(!##NAME##.Equals(baseSnapshot.##NAME##)), 1);
             if(!##NAME##.Equals(baseSnapshot.##NAME##)) ##NAME##.Write(ref writer, compressionModel, baseSnapshot.##NAME##);
 
 ";
