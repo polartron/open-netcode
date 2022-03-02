@@ -1,18 +1,13 @@
+using Shared;
+using Unity.Entities;
+using UnityEngine;
 using Client.Generated;
-using ExampleGame.Client.Components;
-using ExampleGame.Client.Systems;
-using ExampleGame.Shared.Components;
-using ExampleGame.Shared.Movement.Components;
-using ExampleGame.Shared.Movement.Systems;
-using OpenNetcode.Client;
 using OpenNetcode.Client.Components;
 using OpenNetcode.Client.Systems;
 using OpenNetcode.Shared.Systems;
-using OpenNetcode.Shared.Time;
-using Shared;
-using Unity.Entities;
-using Unity.Transforms;
-using UnityEngine;
+using ExampleGame.Client.Systems;
+using ExampleGame.Shared.Movement.Components;
+using ExampleGame.Shared.Movement.Systems;
 
 [assembly: RegisterGenericComponentType(typeof(Prediction<EntityPosition>))]
 namespace ExampleGame.Client
@@ -28,21 +23,12 @@ namespace ExampleGame.Client
 
             NetworkedPrefabs networkedPrefabs = Resources.Load<NetworkedPrefabs>("Networked Prefabs");
             GameObject playerPrefab = Resources.Load<GameObject>("Prefabs/Local Player");
+            ClientInitialization.Initialize(World, playerPrefab, networkedPrefabs);
             
-            EntityManager entityManager = World.EntityManager;
-
-            Entity clientEntity = CreateLocalPlayer(ref entityManager, playerPrefab);
-            ClientInitialization.Initialize(World, clientEntity, networkedPrefabs);
-            var tickSystem = World.GetExistingSystem<TickSystem>();
-            
-            tickSystem.AddPreSimulationSystem(new TickClientSnapshotSystem(World.GetExistingSystem<ClientNetworkSystem>()));
-            tickSystem.AddPreSimulationSystem(new TickPredictionSystem());
-            tickSystem.AddPreSimulationSystem(new TickInputSystem(World.GetExistingSystem<ClientNetworkSystem>()));
-            tickSystem.AddSimulationSystem(new TickSavePredictionSystem());
-
             SharedBootstrap.AddSystem<SimulationSystemGroup>(World, new PlayerInputSystem());
             SharedBootstrap.AddSystem<SimulationSystemGroup>(World, new InterpolationSystem());
 
+            var tickSystem = World.GetExistingSystem<TickSystem>();
             //Pre
             tickSystem.AddPreSimulationSystem(new TickDevClient(World.GetExistingSystem<ClientNetworkSystem>()));
 
@@ -50,27 +36,6 @@ namespace ExampleGame.Client
             tickSystem.AddSimulationSystem(new TickMovementSystem());
         
             return true;
-        }
-
-        private Entity CreateLocalPlayer(ref EntityManager entityManager, in GameObject prefab)
-        {
-            var blobAssetStore = new BlobAssetStore();
-            Entity entityPrefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(prefab,
-                GameObjectConversionSettings.FromWorld(World, blobAssetStore));
-            blobAssetStore.Dispose();
-
-            var entity = entityManager.Instantiate(entityPrefab);
-
-#if UNITY_EDITOR
-            entityManager.SetName(entity, "Client Entity");
-#endif
-
-            entityManager.AddComponent<Translation>(entity);
-            entityManager.AddComponent<ClientEntityTag>(entity);
-
-            Debug.Log($"<color=green> Created client entity with ID = {entity.Index}</color>");
-
-            return entity;
         }
     }
 }

@@ -67,9 +67,9 @@ namespace Server.Generated
                 PlayerSnapshot playerSnapshot = new PlayerSnapshot();
                 playerSnapshot.PlayerId = serverNetworkedEntity.OwnerNetworkId;
 
-                if (spatialHash.Value != playerBaseLine.LastHash)
+                if (spatialHash.h0 != playerBaseLine.LastHash)
                 {
-                    playerBaseLine.LastHash = spatialHash.Value;
+                    playerBaseLine.LastHash = spatialHash.h0;
                     playerBaseLine.ExpectedVersion = playerBaseLine.ExpectedVersion + 1;
                     playerBaselines[i] = playerBaseLine;
                 }
@@ -83,8 +83,8 @@ namespace Server.Generated
                     playerSnapshot.SnapshotIndex = playerBaseLine.BaseLine;
                 }
 
-                PlayersInArea.Add(spatialHash.Value, playerSnapshot);
-                ActiveAreasList.Add(spatialHash.Value);
+                PlayersInArea.Add(spatialHash.h0, playerSnapshot);
+                ActiveAreasList.Add(spatialHash.h0);
 
                 var writer = new DataStreamWriter(1024, Allocator.Temp);
 

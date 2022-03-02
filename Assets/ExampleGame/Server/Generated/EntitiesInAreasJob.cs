@@ -94,31 +94,20 @@ namespace Server.Generated
 
                 serverEntitySnapshot.EventMask = eventMask;
 
-                int h0 = spatialHash.Value;
-                if (ActiveAreas.Contains(h0)) EntitiesInAreas.Add(h0, serverEntitySnapshot);
-                
                 // Add entities to be included in the 8 areas around this one
                 // XXX
                 // X X
                 // XXX
-                
-                int h1 = h0 + 1;
-                int h2 = h0 - 1;
-                int h3 = h0 + SpatialHashing.HashSegments;
-                int h4 = h0 - SpatialHashing.HashSegments;
-                int h5 = h3 + 1;
-                int h6 = h3 - 1;
-                int h7 = h0 + 1 - SpatialHashing.HashSegments;
-                int h8 = h0 - 1 - SpatialHashing.HashSegments;
-                
-                if (ActiveAreas.Contains(h1)) EntitiesInAreas.Add(h1, serverEntitySnapshot);
-                if (ActiveAreas.Contains(h2)) EntitiesInAreas.Add(h2, serverEntitySnapshot);
-                if (ActiveAreas.Contains(h3)) EntitiesInAreas.Add(h3, serverEntitySnapshot);
-                if (ActiveAreas.Contains(h4)) EntitiesInAreas.Add(h4, serverEntitySnapshot);
-                if (ActiveAreas.Contains(h5)) EntitiesInAreas.Add(h5, serverEntitySnapshot);
-                if (ActiveAreas.Contains(h6)) EntitiesInAreas.Add(h6, serverEntitySnapshot);
-                if (ActiveAreas.Contains(h7)) EntitiesInAreas.Add(h7, serverEntitySnapshot);
-                if (ActiveAreas.Contains(h8)) EntitiesInAreas.Add(h8, serverEntitySnapshot);
+
+                if (ActiveAreas.Contains(spatialHash.h0)) EntitiesInAreas.Add(spatialHash.h0, serverEntitySnapshot);
+                if (ActiveAreas.Contains(spatialHash.h1)) EntitiesInAreas.Add(spatialHash.h1, serverEntitySnapshot);
+                if (ActiveAreas.Contains(spatialHash.h2)) EntitiesInAreas.Add(spatialHash.h2, serverEntitySnapshot);
+                if (ActiveAreas.Contains(spatialHash.h3)) EntitiesInAreas.Add(spatialHash.h3, serverEntitySnapshot);
+                if (ActiveAreas.Contains(spatialHash.h4)) EntitiesInAreas.Add(spatialHash.h4, serverEntitySnapshot);
+                if (ActiveAreas.Contains(spatialHash.h5)) EntitiesInAreas.Add(spatialHash.h5, serverEntitySnapshot);
+                if (ActiveAreas.Contains(spatialHash.h6)) EntitiesInAreas.Add(spatialHash.h6, serverEntitySnapshot);
+                if (ActiveAreas.Contains(spatialHash.h7)) EntitiesInAreas.Add(spatialHash.h7, serverEntitySnapshot);
+                if (ActiveAreas.Contains(spatialHash.h8)) EntitiesInAreas.Add(spatialHash.h8, serverEntitySnapshot);
             }
         }
     }

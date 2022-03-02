@@ -44,7 +44,7 @@ namespace ExampleGame.Server
 
             //Simulation
             tickSystem.AddSimulationSystem(new TickMovementSystem());
-            tickSystem.AddSimulationSystem(new SpatialHashingSystem());
+            tickSystem.AddSimulationSystem(new TopDownSpatialHashingSystem());
 
             return true;
         }

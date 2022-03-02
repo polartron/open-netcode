@@ -1,5 +1,4 @@
-﻿using ExampleGame.Client.Components;
-using ExampleGame.Shared.Movement.Components;
+﻿using ExampleGame.Shared.Movement.Components;
 using OpenNetcode.Client.Components;
 using OpenNetcode.Shared.Systems;
 using OpenNetcode.Shared.Time;

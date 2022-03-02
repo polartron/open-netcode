@@ -10,7 +10,7 @@ namespace OpenNetcode.Server.Systems
 {
     [DisableAutoCreation]
     [UpdateInGroup(typeof(TickSimulationSystemGroup), OrderFirst = true)]
-    public class SpatialHashingSystem : SystemBase
+    public class TopDownSpatialHashingSystem : SystemBase
     {
         private EntityQuery _entityQuery;
         
@@ -51,9 +51,26 @@ namespace OpenNetcode.Server.Systems
                 for (int i = 0; i < batchInChunk.Count; i++)
                 {
                     var translation = translations[i].Value;
+
+                    int hash = (int) (math.floor(translation.x / AreaSize) +
+                                    HashSegments * math.floor(translation.z / AreaSize));
+
+                    // 8 areas
+                    // XXX
+                    // X X
+                    // XXX
+
                     spatialHashes[i] = new SpatialHash()
                     {
-                        Value = (int) (math.floor(translation.x / AreaSize) + HashSegments * math.floor(translation.z / AreaSize))
+                        h0 = hash,
+                        h1 = hash + 1,
+                        h2 = hash - 1,
+                        h3 = hash + HashSegments,
+                        h4 = hash - HashSegments,
+                        h5 = hash + HashSegments + 1,
+                        h6 = hash + HashSegments - 1,
+                        h7 = hash + 1 - HashSegments,
+                        h8 = hash - 1 - HashSegments,
                     };
                 }
             }
