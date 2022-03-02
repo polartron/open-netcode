@@ -20,6 +20,7 @@ namespace Client.Generated
     [UpdateInGroup(typeof(TickPreSimulationSystemGroup))]
     public class TickInputSystem : SystemBase
     {
+        private Entity _clientEntity;
         private IClientNetworkSystem _clientNetworkSystem;
         private TickReceiveResultSystem _tickReceiveResultSystem;
         private NetworkCompressionModel _compressionModel;
@@ -42,6 +43,37 @@ namespace Client.Generated
             _tickReceiveResultSystem = World.GetExistingSystem<TickReceiveResultSystem>();
             _compressionModel = new NetworkCompressionModel(Allocator.Persistent);
 
+            Entity clientEntity = GetSingleton<ClientData>().LocalPlayer;
+            
+            //<template:input>
+            //if (EntityManager.HasComponent<##TYPE##>(clientEntity))
+            //{
+            //    var buffer = EntityManager.AddBuffer<SavedInput<##TYPE##>>(clientEntity);
+            //    for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
+            //    {
+            //        buffer.Add(default);
+            //    }
+            //}
+            //</template>
+//<generated>
+            if (EntityManager.HasComponent<MovementInput>(clientEntity))
+            {
+                var buffer = EntityManager.AddBuffer<SavedInput<MovementInput>>(clientEntity);
+                for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
+                {
+                    buffer.Add(default);
+                }
+            }
+            if (EntityManager.HasComponent<WeaponInput>(clientEntity))
+            {
+                var buffer = EntityManager.AddBuffer<SavedInput<WeaponInput>>(clientEntity);
+                for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
+                {
+                    buffer.Add(default);
+                }
+            }
+//</generated>
+            
             base.OnCreate();
         }
 

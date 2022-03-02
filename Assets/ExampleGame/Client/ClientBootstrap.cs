@@ -34,6 +34,7 @@ namespace ExampleGame.Client
             Entity clientEntity = CreateLocalPlayer(ref entityManager, playerPrefab);
             ClientInitialization.Initialize(World, clientEntity, networkedPrefabs);
             var tickSystem = World.GetExistingSystem<TickSystem>();
+            
             tickSystem.AddPreSimulationSystem(new TickClientSnapshotSystem(World.GetExistingSystem<ClientNetworkSystem>()));
             tickSystem.AddPreSimulationSystem(new TickPredictionSystem());
             tickSystem.AddPreSimulationSystem(new TickInputSystem(World.GetExistingSystem<ClientNetworkSystem>()));
@@ -56,6 +57,7 @@ namespace ExampleGame.Client
             var blobAssetStore = new BlobAssetStore();
             Entity entityPrefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(prefab,
                 GameObjectConversionSettings.FromWorld(World, blobAssetStore));
+            blobAssetStore.Dispose();
 
             var entity = entityManager.Instantiate(entityPrefab);
 
@@ -67,51 +69,6 @@ namespace ExampleGame.Client
             entityManager.AddComponent<ClientEntityTag>(entity);
 
             Debug.Log($"<color=green> Created client entity with ID = {entity.Index}</color>");
-            
-            var entityPositionBuffer = entityManager.AddBuffer<SnapshotBufferElement<EntityPosition>>(entity);
-            for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
-            {
-                entityPositionBuffer.Add(default);
-            }
-
-            var entityVelocityBuffer = entityManager.AddBuffer<SnapshotBufferElement<EntityVelocity>>(entity);
-            for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
-            {
-                entityVelocityBuffer.Add(default);
-            }
-
-            var entityHealthBuffer = entityManager.AddBuffer<SnapshotBufferElement<EntityHealth>>(entity);
-            for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
-            {
-                entityHealthBuffer.Add(default);
-            }
-            
-            var entityPositionPrediction = entityManager.AddBuffer<Prediction<EntityPosition>>(entity);
-            for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
-            {
-                entityPositionPrediction.Add(default);
-            }
-            
-            var entityVelocityPrediction = entityManager.AddBuffer<Prediction<EntityVelocity>>(entity);
-            for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
-            {
-                entityVelocityPrediction.Add(default);
-            }
-            
-            var characterInputSave = entityManager.AddBuffer<SavedInput<MovementInput>>(entity);
-            for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
-            {
-                characterInputSave.Add(default);
-            }
-            
-            var weaponInputSave = entityManager.AddBuffer<SavedInput<WeaponInput>>(entity);
-            for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
-            {
-                weaponInputSave.Add(default);
-            }
-
-
-            blobAssetStore.Dispose();
 
             return entity;
         }

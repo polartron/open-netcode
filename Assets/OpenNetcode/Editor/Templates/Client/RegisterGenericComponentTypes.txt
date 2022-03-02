@@ -1,0 +1,20 @@
+using Unity.Entities;
+using OpenNetcode.Client.Components;
+
+//<using>
+
+//<template:publicsnapshot>
+//[assembly: RegisterGenericComponentType(typeof(SnapshotBufferElement<##TYPE##>))]
+//</template>
+//<template:privatesnapshot>
+//[assembly: RegisterGenericComponentType(typeof(SnapshotBufferElement<##TYPE##>))]
+//</template>
+//<template:publicevent>
+//[assembly: RegisterGenericComponentType(typeof(SnapshotBufferElement<##TYPE##>))]
+//</template>
+//<template:input>
+//[assembly: RegisterGenericComponentType(typeof(SavedInput<##TYPE##>))]
+//</template>
+//<template:predicted>
+//[assembly: RegisterGenericComponentType(typeof(Prediction<##TYPE##>))]
+//</template>

@@ -16,40 +16,6 @@ using ExampleGame.Shared.Movement.Components;
 using ExampleGame.Shared.Components;
 //</generated>
 
-//<template:publicsnapshot>
-//[assembly: RegisterGenericComponentType(typeof(SnapshotBufferElement<##TYPE##>))]
-//</template>
-//<generated>
-[assembly: RegisterGenericComponentType(typeof(SnapshotBufferElement<EntityPosition>))]
-[assembly: RegisterGenericComponentType(typeof(SnapshotBufferElement<EntityVelocity>))]
-[assembly: RegisterGenericComponentType(typeof(SnapshotBufferElement<PathComponent>))]
-//</generated>
-//<template:privatesnapshot>
-//[assembly: RegisterGenericComponentType(typeof(SnapshotBufferElement<##TYPE##>))]
-//</template>
-//<generated>
-[assembly: RegisterGenericComponentType(typeof(SnapshotBufferElement<EntityHealth>))]
-//</generated>
-//<template:publicevent>
-//[assembly: RegisterGenericComponentType(typeof(SnapshotBufferElement<##TYPE##>))]
-//</template>
-//<generated>
-[assembly: RegisterGenericComponentType(typeof(SnapshotBufferElement<BumpEvent>))]
-//</generated>
-//<template:input>
-//[assembly: RegisterGenericComponentType(typeof(SavedInput<##TYPE##>))]
-//</template>
-//<generated>
-[assembly: RegisterGenericComponentType(typeof(SavedInput<MovementInput>))]
-[assembly: RegisterGenericComponentType(typeof(SavedInput<WeaponInput>))]
-//</generated>
-//<template:predicted>
-//[assembly: RegisterGenericComponentType(typeof(Prediction<##TYPE##>))]
-//</template>
-//<generated>
-[assembly: RegisterGenericComponentType(typeof(Prediction<EntityPosition>))]
-[assembly: RegisterGenericComponentType(typeof(Prediction<EntityVelocity>))]
-//</generated>
 namespace Client.Generated
 {
     [UpdateInGroup(typeof(TickPreSimulationSystemGroup), OrderFirst = true)]
@@ -77,6 +43,67 @@ namespace Client.Generated
             _observedEntities = new NativeHashMap<int, ClientEntitySnapshot>(10000, Allocator.Persistent);
             _compressionModel = new NetworkCompressionModel(Allocator.Persistent);
             _linkEntitiesQuery = GetEntityQuery(ComponentType.ReadOnly<ServerEntity>());
+            
+            Entity clientEntity = GetSingleton<ClientData>().LocalPlayer;
+            
+            //<template:publicsnapshot>
+            //if (EntityManager.HasComponent<##TYPE##>(clientEntity))
+            //{
+            //    var buffer = EntityManager.AddBuffer<SnapshotBufferElement<##TYPE##>>(clientEntity);
+            //    for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
+            //    {
+            //        buffer.Add(default);
+            //    }
+            //}
+            //</template>
+//<generated>
+            if (EntityManager.HasComponent<EntityPosition>(clientEntity))
+            {
+                var buffer = EntityManager.AddBuffer<SnapshotBufferElement<EntityPosition>>(clientEntity);
+                for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
+                {
+                    buffer.Add(default);
+                }
+            }
+            if (EntityManager.HasComponent<EntityVelocity>(clientEntity))
+            {
+                var buffer = EntityManager.AddBuffer<SnapshotBufferElement<EntityVelocity>>(clientEntity);
+                for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
+                {
+                    buffer.Add(default);
+                }
+            }
+            if (EntityManager.HasComponent<PathComponent>(clientEntity))
+            {
+                var buffer = EntityManager.AddBuffer<SnapshotBufferElement<PathComponent>>(clientEntity);
+                for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
+                {
+                    buffer.Add(default);
+                }
+            }
+//</generated>
+            //<template:privatesnapshot>
+            //if (EntityManager.HasComponent<##TYPE##>(clientEntity))
+            //{
+            //    var buffer = EntityManager.AddBuffer<SnapshotBufferElement<##TYPE##>>(clientEntity);
+            //    for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
+            //    {
+            //        buffer.Add(default);
+            //    }
+            //}
+            //</template>
+//<generated>
+            if (EntityManager.HasComponent<EntityHealth>(clientEntity))
+            {
+                var buffer = EntityManager.AddBuffer<SnapshotBufferElement<EntityHealth>>(clientEntity);
+                for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
+                {
+                    buffer.Add(default);
+                }
+            }
+//</generated>
+
+
 
             base.OnCreate();
         }

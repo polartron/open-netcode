@@ -22,6 +22,38 @@ namespace Client.Generated
         protected override void OnCreate()
         {
             _tickSystem = World.GetExistingSystem<TickSystem>();
+            
+            Entity clientEntity = GetSingleton<ClientData>().LocalPlayer;
+            
+            //<template:predicted>
+            //if (EntityManager.HasComponent<##TYPE##>(clientEntity))
+            //{
+            //    var buffer = EntityManager.AddBuffer<Prediction<##TYPE##>>(clientEntity);
+            //    for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
+            //    {
+            //        buffer.Add(default);
+            //    }
+            //}
+            //</template>
+//<generated>
+            if (EntityManager.HasComponent<EntityPosition>(clientEntity))
+            {
+                var buffer = EntityManager.AddBuffer<Prediction<EntityPosition>>(clientEntity);
+                for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
+                {
+                    buffer.Add(default);
+                }
+            }
+            if (EntityManager.HasComponent<EntityVelocity>(clientEntity))
+            {
+                var buffer = EntityManager.AddBuffer<Prediction<EntityVelocity>>(clientEntity);
+                for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
+                {
+                    buffer.Add(default);
+                }
+            }
+//</generated>
+            
             base.OnCreate();
         }
         

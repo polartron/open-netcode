@@ -12,21 +12,6 @@ using OpenNetcode.Shared.Time;
 
 //<using>
 
-//<template:publicsnapshot>
-//[assembly: RegisterGenericComponentType(typeof(SnapshotBufferElement<##TYPE##>))]
-//</template>
-//<template:privatesnapshot>
-//[assembly: RegisterGenericComponentType(typeof(SnapshotBufferElement<##TYPE##>))]
-//</template>
-//<template:publicevent>
-//[assembly: RegisterGenericComponentType(typeof(SnapshotBufferElement<##TYPE##>))]
-//</template>
-//<template:input>
-//[assembly: RegisterGenericComponentType(typeof(SavedInput<##TYPE##>))]
-//</template>
-//<template:predicted>
-//[assembly: RegisterGenericComponentType(typeof(Prediction<##TYPE##>))]
-//</template>
 namespace Client.Generated
 {
     [UpdateInGroup(typeof(TickPreSimulationSystemGroup), OrderFirst = true)]
@@ -54,6 +39,31 @@ namespace Client.Generated
             _observedEntities = new NativeHashMap<int, ClientEntitySnapshot>(10000, Allocator.Persistent);
             _compressionModel = new NetworkCompressionModel(Allocator.Persistent);
             _linkEntitiesQuery = GetEntityQuery(ComponentType.ReadOnly<ServerEntity>());
+            
+            Entity clientEntity = GetSingleton<ClientData>().LocalPlayer;
+            
+            //<template:publicsnapshot>
+            //if (EntityManager.HasComponent<##TYPE##>(clientEntity))
+            //{
+            //    var buffer = EntityManager.AddBuffer<SnapshotBufferElement<##TYPE##>>(clientEntity);
+            //    for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
+            //    {
+            //        buffer.Add(default);
+            //    }
+            //}
+            //</template>
+            //<template:privatesnapshot>
+            //if (EntityManager.HasComponent<##TYPE##>(clientEntity))
+            //{
+            //    var buffer = EntityManager.AddBuffer<SnapshotBufferElement<##TYPE##>>(clientEntity);
+            //    for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
+            //    {
+            //        buffer.Add(default);
+            //    }
+            //}
+            //</template>
+
+
 
             base.OnCreate();
         }
