@@ -62,7 +62,7 @@ namespace OpenNetcode.Shared.Time
             }
         }
         
-        public Ticker(int ticksPerSecond, long timeInMs, long smoothTimeMs = 0)
+        public Ticker(int ticksPerSecond, long timeInMs, long smoothTimeMs = 500)
         {
             _tickerConfig = TickerConfig.Default;
             _tickerConfig.TicksPerSecond = ticksPerSecond;

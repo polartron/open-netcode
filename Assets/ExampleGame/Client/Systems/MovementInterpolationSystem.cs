@@ -14,7 +14,7 @@ namespace ExampleGame.Client.Systems
     [UpdateInGroup(typeof(SimulationSystemGroup))]
     [UpdateAfter(typeof(TickSystem))]
     [DisableAutoCreation]
-    public class InterpolationSystem : SystemBase
+    public class MovementInterpolationSystem : SystemBase
     {
         private TickSystem _tickSystem;
 
@@ -61,9 +61,9 @@ namespace ExampleGame.Client.Systems
             double rttHalf = roundTripTime.Value / 2;
             double tickFloat = _tickSystem.TickFloat;
             double tickServer = tickFloat - (rttHalf + TimeConfig.CommandBufferLengthMs) / 1000f * TimeConfig.TicksPerSecond;
-            double tickFrom = tickServer - Mathf.Max(1, 1f / TimeConfig.SnapshotsPerSecond);
+            double tickFrom = tickServer - TimeConfig.TicksPerSecond * Mathf.Min(1, 1f / TimeConfig.SnapshotsPerSecond);
 
-            PlayerInterpolationJob playerInterpolationJob = new PlayerInterpolationJob()
+            MovementInterpolationJob movementInterpolationJob = new MovementInterpolationJob()
             {
                 FloatingOrigin = floatingOrigin,
                 TickFrom = tickFrom,
@@ -73,13 +73,12 @@ namespace ExampleGame.Client.Systems
                 EntityVelocityBufferTypeHandle = GetBufferTypeHandle<SnapshotBufferElement<EntityVelocity>>(true)
             };
 
-            Dependency = playerInterpolationJob.Schedule(_query, Dependency);
-            
+            Dependency = movementInterpolationJob.Schedule(_query, Dependency);
             Dependency.Complete();
         }
 
         [BurstCompile]
-        private struct PlayerInterpolationJob : IJobEntityBatch
+        private struct MovementInterpolationJob : IJobEntityBatch
         {
             [ReadOnly] public double TickFrom;
             [ReadOnly] public double TickServer;
@@ -148,8 +147,6 @@ namespace ExampleGame.Client.Systems
 
                         float il = Mathf.InverseLerp(fromPosition.Tick, p1.Tick, (float) TickFrom);
                         target = Vector3.Lerp(ex1, ex2, il);
-                        
-                        //entityPosition.Value = FloatingOrigin.GetGameUnits(target);
                     }
                     else
                     {
@@ -157,8 +154,6 @@ namespace ExampleGame.Client.Systems
 
                         target = Extrapolate(FloatingOrigin.GetUnityVector(p1.Value.Value),
                             v1.Value.Value.ToUnityVector3(), new Vector3(0f, 0f, 0f), t);
-
-                       // entityPosition.Value = FloatingOrigin.GetGameUnits(target);
                     }
 
                     translations[b] = new Translation()

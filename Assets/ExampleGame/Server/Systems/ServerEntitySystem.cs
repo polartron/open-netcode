@@ -119,12 +119,7 @@ namespace ExampleGame.Server.Systems
             EntityManager.SetName(entity, "Monster");
 #endif
             EntityManager.AddComponent<Translation>(entity);
-            var floatingOrigin = GetSingleton<FloatingOrigin>();
-            EntityManager.SetComponentData(entity, new EntityPosition()
-            {
-                Value = floatingOrigin.GetGameUnits(position)
-            });
-            
+
             EntityManager.AddComponent<ServerNetworkedEntity>(entity);
             EntityManager.SetComponentData(entity, new ServerNetworkedEntity()
             {

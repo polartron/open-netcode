@@ -78,14 +78,14 @@ namespace ExampleGame.Server.Systems
 
             var floatingOrigin = GetSingleton<FloatingOrigin>();
             
-            Entities.ForEach((ref EntityPosition entityPosition, ref Translation translation, ref PathComponent pathComponent, in Entity entity, in WanderingAiTag wanderingAiTag) =>
+            Entities.ForEach((ref Translation translation, ref PathComponent pathComponent, in Entity entity, in WanderingAiTag wanderingAiTag) =>
             {
                 if (tick > pathComponent.Stop)
                 {
                     Vector3 target = new Vector3(Random.Range(-range, range), 0f, Random.Range(-range, range));
                     float distance = Vector3.Distance(target, translation.Value);
+                    pathComponent.From = pathComponent.To;
                     pathComponent.To = floatingOrigin.GetGameUnits(target);
-                    pathComponent.From = entityPosition.Value;
                     pathComponent.Start = tick;
                     pathComponent.Stop = tick + (int) (distance * 0.5f * TimeConfig.TicksPerSecond);
 

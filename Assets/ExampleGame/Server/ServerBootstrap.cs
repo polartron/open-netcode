@@ -22,16 +22,12 @@ namespace ExampleGame.Server
 
             var networkedPrefabs = Resources.Load<NetworkedPrefabs>("Networked Prefabs");
             ServerInitialization.Initialize(World, networkedPrefabs);
-            var tickSystem = World.GetExistingSystem<TickSystem>();
-            tickSystem.AddPostSimulationSystem(new TickServerSnapshotSystem(World.GetExistingSystem<ServerNetworkSystem>()));
-            tickSystem.AddPreSimulationSystem(new TickInputBufferSystem(World.GetExistingSystem<ServerNetworkSystem>()));
 
             var networkedPrefabSystem = World.GetExistingSystem<NetworkedPrefabSystem>();
-
             var player = Resources.Load<GameObject>("Prefabs/Server/Server Player");
             var monster = Resources.Load<GameObject>("Prefabs/Server/Server Moving Monster");
             var pathingMonster = Resources.Load<GameObject>("Prefabs/Server/Server Pathing Monster");
-            
+
             World.AddSystem(new ServerEntitySystem()
             {
                 Player = networkedPrefabSystem.GetEntityFromPrefab(player),
@@ -39,6 +35,7 @@ namespace ExampleGame.Server
                 PathingMonster = networkedPrefabSystem.GetEntityFromPrefab(pathingMonster),
             });
 
+            var tickSystem = World.GetExistingSystem<TickSystem>();
             tickSystem.AddPreSimulationSystem(new ServerGuestAuthentication(World.GetExistingSystem<ServerNetworkSystem>()));
             tickSystem.AddPreSimulationSystem(new TickDevServer());
 

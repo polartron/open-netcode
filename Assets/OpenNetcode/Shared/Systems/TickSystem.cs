@@ -76,7 +76,7 @@ namespace OpenNetcode.Shared.Systems
         
         public TickSystem(int ticksPerSecond, long timeInMs)
         {
-            _ticker = new Ticker(ticksPerSecond, timeInMs, (int) (1f / TimeConfig.TicksPerSecond * 1000f));
+            _ticker = new Ticker(ticksPerSecond, timeInMs);
             _ticker.Add(this);
         }
 

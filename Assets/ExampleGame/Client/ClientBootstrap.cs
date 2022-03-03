@@ -26,7 +26,7 @@ namespace ExampleGame.Client
             ClientInitialization.Initialize(World, playerPrefab, networkedPrefabs);
             
             SharedBootstrap.AddSystem<SimulationSystemGroup>(World, new PlayerInputSystem());
-            SharedBootstrap.AddSystem<SimulationSystemGroup>(World, new InterpolationSystem());
+            SharedBootstrap.AddSystem<SimulationSystemGroup>(World, new MovementInterpolationSystem());
 
             var tickSystem = World.GetExistingSystem<TickSystem>();
             //Pre

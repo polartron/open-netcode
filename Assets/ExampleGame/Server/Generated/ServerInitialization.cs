@@ -1,12 +1,11 @@
 using OpenNetcode.Server.Systems;
-using OpenNetcode.Shared.Components;
 using OpenNetcode.Shared.Systems;
 using OpenNetcode.Shared.Time;
 using Shared.Coordinates;
 using Unity.Entities;
 using Unity.Mathematics;
 
-namespace OpenNetcode.Server
+namespace Server.Generated
 {
     public static class ServerInitialization
     {
@@ -26,6 +25,9 @@ namespace OpenNetcode.Server
             tickSystem.AddPreSimulationSystem(new TickServerReceiveSystem(server));
             tickSystem.AddPostSimulationSystem(new TickSendResultSystem(server));
             tickSystem.AddPostSimulationSystem(new TickServerSendSystem(server));
+            
+            tickSystem.AddPostSimulationSystem(new TickServerSnapshotSystem(server));
+            tickSystem.AddPreSimulationSystem(new TickInputBufferSystem(server));
         }
     }
 }
