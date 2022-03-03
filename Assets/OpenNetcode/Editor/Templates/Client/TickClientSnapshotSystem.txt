@@ -46,7 +46,7 @@ namespace Client.Generated
             //if (EntityManager.HasComponent<##TYPE##>(clientEntity))
             //{
             //    var buffer = EntityManager.AddBuffer<SnapshotBufferElement<##TYPE##>>(clientEntity);
-            //    for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
+            //    for (int i = 0; i < TimeConfig.SnapshotsPerSecond; i++)
             //    {
             //        buffer.Add(default);
             //    }

@@ -50,7 +50,7 @@ namespace Client.Generated
             //if (EntityManager.HasComponent<##TYPE##>(clientEntity))
             //{
             //    var buffer = EntityManager.AddBuffer<SnapshotBufferElement<##TYPE##>>(clientEntity);
-            //    for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
+            //    for (int i = 0; i < TimeConfig.SnapshotsPerSecond; i++)
             //    {
             //        buffer.Add(default);
             //    }
@@ -60,7 +60,7 @@ namespace Client.Generated
             if (EntityManager.HasComponent<EntityPosition>(clientEntity))
             {
                 var buffer = EntityManager.AddBuffer<SnapshotBufferElement<EntityPosition>>(clientEntity);
-                for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
+                for (int i = 0; i < TimeConfig.SnapshotsPerSecond; i++)
                 {
                     buffer.Add(default);
                 }
@@ -68,7 +68,7 @@ namespace Client.Generated
             if (EntityManager.HasComponent<EntityVelocity>(clientEntity))
             {
                 var buffer = EntityManager.AddBuffer<SnapshotBufferElement<EntityVelocity>>(clientEntity);
-                for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
+                for (int i = 0; i < TimeConfig.SnapshotsPerSecond; i++)
                 {
                     buffer.Add(default);
                 }
@@ -76,7 +76,7 @@ namespace Client.Generated
             if (EntityManager.HasComponent<PathComponent>(clientEntity))
             {
                 var buffer = EntityManager.AddBuffer<SnapshotBufferElement<PathComponent>>(clientEntity);
-                for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
+                for (int i = 0; i < TimeConfig.SnapshotsPerSecond; i++)
                 {
                     buffer.Add(default);
                 }
@@ -96,7 +96,7 @@ namespace Client.Generated
             if (EntityManager.HasComponent<EntityHealth>(clientEntity))
             {
                 var buffer = EntityManager.AddBuffer<SnapshotBufferElement<EntityHealth>>(clientEntity);
-                for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
+                for (int i = 0; i < TimeConfig.SnapshotsPerSecond; i++)
                 {
                     buffer.Add(default);
                 }
