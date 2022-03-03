@@ -5,6 +5,8 @@ using Shared.Coordinates;
 using Unity.Entities;
 using Unity.Mathematics;
 
+//<using>
+
 namespace Server.Generated
 {
     public static class ServerInitialization

@@ -9,6 +9,12 @@ using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 
+//<using>
+//<generated>
+using ExampleGame.Shared.Movement.Components;
+using ExampleGame.Shared.Components;
+//</generated>
+
 namespace Client.Generated
 {
     public static class ClientInitialization

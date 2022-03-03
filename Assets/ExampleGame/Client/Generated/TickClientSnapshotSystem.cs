@@ -96,7 +96,7 @@ namespace Client.Generated
             if (EntityManager.HasComponent<EntityHealth>(clientEntity))
             {
                 var buffer = EntityManager.AddBuffer<SnapshotBufferElement<EntityHealth>>(clientEntity);
-                for (int i = 0; i < TimeConfig.SnapshotsPerSecond; i++)
+                for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
                 {
                     buffer.Add(default);
                 }

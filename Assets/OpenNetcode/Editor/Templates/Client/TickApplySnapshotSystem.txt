@@ -1,10 +1,11 @@
-using ExampleGame.Shared.Movement.Components;
 using OpenNetcode.Client.Components;
 using OpenNetcode.Shared.Systems;
 using OpenNetcode.Shared.Time;
 using Unity.Burst;
 using Unity.Entities;
 using UnityEngine;
+
+//<using>
 
 namespace Client.Generated
 {
@@ -17,7 +18,7 @@ namespace Client.Generated
         //<template:publicsnapshot>
         //private EntityQuery _##TYPELOWER##Query;
         //</template>
-        //<template:private>
+        //<template:privatesnapshot>
         //private EntityQuery _##TYPELOWER##Query;
         //</template>
 
@@ -26,10 +27,37 @@ namespace Client.Generated
             _tickSystem = World.GetExistingSystem<TickSystem>();
             
             //<template:publicsnapshot>
-            //_entityPositionQuery = GetEntityQuery(
+            //_##TYPELOWER##Query = GetEntityQuery(
             //    ComponentType.Exclude<Prediction<##TYPE##>>(),
             //    ComponentType.ReadOnly<SnapshotBufferElement<##TYPE##>>(),
             //    ComponentType.ReadWrite<##TYPE##>());
+            //</template>
+            //<template:privatesnapshot>
+            //_##TYPELOWER##Query = GetEntityQuery(
+            //    ComponentType.Exclude<Prediction<##TYPE##>>(),
+            //    ComponentType.ReadOnly<SnapshotBufferElement<##TYPE##>>(),
+            //    ComponentType.ReadWrite<##TYPE##>());
+            //</template>
+            
+            base.OnCreate();
+        }
+
+        protected override void OnUpdate()
+        {
+            var roundTripTime = GetSingleton<RoundTripTime>();
+            double rttHalf = roundTripTime.Value / 2;
+            double tickFloat = _tickSystem.TickFloat;
+            double tickServer = tickFloat - (rttHalf + TimeConfig.CommandBufferLengthMs) / 1000f * TimeConfig.TicksPerSecond;
+            double tickFrom = tickServer - TimeConfig.TicksPerSecond * Mathf.Min(0.1f, 1f / TimeConfig.SnapshotsPerSecond);
+
+            //<template:publicsnapshot>
+            //ApplyFromBufferJob<##TYPE##> ##TYPELOWER##Job = new ApplyFromBufferJob<##TYPE##>()
+            //{
+            //    Tick = (int) tickFrom,
+            //    BufferFromEntity = GetBufferTypeHandle<SnapshotBufferElement<##TYPE##>>(true),
+            //    ComponentDataFromEntity = GetComponentTypeHandle<##TYPE##>()
+            //};
+            //Dependency = ##TYPELOWER##Job.ScheduleParallel(_##TYPELOWER##Query, Dependency);
             //</template>
             //<template:privatesnapshot>
             //ApplyFromBufferJob<##TYPE##> ##TYPELOWER##Job = new ApplyFromBufferJob<##TYPE##>()
@@ -40,8 +68,7 @@ namespace Client.Generated
             //};
             //Dependency = ##TYPELOWER##Job.ScheduleParallel(_##TYPELOWER##Query, Dependency);
             //</template>
-            
-            
+
             Dependency.Complete();
         }
 

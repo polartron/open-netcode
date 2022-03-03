@@ -18,3 +18,11 @@ using OpenNetcode.Client.Components;
 //<template:predicted>
 //[assembly: RegisterGenericComponentType(typeof(Prediction<##TYPE##>))]
 //</template>
+//</generated>
+//<template:publicsnapshot>
+//[assembly: RegisterGenericComponentType(typeof(Prediction<##TYPE##>))]
+//</template>
+//</generated>
+//<template:privatesnapshot>
+//[assembly: RegisterGenericComponentType(typeof(Prediction<##TYPE##>))]
+//</template>

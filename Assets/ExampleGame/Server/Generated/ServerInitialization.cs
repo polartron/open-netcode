@@ -5,6 +5,12 @@ using Shared.Coordinates;
 using Unity.Entities;
 using Unity.Mathematics;
 
+//<using>
+//<generated>
+using ExampleGame.Shared.Movement.Components;
+using ExampleGame.Shared.Components;
+//</generated>
+
 namespace Server.Generated
 {
     public static class ServerInitialization

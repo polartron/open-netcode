@@ -308,7 +308,7 @@ namespace Client.Generated
                     NativeArray<SnapshotBufferElement<T>> buffer = hasCreatedBuffer
                         ? componentBuffers.GetBufferArray<SnapshotBufferElement<T>>(arrayIndex)
                         : theBuffer[serverEntity.Entity].ToNativeArray(Allocator.Temp);
-                            
+                    
                     buffer[tick % buffer.Length] = new SnapshotBufferElement<T>()
                     {
                         Value = bumpEvent,
@@ -343,7 +343,7 @@ namespace Client.Generated
                 NativeArray<SnapshotBufferElement<T>> buffer = hasCreatedBuffer
                     ? componentBuffers.GetBufferArray<SnapshotBufferElement<T>>(index)
                     : theBuffer[serverEntity.Entity].ToNativeArray(Allocator.Temp);
-
+        
                 int length = buffer.Length;
 
                 buffer[tick % length] = new SnapshotBufferElement<T>()
