@@ -1,4 +1,5 @@
 ﻿using ExampleGame.Shared.Movement.Components;
+using OpenNetcode.Shared.Components;
 using OpenNetcode.Shared.Systems;
 using OpenNetcode.Shared.Time;
 using Shared.Coordinates;
@@ -25,11 +26,13 @@ namespace ExampleGame.Shared.Movement.Systems
                 ComponentType.ReadWrite<EntityVelocity>(),
                 ComponentType.ReadWrite<EntityPosition>(),
                 ComponentType.ReadOnly<MovementConfig>(),
-                ComponentType.ReadOnly<MovementInput>());
+                ComponentType.ReadOnly<MovementInput>(),
+                ComponentType.ReadOnly<SimulatedEntity>());
 
             _pathingEntitiesQuery = GetEntityQuery(
                 ComponentType.ReadWrite<Translation>(),
-                ComponentType.ReadOnly<PathComponent>());
+                ComponentType.ReadOnly<PathComponent>(),
+                ComponentType.ReadOnly<SimulatedEntity>());
 
             _tickSystem = World.GetExistingSystem<TickSystem>();
 
@@ -121,9 +124,9 @@ namespace ExampleGame.Shared.Movement.Systems
                     Vector3 velocity = entityVelocity.Value.ToUnityVector3();
                     Vector3 position = floatingOrigin.GetUnityVector(entityPosition.Value);
 
-                    ExampleGame.Shared.Movement.Movement.CalculateVelocity(ref velocity, movementConfig, playerInput,
+                    Movement.CalculateVelocity(ref velocity, movementConfig, playerInput,
                         TimeConfig.FixedDeltaTime);
-                    ExampleGame.Shared.Movement.Movement.Move(ref position, velocity, TimeConfig.FixedDeltaTime);
+                    Movement.Move(ref position, velocity, TimeConfig.FixedDeltaTime);
 
                     entityVelocity.Value = GameUnits.FromUnityVector3(velocity);
                     entityVelocities[i] = entityVelocity;
@@ -132,7 +135,6 @@ namespace ExampleGame.Shared.Movement.Systems
                     entityPositions[i] = entityPosition;
 
                     translation.Value = floatingOrigin.GetUnityVector(entityPosition.Value);
-                    
                     translations[i] = translation;
                 }
             }

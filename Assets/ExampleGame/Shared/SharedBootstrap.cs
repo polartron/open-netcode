@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using Unity.Entities;
 using UnityEngine;
 
+#if !UNITY_EDITOR
+using System.Reflection;
+#endif
+
 namespace Shared
 {
     public interface IWorldBootstrap

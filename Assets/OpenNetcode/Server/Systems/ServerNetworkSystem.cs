@@ -119,6 +119,7 @@ namespace OpenNetcode.Server.Systems
 
         public void ReceiveUpdate()
         {
+            
             Dependency.Complete();
             
             ReceivePackets.Clear();

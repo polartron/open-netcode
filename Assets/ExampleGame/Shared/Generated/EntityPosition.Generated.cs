@@ -36,6 +36,8 @@ namespace ExampleGame.Shared.Movement.Components
         {
             bool equals = true;
             //<equals>
+            equals = equals && Value.Equals(other.Value);
+            equals = equals && Test.Equals(other.Test);
             return equals;
         }
 
@@ -50,6 +52,8 @@ namespace ExampleGame.Shared.Movement.Components
             {
                 int hash = 17;
                 //<hash>
+                hash = hash * 23 + Value.GetHashCode();
+                hash = hash * 23 + Test.GetHashCode();
                 return hash;
             }
         }

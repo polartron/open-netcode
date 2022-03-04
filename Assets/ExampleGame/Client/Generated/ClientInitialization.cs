@@ -35,6 +35,7 @@ namespace Client.Generated
 #endif
 
             clientWorld.EntityManager.AddComponent<ClientEntityTag>(entity);
+            clientWorld.EntityManager.AddComponent<SimulatedEntity>(entity);
             
             clientWorld.EntityManager.CreateEntity(ComponentType.ReadOnly<TickData>(), ComponentType.ReadOnly<ClientData>(), ComponentType.ReadOnly<RoundTripTime>());
             tickSystem.SetSingleton(new ClientData()
@@ -58,6 +59,7 @@ namespace Client.Generated
             tickSystem.AddPreSimulationSystem(new TickPredictionSystem());
             tickSystem.AddPreSimulationSystem(new TickInputSystem(clientNetworkSystem));
             tickSystem.AddSimulationSystem(new TickSavePredictionSystem());
+            tickSystem.AddPostSimulationSystem(new TickClearEventsSystem());
         }
     }
 }

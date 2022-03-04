@@ -1,5 +1,6 @@
 ﻿using ExampleGame.Shared.Movement.Components;
 using OpenNetcode.Client.Components;
+using OpenNetcode.Shared.Components;
 using OpenNetcode.Shared.Systems;
 using OpenNetcode.Shared.Time;
 using Shared.Coordinates;
@@ -18,18 +19,23 @@ namespace ExampleGame.Client.Systems
     {
         private TickSystem _tickSystem;
 
-        private EntityQuery _query;
+        private EntityQuery _movingEntityQuery;
+        private EntityQuery _pathingEntityQuery;
         
         protected override void OnCreate()
         {
             _tickSystem = World.GetExistingSystem<TickSystem>();
 
-            _query = GetEntityQuery(
+            _movingEntityQuery = GetEntityQuery(
                 ComponentType.ReadWrite<Translation>(),
                 ComponentType.ReadOnly<SnapshotBufferElement<EntityPosition>>(),
                 ComponentType.ReadOnly<SnapshotBufferElement<EntityVelocity>>(),
-                ComponentType.Exclude<ClientEntityTag>()
-                );
+                ComponentType.Exclude<SimulatedEntity>());
+
+            _pathingEntityQuery = GetEntityQuery(
+                ComponentType.ReadWrite<Translation>(),
+                ComponentType.ReadOnly<PathComponent>(),
+                ComponentType.Exclude<SimulatedEntity>());
             
             base.OnCreate();
         }
@@ -73,8 +79,44 @@ namespace ExampleGame.Client.Systems
                 EntityVelocityBufferTypeHandle = GetBufferTypeHandle<SnapshotBufferElement<EntityVelocity>>(true)
             };
 
-            Dependency = movementInterpolationJob.Schedule(_query, Dependency);
+            Dependency = movementInterpolationJob.Schedule(_movingEntityQuery, Dependency);
+
+            PathInterpolationJob pathInterpolationJob = new PathInterpolationJob()
+            {
+                FloatingOrigin = floatingOrigin,
+                TickFrom = tickFrom,
+                TranslationTypeHandle = GetComponentTypeHandle<Translation>(),
+                PathComponentTypeHandle = GetComponentTypeHandle<PathComponent>(true)
+            };
+
+            Dependency = pathInterpolationJob.Schedule(_pathingEntityQuery, Dependency);
             Dependency.Complete();
+        }
+
+        private struct PathInterpolationJob : IJobEntityBatch
+        {
+            [ReadOnly] public double TickFrom;
+            [ReadOnly] public FloatingOrigin FloatingOrigin;
+            [ReadOnly] public ComponentTypeHandle<PathComponent> PathComponentTypeHandle;
+            public ComponentTypeHandle<Translation> TranslationTypeHandle;
+            
+            public void Execute(ArchetypeChunk batchInChunk, int batchIndex)
+            {
+                var pathComponents = batchInChunk.GetNativeArray(PathComponentTypeHandle);
+                var translations = batchInChunk.GetNativeArray(TranslationTypeHandle);
+
+                for (int i = 0; i < batchInChunk.Count; i++)
+                {
+                    var pathComponent = pathComponents[i];
+                    
+                    float il = Mathf.InverseLerp(pathComponent.Start, pathComponent.Stop, (float) TickFrom);
+                    GameUnits position = GameUnits.Lerp(pathComponent.From, pathComponent.To, il);
+                    translations[i] = new Translation()
+                    {
+                        Value = FloatingOrigin.GetUnityVector(position)
+                    };
+                }
+            }
         }
 
         [BurstCompile]

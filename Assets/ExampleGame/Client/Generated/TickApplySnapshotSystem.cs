@@ -104,7 +104,7 @@ namespace Client.Generated
             //ApplyFromBufferJob<##TYPE##> ##TYPELOWER##Job = new ApplyFromBufferJob<##TYPE##>()
             //{
             //    Tick = (int) tickFrom,
-            //    BufferFromEntity = GetBufferTypeHandle<SnapshotBufferElement<##TYPE##>>(true),
+            //    SnapshotBufferFromEntity = GetBufferTypeHandle<SnapshotBufferElement<##TYPE##>>(true),
             //    ComponentDataFromEntity = GetComponentTypeHandle<##TYPE##>()
             //};
             //Dependency = ##TYPELOWER##Job.ScheduleParallel(_##TYPELOWER##Query, Dependency);
@@ -136,7 +136,7 @@ namespace Client.Generated
             //ApplyFromBufferJob<##TYPE##> ##TYPELOWER##Job = new ApplyFromBufferJob<##TYPE##>()
             //{
             //    Tick = (int) tickFrom,
-            //    BufferFromEntity = GetBufferTypeHandle<SnapshotBufferElement<##TYPE##>>(true),
+            //    SnapshotBufferFromEntity = GetBufferTypeHandle<SnapshotBufferElement<##TYPE##>>(true),
             //    ComponentDataFromEntity = GetComponentTypeHandle<##TYPE##>()
             //};
             //Dependency = ##TYPELOWER##Job.ScheduleParallel(_##TYPELOWER##Query, Dependency);

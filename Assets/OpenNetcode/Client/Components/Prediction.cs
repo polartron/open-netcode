@@ -7,7 +7,8 @@ namespace OpenNetcode.Client.Components
 {
     [InternalBufferCapacity(TimeConfig.TicksPerSecond)]
     public struct Prediction<T> : IBufferElementData
-        where T : unmanaged, IEquatable<T>
+        where T : unmanaged
+        , IEquatable<T>
     {
         public int Tick;
         public T Value;

@@ -52,6 +52,10 @@ namespace ExampleGame.Shared.Movement.Components
         {
             bool equals = true;
             //<equals>
+            equals = equals && From.Equals(other.From);
+            equals = equals && To.Equals(other.To);
+            equals = equals && Start.Equals(other.Start);
+            equals = equals && Stop.Equals(other.Stop);
             return equals;
         }
 
@@ -66,6 +70,10 @@ namespace ExampleGame.Shared.Movement.Components
             {
                 int hash = 17;
                 //<hash>
+                hash = hash * 23 + From.GetHashCode();
+                hash = hash * 23 + To.GetHashCode();
+                hash = hash * 23 + Start.GetHashCode();
+                hash = hash * 23 + Stop.GetHashCode();
                 return hash;
             }
         }

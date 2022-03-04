@@ -49,7 +49,7 @@ namespace OpenNetcode.Server.Systems
 
                 Packets.WritePacketType(PacketType.Result, ref writer);
                 writer.WritePackedUInt((uint) tick.Value, compressionModel);
-                writer.WriteRawBits((uint) processedInputs.Length, 3);
+                writer.WritePackedUInt((uint) processedInputs.Length, compressionModel);
 
                 ProcessedInput lastValidInput = default;
                 
@@ -63,12 +63,15 @@ namespace OpenNetcode.Server.Systems
                 }
 
                 if (lastValidInput.HasInput)
+                {
                     writer.WriteRawBits(1, 1);
+                    uint processedTime = (uint) ((elapsedTime - lastValidInput.ArrivedTime) * 1000f);
+                    writer.WritePackedUInt(processedTime, compressionModel);
+                }
                 else
+                {
                     writer.WriteRawBits(0, 1);
-                
-                uint processedTime = (uint) ((elapsedTime - lastValidInput.ArrivedTime) * 1000f);
-                writer.WritePackedUInt(processedTime, compressionModel);
+                }
 
                 packets.Add(networkEntity.OwnerNetworkId, Packets.WrapPacket(writer));
                 

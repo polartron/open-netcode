@@ -28,6 +28,7 @@ namespace ExampleGame.Shared.Components
         {
             bool equals = true;
             //<equals>
+            equals = equals && WeaponType.Equals(other.WeaponType);
             return equals;
         }
 
@@ -42,6 +43,7 @@ namespace ExampleGame.Shared.Components
             {
                 int hash = 17;
                 //<hash>
+                hash = hash * 23 + WeaponType.GetHashCode();
                 return hash;
             }
         }

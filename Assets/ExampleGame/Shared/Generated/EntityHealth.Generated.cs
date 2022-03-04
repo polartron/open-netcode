@@ -28,6 +28,7 @@ namespace ExampleGame.Shared.Components
         {
             bool equals = true;
             //<equals>
+            equals = equals && Value.Equals(other.Value);
             return equals;
         }
 
@@ -42,6 +43,7 @@ namespace ExampleGame.Shared.Components
             {
                 int hash = 17;
                 //<hash>
+                hash = hash * 23 + Value.GetHashCode();
                 return hash;
             }
         }

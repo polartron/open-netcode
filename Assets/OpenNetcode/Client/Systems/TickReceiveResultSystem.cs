@@ -1,4 +1,5 @@
-﻿using OpenNetcode.Client.Components;
+﻿using System;
+using OpenNetcode.Client.Components;
 using OpenNetcode.Shared;
 using OpenNetcode.Shared.Components;
 using OpenNetcode.Shared.Systems;
@@ -21,9 +22,15 @@ namespace OpenNetcode.Client.Systems
     [UpdateAfter(typeof(TickClientReceiveSystem))]
     public class TickReceiveResultSystem : SystemBase, ITickReceiveResultSystem
     {
+        private struct SentTime
+        {
+            public int Tick;
+            public float Time;
+        }
+        
         private IClientNetworkSystem _client;
         private TickSystem _tickSystem;
-        private NativeHashMap<int, float> _sentInputs;
+        private NativeHashMap<int, SentTime> _sentInputs;
         private float _dilationMs;
         private NetworkCompressionModel _compressionModel;
 
@@ -36,7 +43,7 @@ namespace OpenNetcode.Client.Systems
         {
             _tickSystem = World.GetExistingSystem<TickSystem>();
             _compressionModel = new NetworkCompressionModel(Allocator.Persistent);
-            _sentInputs = new NativeHashMap<int, float>(TimeConfig.TicksPerSecond, Allocator.Persistent);
+            _sentInputs = new NativeHashMap<int, SentTime>(TimeConfig.TicksPerSecond, Allocator.Persistent);
             
            // _profilerRoundTripTime = ProfilerRecorder.StartNew(ProfilerCategory.Network, "Round Trip Time");
         }
@@ -49,7 +56,11 @@ namespace OpenNetcode.Client.Systems
 
         public void AddSentInput(int tick, float sentTime)
         {
-            _sentInputs[tick % _sentInputs.Capacity] = sentTime;
+            _sentInputs[tick % _sentInputs.Capacity] = new SentTime()
+            {
+                Tick = tick,
+                Time = sentTime
+            };
         }
 
         protected override void OnUpdate()
@@ -65,7 +76,7 @@ namespace OpenNetcode.Client.Systems
                         DataStreamReader reader = new DataStreamReader(data);
                         Packets.ReadPacketType(ref reader);
                         int resultTick = (int) reader.ReadPackedUInt(_compressionModel);
-                        int processedInputs = (int) reader.ReadRawBits(3);
+                        int processedInputs = (int) reader.ReadPackedUInt(_compressionModel);
 
                         int lastValidInput = 0;
                         int missedInputs = 0;
@@ -80,17 +91,32 @@ namespace OpenNetcode.Client.Systems
                                 missedInputs++;
                             }
                         }
+                        
+                        int offset = (processedInputs - (lastValidInput + 1));
+                        int processedTick = resultTick - offset;
+                        double serverTimeMs = ((float) processedTick / TimeConfig.TicksPerSecond) * 1000f;
 
-                        if (reader.ReadRawBits(1) == 1)
+                        bool hasInput = Convert.ToBoolean(reader.ReadRawBits(1));
+                        
+                        if (!hasInput)
                         {
-                            int offset = (processedInputs - (lastValidInput + 1));
-                            int processedTick = resultTick - offset;
+                            int resetToTick = resultTick + TimeConfig.TicksPerSecond / 10;
+                            double resetTimeMs = ((float) resetToTick / TimeConfig.TicksPerSecond) * 1000f;
+                            _tickSystem.SetTime(resetTimeMs);
+                        }
+                        else
+                        {
                             int processedTime = (int) reader.ReadPackedUInt(_compressionModel);
                             
-                            if (_sentInputs.TryGetValue(processedTick % _sentInputs.Capacity, out float sentTime))
+                            if (_sentInputs.TryGetValue(processedTick % _sentInputs.Capacity, out SentTime sentTime))
                             {
+                                if (sentTime.Tick != processedTick)
+                                {
+                                    break;
+                                }
+                                
                                 //Calculate round trip time
-                                double rttMs = (Time.ElapsedTime - sentTime) * 1000f;
+                                double rttMs = (Time.ElapsedTime - sentTime.Time) * 1000f;
                                 rttMs -= processedTime;
                                 
                                 float rttHalf = (float) rttMs / 2;
@@ -99,8 +125,6 @@ namespace OpenNetcode.Client.Systems
                                 {
                                     Value = (float) rttMs
                                 });
-
-                                double serverTimeMs = ((float) processedTick / TimeConfig.TicksPerSecond) * 1000f;
 
                                 //No sudden time changes. Slowly move towards predicted time. 
 
@@ -115,7 +139,7 @@ namespace OpenNetcode.Client.Systems
                                     if (missedInputs > 0)
                                     {
                                         //We missed input. Dilate hard.
-                                        _dilationMs += (TimeConfig.FixedDeltaTime * 100f);
+                                        _dilationMs += (TimeConfig.FixedDeltaTime * 5f);
                                         _dilationMs = Mathf.Clamp(_dilationMs, 0, TimeConfig.CommandBufferLengthMs);
                                     }
                                     else

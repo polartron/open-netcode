@@ -1,0 +1,56 @@
+using OpenNetcode.Shared.Systems;
+using Unity.Burst;
+using Unity.Collections;
+using Unity.Entities;
+
+//<using>
+
+namespace Client.Generated
+{
+    [UpdateInGroup(typeof(TickPostSimulationSystemGroup))]
+    [DisableAutoCreation]
+    public class TickClearEventsSystem : SystemBase
+    {
+        //<template:publicevent>
+        //private EntityQuery _##TYPELOWER##Query;
+        //</template>
+        protected override void OnCreate()
+        {
+            //<template:publicevent>
+            //_##TYPELOWER##Query = GetEntityQuery(
+            //    ComponentType.ReadWrite<##TYPE##>());
+            //</template>
+            base.OnCreate();
+        }
+
+        protected override void OnUpdate()
+        {
+            //<template:publicevent>
+            //ClearEventsJob<##TYPE##> ##TYPELOWER##Job = new ClearEventsJob<##TYPE##>()
+            //{
+            //    BufferTypeHandle = GetBufferTypeHandle<##TYPE##>()
+            //};
+            //Dependency = ##TYPELOWER##Job.ScheduleParallel(_##TYPELOWER##Query, Dependency);
+            //</template>
+            
+            Dependency.Complete();
+        }
+        
+        [BurstCompile]
+        public struct ClearEventsJob<T> : IJobChunk where T : unmanaged, IBufferElementData
+        {
+            public BufferTypeHandle<T> BufferTypeHandle;
+        
+            public void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
+            {
+                var buffers = chunk.GetBufferAccessor(BufferTypeHandle);
+
+                for (int i = 0; i < chunk.Count; i++)
+                {
+                    var buffer = buffers[i];
+                    buffer.Clear();
+                }
+            }
+        }
+    }
+}

@@ -11,6 +11,7 @@ using OpenNetcode.Client.Components;
 //</template>
 //<template:publicevent>
 //[assembly: RegisterGenericComponentType(typeof(SnapshotBufferElement<##TYPE##>))]
+//[assembly: RegisterGenericComponentType(typeof(DynamicBuffer<##TYPE##>))]
 //</template>
 //<template:input>
 //[assembly: RegisterGenericComponentType(typeof(SavedInput<##TYPE##>))]

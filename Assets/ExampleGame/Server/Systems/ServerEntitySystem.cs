@@ -30,7 +30,7 @@ namespace ExampleGame.Server.Systems
 #if UNITY_EDITOR
             EntityManager.SetName(entity, "Server Player");
 #endif
-            
+            EntityManager.AddComponent<SimulatedEntity>(entity);
             EntityManager.SetComponentData(entity, new EntityPosition()
             {
                 Value = floatingOrigin.GetGameUnits(position)
@@ -88,6 +88,7 @@ namespace ExampleGame.Server.Systems
 #if UNITY_EDITOR
             EntityManager.SetName(entity, "Monster");
 #endif
+            EntityManager.AddComponent<SimulatedEntity>(entity);
             EntityManager.AddComponent<Translation>(entity);
             var floatingOrigin = GetSingleton<FloatingOrigin>();
             EntityManager.SetComponentData(entity, new EntityPosition()
@@ -119,6 +120,7 @@ namespace ExampleGame.Server.Systems
             EntityManager.SetName(entity, "Monster");
 #endif
             EntityManager.AddComponent<Translation>(entity);
+            EntityManager.AddComponent<SimulatedEntity>(entity);
 
             EntityManager.AddComponent<ServerNetworkedEntity>(entity);
             EntityManager.SetComponentData(entity, new ServerNetworkedEntity()

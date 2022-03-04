@@ -42,9 +42,6 @@ namespace ExampleGame.Server.Systems
             float range = 20;
             
             Vector3 center = new Vector3(0, 0, 0);
-
-            var entityManager = EntityManager;
-            var ecb = new EntityCommandBuffer();
             
             Entities.ForEach((ref MovementInput input, ref Translation translation, ref DynamicBuffer<BumpEvent> bumpEvents, in Entity entity, in WanderingAiTag wanderingAiTag) =>
             {

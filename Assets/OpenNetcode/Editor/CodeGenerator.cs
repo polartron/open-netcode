@@ -183,11 +183,11 @@ namespace ##NAMESPACE##
 ";
 
         private static string EqualsTemplate =
-            @"equals = equals && ##NAME##.Equals(other.##NAME##);
+            @"            equals = equals && ##NAME##.Equals(other.##NAME##);
 ";
 
         private static string HashTemplate =
-            @"hash = hash * 23 + ##NAME##.GetHashCode();
+            @"                hash = hash * 23 + ##NAME##.GetHashCode();
 ";
 
         private static void GenerateSnapshotCodeForComponent(Type type, string generatedFolder)
@@ -219,6 +219,30 @@ namespace ##NAMESPACE##
                 read = read.Replace("##TYPE##", field.FieldType.Name);
                 text = text.Insert(readIndex, read);
                 readIndex += read.Length;
+            }
+            
+            int hashIndex = text.IndexOf("<hash>", StringComparison.Ordinal) + "<hash>".Length + 2;
+
+            // Hash
+            foreach (var field in fields)
+            {
+                string hash = HashTemplate;
+                hash = hash.Replace("##NAME##", field.Name);
+                hash = hash.Replace("##TYPE##", field.FieldType.Name);
+                text = text.Insert(hashIndex, hash);
+                hashIndex += hash.Length;
+            }
+            
+            int equalsIndex = text.IndexOf("<equals>", StringComparison.Ordinal) + "<equals>".Length + 2;
+
+            // Equals
+            foreach (var field in fields)
+            {
+                string equals = EqualsTemplate;
+                equals = equals.Replace("##NAME##", field.Name);
+                equals = equals.Replace("##TYPE##", field.FieldType.Name);
+                text = text.Insert(equalsIndex, equals);
+                equalsIndex += equals.Length;
             }
 
             string generatedPath = Path.Combine(generatedFolder, type.Name + ".Generated.cs");

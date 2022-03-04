@@ -9,7 +9,6 @@ using ExampleGame.Client.Systems;
 using ExampleGame.Shared.Movement.Components;
 using ExampleGame.Shared.Movement.Systems;
 
-[assembly: RegisterGenericComponentType(typeof(Prediction<EntityPosition>))]
 namespace ExampleGame.Client
 {
     public class ClientBootstrap : IWorldBootstrap
