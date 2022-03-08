@@ -71,6 +71,18 @@ namespace Server.Generated
                 ExpectedVersion = 1
             });
 
+            //<template:input>
+            //if (entityManager.HasComponent<##TYPE##>(entity))
+            //{
+            //    var buffer = entityManager.AddBuffer<Received##TYPE##>(entity);
+            //
+            //    for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
+            //    {
+            //        buffer.Add(default);
+            //    }
+            //}
+            //</template>
+//<generated>
             if (entityManager.HasComponent<MovementInput>(entity))
             {
                 var buffer = entityManager.AddBuffer<ReceivedMovementInput>(entity);
@@ -90,6 +102,7 @@ namespace Server.Generated
                     buffer.Add(default);
                 }
             }
+//</generated>
         }
     }
 }

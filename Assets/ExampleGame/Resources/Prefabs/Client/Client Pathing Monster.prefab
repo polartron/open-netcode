@@ -9,7 +9,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1156005502562407750, guid: 7957c8999e9efe246902611197467302, type: 3}
       propertyPath: m_Name
-      value: Pathing
+      value: Client Pathing Monster
       objectReference: {fileID: 0}
     - target: {fileID: 6395206510797051012, guid: 7957c8999e9efe246902611197467302, type: 3}
       propertyPath: m_RootOrder
@@ -21,7 +21,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6395206510797051012, guid: 7957c8999e9efe246902611197467302, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 9999
       objectReference: {fileID: 0}
     - target: {fileID: 6395206510797051012, guid: 7957c8999e9efe246902611197467302, type: 3}
       propertyPath: m_LocalPosition.z
