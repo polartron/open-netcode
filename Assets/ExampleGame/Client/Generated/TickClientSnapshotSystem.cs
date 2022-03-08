@@ -20,6 +20,7 @@ namespace Client.Generated
 {
     [UpdateInGroup(typeof(TickPreSimulationSystemGroup), OrderFirst = true)]
     [UpdateAfter(typeof(TickClientReceiveSystem))]
+    [DisableAutoCreation]
     public class TickClientSnapshotSystem : SystemBase
     {
         private IClientNetworkSystem _client;

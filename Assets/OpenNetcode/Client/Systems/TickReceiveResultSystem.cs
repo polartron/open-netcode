@@ -34,6 +34,9 @@ namespace OpenNetcode.Client.Systems
         private float _dilationMs;
         private NetworkCompressionModel _compressionModel;
 
+        private NativeArray<float> _timeOffsets;
+        private int _timeOffsetIndex = 0;
+
         public TickReceiveResultSystem(IClientNetworkSystem client)
         {
             _client = client;
@@ -44,6 +47,7 @@ namespace OpenNetcode.Client.Systems
             _tickSystem = World.GetExistingSystem<TickSystem>();
             _compressionModel = new NetworkCompressionModel(Allocator.Persistent);
             _sentInputs = new NativeHashMap<int, SentTime>(TimeConfig.TicksPerSecond, Allocator.Persistent);
+            _timeOffsets = new NativeArray<float>(TimeConfig.TicksPerSecond, Allocator.Persistent);
             
            // _profilerRoundTripTime = ProfilerRecorder.StartNew(ProfilerCategory.Network, "Round Trip Time");
         }
@@ -63,10 +67,22 @@ namespace OpenNetcode.Client.Systems
             };
         }
 
+        private float GetAverageTimeOffset()
+        {
+            float offset = 0f;
+
+            for (int i = 0; i < _timeOffsets.Length; i++)
+            {
+                offset += _timeOffsets[i];
+            }
+
+            offset /= _timeOffsets.Length;
+
+            return offset;
+        }
+
         protected override void OnUpdate()
         {
-            int tick = GetSingleton<TickData>().Value;
-            
             foreach (var packet in _client.ReceivedPackets)
             {
                 switch ((PacketType) packet.Key)
@@ -75,84 +91,42 @@ namespace OpenNetcode.Client.Systems
                         var data = packet.Value.GetArray<byte>();
                         DataStreamReader reader = new DataStreamReader(data);
                         Packets.ReadPacketType(ref reader);
+                        
                         int resultTick = (int) reader.ReadPackedUInt(_compressionModel);
-                        int processedInputs = (int) reader.ReadPackedUInt(_compressionModel);
-
-                        int lastValidInput = 0;
-                        int missedInputs = 0;
-                        for (int i = 0; i < processedInputs; i++)
+                        int serverTick = (int) reader.ReadPackedUInt(_compressionModel);
+                        float processedTime = reader.ReadPackedFloat(_compressionModel);
+                        
+                        double serverTimeMs = ((float) serverTick / TimeConfig.TicksPerSecond) * 1000f;
+                        
+                        if (_sentInputs.TryGetValue(resultTick % _sentInputs.Capacity, out SentTime sentTime))
                         {
-                            if (reader.ReadRawBits(1) == 1)
+                            if (sentTime.Tick != resultTick)
                             {
-                                lastValidInput = i;
+                                break;
+                            }
+                            
+                            //Calculate round trip time
+                            double rttMs = (Time.ElapsedTime - sentTime.Time) * 1000f;
+                            rttMs -= (processedTime * 1000f);
+                            float rttHalf = (float) rttMs / 2;
+                            
+                            SetSingleton(new RoundTripTime()
+                            {
+                                Value = (float) rttMs
+                            });
+
+                            //No sudden time changes. Slowly move towards predicted time. 
+                            double tickerTime = _tickSystem.TickerTime;
+            
+                            if (tickerTime < serverTimeMs || tickerTime > serverTimeMs + 1000)
+                            {
+                                _tickSystem.SetTime(serverTimeMs + rttHalf + TimeConfig.CommandBufferLengthMs);
                             }
                             else
                             {
-                                missedInputs++;
-                            }
-                        }
-                        
-                        int offset = (processedInputs - (lastValidInput + 1));
-                        int processedTick = resultTick - offset;
-                        double serverTimeMs = ((float) processedTick / TimeConfig.TicksPerSecond) * 1000f;
-
-                        bool hasInput = Convert.ToBoolean(reader.ReadRawBits(1));
-                        
-                        if (!hasInput)
-                        {
-                            int resetToTick = resultTick + TimeConfig.TicksPerSecond / 10;
-                            double resetTimeMs = ((float) resetToTick / TimeConfig.TicksPerSecond) * 1000f;
-                            _tickSystem.SetTime(resetTimeMs);
-                        }
-                        else
-                        {
-                            int processedTime = (int) reader.ReadPackedUInt(_compressionModel);
-                            
-                            if (_sentInputs.TryGetValue(processedTick % _sentInputs.Capacity, out SentTime sentTime))
-                            {
-                                if (sentTime.Tick != processedTick)
-                                {
-                                    break;
-                                }
-                                
-                                //Calculate round trip time
-                                double rttMs = (Time.ElapsedTime - sentTime.Time) * 1000f;
-                                rttMs -= processedTime;
-                                
-                                float rttHalf = (float) rttMs / 2;
-                                
-                                SetSingleton(new RoundTripTime()
-                                {
-                                    Value = (float) rttMs
-                                });
-
-                                //No sudden time changes. Slowly move towards predicted time. 
-
-                                double tickerTime = _tickSystem.TickerTime;
-                
-                                if (tickerTime < serverTimeMs || tickerTime > serverTimeMs + 1000)
-                                {
-                                    _tickSystem.SetTime(serverTimeMs + 1000);
-                                }
-                                else
-                                {
-                                    if (missedInputs > 0)
-                                    {
-                                        //We missed input. Dilate hard.
-                                        _dilationMs += (TimeConfig.FixedDeltaTime * 5f);
-                                        _dilationMs = Mathf.Clamp(_dilationMs, 0, TimeConfig.CommandBufferLengthMs);
-                                    }
-                                    else
-                                    {
-                                        //We got input. Slowly remove dilation.
-                                        _dilationMs -= (TimeConfig.FixedDeltaTime * 2f);
-                                        _dilationMs = Mathf.Clamp(_dilationMs, 0, TimeConfig.CommandBufferLengthMs);
-                                    }
-
-                                    double predictedTimeMs = serverTimeMs + rttHalf + TimeConfig.CommandBufferLengthMs + _dilationMs;
-                                    float lerpedTime = Mathf.Lerp((float) tickerTime, (float) predictedTimeMs, TimeConfig.FixedDeltaTime);
-                                    _tickSystem.SetTime(lerpedTime);
-                                }
+                                double predictedTimeMs = serverTimeMs + rttHalf + TimeConfig.CommandBufferLengthMs + _dilationMs;
+                                float lerpedTime = Mathf.Lerp((float) tickerTime, (float) predictedTimeMs, TimeConfig.FixedDeltaTime);
+                                _tickSystem.SetTime(lerpedTime);
                             }
                         }
 

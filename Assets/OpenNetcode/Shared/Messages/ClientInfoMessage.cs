@@ -8,9 +8,6 @@ namespace OpenNetcode.Shared.Messages
         {
             Packets.WritePacketType(PacketType.ClientInfo, ref writer);
             writer.WritePackedUInt((uint) entityId, compressionModel);
-            writer.WritePackedUInt((uint) entityId, compressionModel);
-            writer.WritePackedUInt((uint) entityId, compressionModel);
-            writer.WritePackedUInt((uint) entityId, compressionModel);
             return writer.HasFailedWrites;
         }
 

@@ -8,14 +8,22 @@ using OpenNetcode.Shared.Systems;
 using ExampleGame.Client.Systems;
 using ExampleGame.Shared.Movement.Components;
 using ExampleGame.Shared.Movement.Systems;
+using UnityEngine.Scripting;
 
 namespace ExampleGame.Client
 {
+    [Preserve]
     public class ClientBootstrap : IWorldBootstrap
     {
         public static World World;
         public string Name => "Client World";
-
+        
+        [Preserve]
+        public ClientBootstrap()
+        {
+            Debug.Log("Client Bootstrap");
+        }
+        
         public bool Initialize()
         {
             World = SharedBootstrap.CreateWorld(Name);
@@ -25,7 +33,8 @@ namespace ExampleGame.Client
             ClientInitialization.Initialize(World, playerPrefab, networkedPrefabs);
             
             SharedBootstrap.AddSystem<SimulationSystemGroup>(World, new PlayerInputSystem());
-            SharedBootstrap.AddSystem<SimulationSystemGroup>(World, new MovementInterpolationSystem());
+            SharedBootstrap.AddSystem<SimulationSystemGroup>(World, new SoundSystem());
+            SharedBootstrap.AddSystem<PresentationSystemGroup>(World, new MovementInterpolationSystem());
 
             var tickSystem = World.GetExistingSystem<TickSystem>();
             //Pre
@@ -33,6 +42,8 @@ namespace ExampleGame.Client
 
             //Simulation
             tickSystem.AddSimulationSystem(new TickMovementSystem());
+            tickSystem.AddPostSimulationSystem(new BumpEventSystem());
+            
         
             return true;
         }

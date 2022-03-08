@@ -21,11 +21,11 @@ namespace ExampleGame.Server.Systems
         {
             var spawner = World.GetExistingSystem<ServerEntitySystem>();
 
-            for (int i = 0; i < 50; i++)
-            {
-                spawner.SpawnPathingMonster(new Vector3(0, 0, 0) + new Vector3(Random.Range(-10, 10), 0f, Random.Range(-10, 10)));
-            }
-            
+            //for (int i = 0; i < 50; i++)
+            //{
+            //    spawner.SpawnPathingMonster(new Vector3(0, 0, 0) + new Vector3(Random.Range(-10, 10), 0f, Random.Range(-10, 10)));
+            //}
+            //
             for (int i = 0; i < 50; i++)
             {
                 spawner.SpawnMonster(new Vector3(0, 0, 0) + new Vector3(Random.Range(-10, 10), 0f, Random.Range(-10, 10)));
@@ -36,7 +36,6 @@ namespace ExampleGame.Server.Systems
 
         protected override void OnUpdate()
         {
-            double time = Time.ElapsedTime;
             int tick = GetSingleton<TickData>().Value;
 
             float range = 20;
@@ -85,7 +84,6 @@ namespace ExampleGame.Server.Systems
                     pathComponent.To = floatingOrigin.GetGameUnits(target);
                     pathComponent.Start = tick;
                     pathComponent.Stop = tick + (int) (distance * 0.5f * TimeConfig.TicksPerSecond);
-
                 }
             }).Run();
         }

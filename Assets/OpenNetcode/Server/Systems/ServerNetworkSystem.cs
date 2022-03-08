@@ -119,7 +119,6 @@ namespace OpenNetcode.Server.Systems
 
         public void ReceiveUpdate()
         {
-            
             Dependency.Complete();
             
             ReceivePackets.Clear();
@@ -209,7 +208,7 @@ namespace OpenNetcode.Server.Systems
                 while ((c = Driver.Accept()) != default(NetworkConnection))
                 {
                     Connections.Add(c);
-                    Debug.Log("<color=red>Accepted a connection</color>");
+                    Debug.Log($"<color=red>Client connected with ID = {c.InternalId}</color>");
                 }
             }
         }

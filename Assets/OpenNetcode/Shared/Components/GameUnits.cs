@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Shared.Coordinates
 {
     [Serializable]
-    public struct GameUnits : IEquatable<GameUnits>, INetworkedComponent
+    public struct GameUnits : IEquatable<GameUnits>
     {
         public int x;
         public int y;
@@ -168,11 +168,6 @@ namespace Shared.Coordinates
             x = reader.ReadPackedInt(compressionModel);
             y = reader.ReadPackedInt(compressionModel);
             z = reader.ReadPackedInt(compressionModel);
-        }
-
-        public int Hash()
-        {
-            return GetHashCode();
         }
     }
 }

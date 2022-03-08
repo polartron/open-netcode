@@ -17,9 +17,10 @@ namespace OpenNetcode.Shared
         
         [NativeDisableUnsafePtrRestriction] private void* _snapshotArrayPointer;
         [NativeDisableUnsafePtrRestriction] private void* _lengthsArrayPointer;
-
+        
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
         private AtomicSafetyHandle _safetyHandle;
-
+#endif
         public BaseLines(int length, int segments)
         {
             _segments = segments;
@@ -28,14 +29,18 @@ namespace OpenNetcode.Shared
             UnsafeUtility.MemClear(_snapshotArrayPointer, UnsafeUtility.SizeOf<T>() * _capacity);
             _lengthsArrayPointer = UnsafeUtility.Malloc(UnsafeUtility.SizeOf<int>() * _segments, UnsafeUtility.AlignOf<int>(), Allocator.Persistent);
             UnsafeUtility.MemClear(_lengthsArrayPointer, UnsafeUtility.SizeOf<int>() * _segments);
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
             _safetyHandle = AtomicSafetyHandle.Create();
+#endif
         }
         
         public void Dispose()
         {
             UnsafeUtility.Free(_snapshotArrayPointer, Allocator.Persistent);
             UnsafeUtility.Free(_lengthsArrayPointer, Allocator.Persistent);
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
             AtomicSafetyHandle.Release(_safetyHandle);
+#endif
         }
 
         public NativeSlice<T> GetBaseline(int baseLine)

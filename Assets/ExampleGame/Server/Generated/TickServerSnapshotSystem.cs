@@ -92,7 +92,7 @@ namespace Server.Generated
             int playersCount = _playersQuery.CalculateEntityCount();
 
             var activeAreasList = new NativeHashSet<int>(playersCount, Allocator.TempJob);
-            var entitiesInAreas = new NativeMultiHashMap<int, ServerEntitySnapshot>(entitiesCount, Allocator.TempJob);
+            var entitiesInAreas = new NativeMultiHashMap<int, ServerEntitySnapshot>(entitiesCount * 10, Allocator.TempJob);
             var playersInAreas = new NativeMultiHashMap<int, PlayerSnapshot>(playersCount, Allocator.TempJob);
             var currentPlayerSnapshots = new NativeMultiHashMap<int, PlayerSnapshot>(playersCount, Allocator.Temp);
 
@@ -199,13 +199,13 @@ namespace Server.Generated
             NativeList<JobHandle> jobs = new NativeList<JobHandle>(playersInAreasCount, Allocator.Temp);
             NativeArray<PacketArrayWrapper> buffers = new NativeArray<PacketArrayWrapper>(playersInAreasCount, Allocator.TempJob);
             NativeArray<byte> bufferOfArraysPublic = new NativeArray<byte>(playersInAreasCount * SnapshotSettings.PublicSnapshotSize, Allocator.TempJob);
+            NativeMultiHashMap<int, int> jobsForPlayers = new NativeMultiHashMap<int, int>(playersInAreasCount, Allocator.Temp);
             
             for (int i = 0; i < activeAreas.Length; i++)
             {
                 int hash = activeAreas[i];
 
                 NativeHashMap<int, int> snapshotJobs = new NativeHashMap<int, int>(playersInAreasCount, Allocator.Temp);
-                NativeHashMap<int, int> jobsForPlayers = new NativeHashMap<int, int>(playersInAreasCount, Allocator.Temp);
 
                 foreach (var player in playersInAreas.GetValuesForKey(hash))
                 {
@@ -214,7 +214,7 @@ namespace Server.Generated
                     if (snapshotJobs.ContainsKey(offset))
                     {
                         //Use already sent snapshot
-                        jobsForPlayers.Add(player.PlayerId, snapshotJobs[offset]);
+                        jobsForPlayers.Add(snapshotJobs[offset], player.PlayerId);
                     }
                     else
                     {
@@ -254,12 +254,11 @@ namespace Server.Generated
                         };
 
                         jobs.Add(snapshotJob.Schedule());
-                        jobsForPlayers.Add(player.PlayerId, snapshotJob.JobIndex);
+                        jobsForPlayers.Add(snapshotJob.JobIndex, player.PlayerId);
                         snapshotJobs.Add(offset, snapshotJob.JobIndex);
                     }
                 }
 
-                jobsForPlayers.Dispose();
                 snapshotJobs.Dispose();
             }
 
@@ -267,10 +266,15 @@ namespace Server.Generated
             {
                 jobs[i].Complete();
             }
-
+            
             foreach (var result in publicSnapshotResults)
             {
-                _server.Send(result.Key, Packets.WrapPacket(result.Value.GetArray<byte>(), result.Value.Length));
+                var packet = Packets.WrapPacket(result.Value.GetArray<byte>(), result.Value.Length);
+                
+                foreach (var player in jobsForPlayers)
+                {
+                    _server.Send(player.Value, packet);
+                }
             }
 
             ClearEventsJob clearEventsJob = new ClearEventsJob()

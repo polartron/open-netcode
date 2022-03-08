@@ -53,7 +53,7 @@ namespace ExampleGame.Server.Systems
                 if (login.Value.Guest)
                 {
                     Debug.Log("Guest logging in");
-                    Entity entity = _serverEntitySystem.SpawnPlayer(new Vector3(0, 0, 0), login.Key);
+                    Entity entity = _serverEntitySystem.SpawnPlayer(new Vector3(login.Key, 0, login.Key) + new Vector3(1, 0, 1), login.Key);
                     ClientInfoMessage.Write(entity.Index, ref writer, _compressionModel);
                     _server.Send(login.Key, Packets.WrapPacket(writer));
                 }

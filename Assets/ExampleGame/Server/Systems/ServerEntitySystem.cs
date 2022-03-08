@@ -30,7 +30,8 @@ namespace ExampleGame.Server.Systems
 #if UNITY_EDITOR
             EntityManager.SetName(entity, "Server Player");
 #endif
-            EntityManager.AddComponent<SimulatedEntity>(entity);
+            ServerInitialization.InitializePlayerEntity(EntityManager, entity, ownerId);
+            
             EntityManager.SetComponentData(entity, new EntityPosition()
             {
                 Value = floatingOrigin.GetGameUnits(position)
@@ -40,44 +41,6 @@ namespace ExampleGame.Server.Systems
             {
                 Value = position
             });
-
-            EntityManager.AddComponent<SpatialHash>(entity);
-            
-            EntityManager.AddComponent<ServerNetworkedEntity>(entity);
-            
-            if (ownerId >= 0)
-            {
-                EntityManager.SetComponentData(entity, new ServerNetworkedEntity()
-                {
-                    OwnerNetworkId = ownerId
-                });
-
-                EntityManager.AddComponent<PlayerControlledTag>(entity);
-                EntityManager.AddBuffer<ProcessedInput>(entity);
-                EntityManager.AddComponent<PlayerBaseLine>(entity);
-                EntityManager.SetComponentData(entity, new PlayerBaseLine()
-                {
-                    ExpectedVersion = 1
-                });
-
-                var buffer = EntityManager.AddBuffer<PrivateSnapshotObserver>(entity);
-
-                int componentInterestMask = 0;
-                componentInterestMask = PrivateSnapshotObserver.Observe<EntityHealth>(componentInterestMask);
-                
-                buffer.Add(new PrivateSnapshotObserver()
-                {
-                    Entity = entity,
-                    ComponentInterestMask = componentInterestMask
-                });
-            }
-            else
-            {
-                EntityManager.SetComponentData(entity, new ServerNetworkedEntity()
-                {
-                    OwnerNetworkId = 0
-                });
-            }
 
             return entity;
         }

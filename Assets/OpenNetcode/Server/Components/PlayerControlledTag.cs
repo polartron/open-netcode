@@ -1,6 +1,6 @@
 ﻿using Unity.Entities;
 
-namespace OpenNetcode.Shared.Components
+namespace OpenNetcode.Server.Components
 {
     public struct PlayerControlledTag : IComponentData
     {

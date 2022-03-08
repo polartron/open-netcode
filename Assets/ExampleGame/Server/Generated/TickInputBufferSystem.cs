@@ -15,34 +15,31 @@ using UnityEngine;
 //<generated>
 using ExampleGame.Shared.Movement.Components;
 using ExampleGame.Shared.Components;
+using Unity.Jobs;
+
 //</generated>
 
 namespace Server.Generated
 {
+    public struct ReceivedMovementInput : IBufferElementData
+    {
+        public int Tick;
+        public MovementInput Input;
+    }
+
+    public struct ReceivedWeaponInput : IBufferElementData
+    {
+        public int Tick;
+        public WeaponInput Input;
+    }
+    
     [UpdateInGroup(typeof(TickPreSimulationSystemGroup))]
     [UpdateAfter(typeof(TickServerReceiveSystem))]
+    [DisableAutoCreation]
     public class TickInputBufferSystem : SystemBase
     {
-        public struct InputBufferData
-        {
-            //<template:input>
-            //public ##TYPE## ##TYPE##;
-            //</template>
-//<generated>
-            public MovementInput MovementInput;
-            public WeaponInput WeaponInput;
-//</generated>
-            public double ArrivedTime;
-            public int Tick;
-            public int Version;
-            public int BaseLine;
-        }
-
-        private IServerNetworkSystem _server;
-        private NativeHashMap<int, int> _connectionIndex;
-        private NativeList<int> _freeIndexes;
-        private NativeArray<InputBufferData> _inputs;
         private EntityQuery _playersQuery;
+        private IServerNetworkSystem _server;
         private NetworkCompressionModel _compressionModel;
 
         public TickInputBufferSystem(IServerNetworkSystem server)
@@ -52,16 +49,6 @@ namespace Server.Generated
 
         protected override void OnCreate()
         {
-            int maxPlayers = 100;
-            
-            _connectionIndex = new NativeHashMap<int, int>(maxPlayers, Allocator.Persistent);
-            _freeIndexes = new NativeList<int>(maxPlayers, Allocator.Persistent);
-            for (int i = 0; i < _freeIndexes.Capacity; i++)
-            {
-                _freeIndexes.Add(i);
-            }
-            
-            _inputs  = new NativeArray<InputBufferData>(TimeConfig.TicksPerSecond * maxPlayers, Allocator.Persistent);
             _playersQuery = GetEntityQuery(
                 //<template:input>
                 //ComponentType.ReadOnly<##TYPE##>(),
@@ -73,7 +60,6 @@ namespace Server.Generated
                 ComponentType.ReadOnly<ProcessedInput>(),
                 ComponentType.ReadOnly<PlayerControlledTag>(),
                 ComponentType.ReadOnly<ServerNetworkedEntity>()
-
             );
 
             _compressionModel = new NetworkCompressionModel(Allocator.Persistent);
@@ -81,191 +67,179 @@ namespace Server.Generated
             base.OnCreate();
         }
 
-        protected override void OnDestroy()
-        {
-            _connectionIndex.Dispose();
-            _freeIndexes.Dispose();
-            _inputs.Dispose();
-            base.OnDestroy();
-        }
-
         protected override void OnUpdate()
         {
-            var packets = _server.ReceivePackets;
-            
-            if(packets.TryGetFirstValue((int) PacketType.Input, out PacketArrayWrapper wrapper, out NativeMultiHashMapIterator<int> iterator))
+            ReadPlayerInputJob readPlayerInputJob = new ReadPlayerInputJob()
             {
-                do
-                {
-                    var array = wrapper.GetArray<byte>();
-                    var reader = new DataStreamReader(array);
-                    if (!ReadInput(ref reader, _compressionModel, wrapper.InternalId))
-                    {
-                        Debug.Log("Failed");
-                    }
-
-                } while (packets.TryGetNextValue(out wrapper, ref iterator));
-            }
-
-            NativeHashMap<int, int> connectionIndex = _connectionIndex;
-            NativeArray<InputBufferData> inputs = _inputs;
-            
-            UpdatePlayerInputJob job = new UpdatePlayerInputJob()
-            {
-                inputs = inputs,
-                connectionIndex = connectionIndex,
-                tick = GetSingleton<TickData>().Value,
-                NetworkEntityTypeHandle = GetComponentTypeHandle<ServerNetworkedEntity>(true),
-                ProcessedInputTypeHandle = GetBufferTypeHandle<ProcessedInput>(),
+                ElapsedTime = UnityEngine.Time.realtimeSinceStartupAsDouble,
+                CompressionModel = _compressionModel,
+                ReceivedPackets = _server.ReceivePackets,
+                ServerNetworkedEntityTypeHandle = GetComponentTypeHandle<ServerNetworkedEntity>(true),
                 PlayerBaseLineTypeHandle = GetComponentTypeHandle<PlayerBaseLine>(),
-                //<template:input>
-                //##TYPE##TypeHandle = GetComponentTypeHandle<##TYPE##>(),
-                //</template>
-//<generated>
+                InputTimeDataTypeHandle = GetComponentTypeHandle<InputTimeData>(),
+                ReceivedMovementInput = GetBufferTypeHandle<ReceivedMovementInput>(),
+                ReceivedWeaponInput = GetBufferTypeHandle<ReceivedWeaponInput>()
+            };
+
+            Dependency = readPlayerInputJob.ScheduleParallel(_playersQuery, 4, Dependency);
+            Dependency.Complete();
+
+            UpdatePlayerInputJob updatePlayerInputJob = new UpdatePlayerInputJob()
+            {
+                Tick = GetSingleton<TickData>().Value,
                 MovementInputTypeHandle = GetComponentTypeHandle<MovementInput>(),
                 WeaponInputTypeHandle = GetComponentTypeHandle<WeaponInput>(),
-//</generated>
+                ReceivedMovementInput = GetBufferTypeHandle<ReceivedMovementInput>(true),
+                ReceivedWeaponInput = GetBufferTypeHandle<ReceivedWeaponInput>(true)
             };
             
-            Dependency = job.ScheduleParallel(_playersQuery, 4, Dependency);
+            Dependency = updatePlayerInputJob.ScheduleParallel(_playersQuery, 4, Dependency);
             Dependency.Complete();
         }
 
-        public bool ReadInput(ref DataStreamReader reader, in NetworkCompressionModel compressionModel, int internalId)
+        [BurstCompile]
+        private struct ReadPlayerInputJob : IJobEntityBatch
         {
-            Packets.ReadPacketType(ref reader);
-            int count = (int) reader.ReadRawBits(3);
-            int tick = (int) reader.ReadPackedUInt(compressionModel);
-            int lastReceivedSnapshotTick = (int) reader.ReadPackedUInt(compressionModel);
-            int version = (int) reader.ReadPackedUInt(compressionModel);
-
-            if (!_connectionIndex.ContainsKey(internalId))
-            {
-                _connectionIndex[internalId] = _freeIndexes[0];
-                _freeIndexes.RemoveAt(0);
-            }
-
-            int offset = _connectionIndex[internalId] * TimeConfig.TicksPerSecond;
-
-            //<template:input>
-            //##TYPE## last##TYPE## = new ##TYPE##();
-            //</template>
-//<generated>
-            MovementInput lastMovementInput = new MovementInput();
-            WeaponInput lastWeaponInput = new WeaponInput();
-//</generated>
+            [ReadOnly] public double ElapsedTime;
             
-            for (int i = 0; i < count; i++)
-            {
-                //<template:input>
-                //##TYPE## ##TYPELOWER## = new ##TYPE##();
-                //##TYPELOWER##.ReadSnapshot(ref reader, _compressionModel, last##TYPE##);
-                //last##TYPE## = ##TYPELOWER##;
-                //</template>
-//<generated>
-                MovementInput movementInput = new MovementInput();
-                movementInput.ReadSnapshot(ref reader, _compressionModel, lastMovementInput);
-                lastMovementInput = movementInput;
-                WeaponInput weaponInput = new WeaponInput();
-                weaponInput.ReadSnapshot(ref reader, _compressionModel, lastWeaponInput);
-                lastWeaponInput = weaponInput;
-//</generated>
-                
-                int index = (tick - i + TimeConfig.TicksPerSecond) % TimeConfig.TicksPerSecond;
+            [ReadOnly] public NetworkCompressionModel CompressionModel;
+            [ReadOnly] public NativeMultiHashMap<int, PacketArrayWrapper> ReceivedPackets;
+            [ReadOnly] public ComponentTypeHandle<ServerNetworkedEntity> ServerNetworkedEntityTypeHandle;
 
-                if (_inputs[offset + index].Tick != tick - i)
+            public ComponentTypeHandle<PlayerBaseLine> PlayerBaseLineTypeHandle;
+            public ComponentTypeHandle<InputTimeData> InputTimeDataTypeHandle;
+            public BufferTypeHandle<ReceivedMovementInput> ReceivedMovementInput;
+            public BufferTypeHandle<ReceivedWeaponInput> ReceivedWeaponInput;
+            
+            public void Execute(ArchetypeChunk batchInChunk, int batchIndex)
+            {
+                var serverNetworkedEntities = batchInChunk.GetNativeArray(ServerNetworkedEntityTypeHandle);
+                var receivedMovementInputs = batchInChunk.GetBufferAccessor(ReceivedMovementInput);
+                var receivedWeaponInputs = batchInChunk.GetBufferAccessor(ReceivedWeaponInput);
+                var playerBaselines = batchInChunk.GetNativeArray(PlayerBaseLineTypeHandle);
+                var inputTimeDatas = batchInChunk.GetNativeArray(InputTimeDataTypeHandle);
+
+                for (int i = 0; i < serverNetworkedEntities.Length; i++)
                 {
-                    var inputBufferData = _inputs[offset + index];
-                    //<template:input>
-                    //inputBufferData.##TYPE## = last##TYPE##;
-                    //</template>
+                    var serverNetworkedEntity = serverNetworkedEntities[i];
+                    
+                    if(ReceivedPackets.TryGetFirstValue((int) PacketType.Input, out PacketArrayWrapper wrapper, out NativeMultiHashMapIterator<int> iterator))
+                    {
+                        do
+                        {
+                            if (wrapper.InternalId != serverNetworkedEntity.OwnerNetworkId)
+                                continue;
+
+                            var receivedMovementInput = receivedMovementInputs[i];
+                            var receivedWeaponInput = receivedWeaponInputs[i];
+                            
+                            var array = wrapper.GetArray<byte>();
+                            var reader = new DataStreamReader(array);
+                            
+                            Packets.ReadPacketType(ref reader);
+                            int count = (int) reader.ReadRawBits(3);
+                            int tick = (int) reader.ReadPackedUInt(CompressionModel);
+                            int lastReceivedSnapshotTick = (int) reader.ReadPackedUInt(CompressionModel);
+                            int version = (int) reader.ReadPackedUInt(CompressionModel);
+
+                            var playerBaseline = playerBaselines[i];
+                            playerBaseline.Version = version;
+                            playerBaseline.BaseLine = lastReceivedSnapshotTick;
+                            playerBaselines[i] = playerBaseline;
+
+                            inputTimeDatas[i] = new InputTimeData()
+                            {
+                                Tick = tick,
+                                ArrivedTime = ElapsedTime
+                            };
+                            
+                            //<template:input>
+                            //##TYPE## last##TYPE## = new ##TYPE##();
+                            //</template>
 //<generated>
-                    inputBufferData.MovementInput = lastMovementInput;
-                    inputBufferData.WeaponInput = lastWeaponInput;
+                            MovementInput lastMovementInput = new MovementInput();
+                            WeaponInput lastWeaponInput = new WeaponInput();
 //</generated>
-                    inputBufferData.ArrivedTime = Time.ElapsedTime;
-                    inputBufferData.Tick = tick - i;
-                    inputBufferData.Version = version;
-                    inputBufferData.BaseLine = lastReceivedSnapshotTick;
-                    _inputs[offset + index] = inputBufferData;
+
+                            for (int j = 0; j < count; j++)
+                            {
+                                //<template:input>
+                                //##TYPE## ##TYPELOWER## = new ##TYPE##();
+                                //##TYPELOWER##.ReadSnapshot(ref reader, _compressionModel, last##TYPE##);
+                                //last##TYPE## = ##TYPELOWER##;
+                                //</template>
+//<generated>
+                                MovementInput movementInput = new MovementInput();
+                                movementInput.ReadSnapshot(ref reader, CompressionModel, lastMovementInput);
+                                lastMovementInput = movementInput;
+
+                                WeaponInput weaponInput = new WeaponInput();
+                                weaponInput.ReadSnapshot(ref reader, CompressionModel, lastWeaponInput);
+                                lastWeaponInput = weaponInput;
+//</generated>
+
+                                int index = (tick - j + TimeConfig.TicksPerSecond) % TimeConfig.TicksPerSecond;
+
+                                if (receivedMovementInput[index].Tick != tick - j)
+                                {
+                                    receivedMovementInput[index] = new ReceivedMovementInput()
+                                    {
+                                        Tick = tick - j,
+                                        Input = movementInput
+                                    };
+                                }
+
+                                if (receivedWeaponInput[index].Tick != tick - j)
+                                {
+                                    receivedWeaponInput[index] = new ReceivedWeaponInput()
+                                    {
+                                        Tick = tick - j,
+                                        Input = weaponInput
+                                    };
+                                }
+                            }
+                        } while (ReceivedPackets.TryGetNextValue(out wrapper, ref iterator));
+                    }
                 }
             }
-
-            return !reader.HasFailedReads;
         }
 
         [BurstCompile]
-        public struct UpdatePlayerInputJob : IJobEntityBatch
+        private struct UpdatePlayerInputJob : IJobEntityBatch
         {
-            [ReadOnly] public NativeArray<InputBufferData> inputs;
-            [ReadOnly] public NativeHashMap<int, int> connectionIndex;
-            [ReadOnly] public int tick;
+            [ReadOnly] public BufferTypeHandle<ReceivedMovementInput> ReceivedMovementInput;
+            [ReadOnly] public BufferTypeHandle<ReceivedWeaponInput> ReceivedWeaponInput;
+            [ReadOnly] public int Tick;
             
-            //<template:input>
-            //public ComponentTypeHandle<##TYPE##> ##TYPE##TypeHandle;
-            //</template>
-//<generated>
             public ComponentTypeHandle<MovementInput> MovementInputTypeHandle;
             public ComponentTypeHandle<WeaponInput> WeaponInputTypeHandle;
-//</generated>
-            public ComponentTypeHandle<PlayerBaseLine> PlayerBaseLineTypeHandle;
-            public BufferTypeHandle<ProcessedInput> ProcessedInputTypeHandle;
-            [ReadOnly] public ComponentTypeHandle<ServerNetworkedEntity> NetworkEntityTypeHandle;
 
             public void Execute(ArchetypeChunk batchInChunk, int batchIndex)
             {
-                //<template:input>
-                //var chunk##TYPE## = batchInChunk.GetNativeArray(##TYPE##TypeHandle);
-                //</template>
-//<generated>
-                var chunkMovementInput = batchInChunk.GetNativeArray(MovementInputTypeHandle);
-                var chunkWeaponInput = batchInChunk.GetNativeArray(WeaponInputTypeHandle);
-//</generated>
-                var chunkPlayerBaseLines = batchInChunk.GetNativeArray(PlayerBaseLineTypeHandle);
-                var chunkProcessedInput = batchInChunk.GetBufferAccessor(ProcessedInputTypeHandle);
-                var chunkNetworkEntities = batchInChunk.GetNativeArray(NetworkEntityTypeHandle);
+                var movementInputs = batchInChunk.GetNativeArray(MovementInputTypeHandle);
+                var weaponInputs = batchInChunk.GetNativeArray(WeaponInputTypeHandle);
+
+                var receivedMovementInputs = batchInChunk.GetBufferAccessor(ReceivedMovementInput);
+                var receivedWeaponInputs = batchInChunk.GetBufferAccessor(ReceivedWeaponInput);
+                
 
                 for (int i = 0; i < batchInChunk.Count; i++)
                 {
-                    var networkEntity = chunkNetworkEntities[i];
-                    var processedInputs = chunkProcessedInput[i];
+                    var receivedMovementInput = receivedMovementInputs[i];
+                    var receivedWeaponInput = receivedWeaponInputs[i];
                     
-                    if (!connectionIndex.ContainsKey(networkEntity.OwnerNetworkId))
-                        return;
+                    int index = (Tick + TimeConfig.TicksPerSecond) % TimeConfig.TicksPerSecond;
+                    var movementInput = receivedMovementInput[index];
+                    var weaponInput = receivedWeaponInput[index];
 
-                    int offset = connectionIndex[networkEntity.OwnerNetworkId] * TimeConfig.TicksPerSecond;
-                    int index = (tick + TimeConfig.TicksPerSecond) % TimeConfig.TicksPerSecond;
-                    var element = inputs[offset + index];
-
-                    if (element.Tick >= tick)
+                    if (movementInput.Tick == Tick)
                     {
-                        var playerBaseLine = chunkPlayerBaseLines[i];
-                        playerBaseLine.BaseLine = element.BaseLine;
-                        playerBaseLine.Version = element.Version;
-                        chunkPlayerBaseLines[i] = playerBaseLine;
+                        movementInputs[i] = movementInput.Input;
                     }
                     
-                    if (element.Tick == tick)
+                    if (weaponInput.Tick == Tick)
                     {
-                        //<template:input>
-                        //chunk##TYPE##[i] = element.##TYPE##;
-                        //</template>
-//<generated>
-                        chunkMovementInput[i] = element.MovementInput;
-                        chunkWeaponInput[i] = element.WeaponInput;
-//</generated>
-                        processedInputs.Add(new ProcessedInput()
-                        {
-                            ArrivedTime = element.ArrivedTime,
-                            HasInput = true
-                        });
-                    }
-                    else
-                    {
-                        processedInputs.Add(new ProcessedInput()
-                        {
-                            HasInput = false
-                        });
+                        weaponInputs[i] = weaponInput.Input;
                     }
                 }
             }

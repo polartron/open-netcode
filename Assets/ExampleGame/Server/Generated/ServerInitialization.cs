@@ -9,6 +9,9 @@ using Unity.Mathematics;
 //<generated>
 using ExampleGame.Shared.Movement.Components;
 using ExampleGame.Shared.Components;
+using OpenNetcode.Server.Components;
+using OpenNetcode.Shared.Components;
+
 //</generated>
 
 namespace Server.Generated
@@ -34,6 +37,59 @@ namespace Server.Generated
             
             tickSystem.AddPostSimulationSystem(new TickServerSnapshotSystem(server));
             tickSystem.AddPreSimulationSystem(new TickInputBufferSystem(server));
+        }
+
+        public static void InitializePlayerEntity(EntityManager entityManager, in Entity entity, int ownerId)
+        {
+            // Add components
+            entityManager.AddComponent<SimulatedEntity>(entity);
+            entityManager.AddComponent<SpatialHash>(entity);
+            entityManager.AddComponent<ServerNetworkedEntity>(entity);
+            entityManager.AddComponent<PlayerControlledTag>(entity);
+            entityManager.AddBuffer<ProcessedInput>(entity);
+            entityManager.AddComponent<PlayerBaseLine>(entity);
+            entityManager.AddComponent<InputTimeData>(entity);
+            var privateSnapshotObservers = entityManager.AddBuffer<PrivateSnapshotObserver>(entity);
+            
+            // Set data
+            int componentInterestMask = 0;
+            componentInterestMask = PrivateSnapshotObserver.Observe<EntityHealth>(componentInterestMask);
+                
+            privateSnapshotObservers.Add(new PrivateSnapshotObserver()
+            {
+                Entity = entity,
+                ComponentInterestMask = componentInterestMask
+            });
+            
+            entityManager.SetComponentData(entity, new ServerNetworkedEntity()
+            {
+                OwnerNetworkId = ownerId
+            });
+            
+            entityManager.SetComponentData(entity, new PlayerBaseLine()
+            {
+                ExpectedVersion = 1
+            });
+
+            if (entityManager.HasComponent<MovementInput>(entity))
+            {
+                var buffer = entityManager.AddBuffer<ReceivedMovementInput>(entity);
+
+                for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
+                {
+                    buffer.Add(default);
+                }
+            }
+            
+            if (entityManager.HasComponent<WeaponInput>(entity))
+            {
+                var buffer = entityManager.AddBuffer<ReceivedWeaponInput>(entity);
+
+                for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
+                {
+                    buffer.Add(default);
+                }
+            }
         }
     }
 }

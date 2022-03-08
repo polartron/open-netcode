@@ -591,7 +591,7 @@ PlayerSettings:
   webGLThreadsSupport: 0
   webGLDecompressionFallback: 0
   scriptingDefineSymbols:
-    1: ENABLE_PLAYFABSERVER_API;TICKRATE_64;SNAPSHOTRATE_16
+    1: ENABLE_PLAYFABSERVER_API;TICKRATE_64;SNAPSHOTRATE_16;CLIENT
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend:
@@ -601,7 +601,7 @@ PlayerSettings:
   managedStrippingLevel: {}
   incrementalIl2cppBuild: {}
   suppressCommonWarnings: 1
-  allowUnsafeCode: 0
+  allowUnsafeCode: 1
   useDeterministicCompilation: 1
   useReferenceAssemblies: 1
   enableRoslynAnalyzers: 1
@@ -611,7 +611,7 @@ PlayerSettings:
   assemblyVersionValidation: 1
   gcWBarrierValidation: 0
   apiCompatibilityLevelPerPlatform:
-    Standalone: 3
+    Standalone: 6
   m_RenderingPath: 1
   m_MobileRenderingPath: 1
   metroPackageName: Template_3D

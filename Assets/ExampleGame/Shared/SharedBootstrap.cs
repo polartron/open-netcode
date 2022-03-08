@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Unity.Entities;
 using UnityEngine;
 
@@ -17,6 +18,11 @@ namespace Shared
 
     public class SharedBootstrap : ICustomBootstrap
     {
+        public SharedBootstrap()
+        {
+            // Default ctor
+        }
+        
         public static World CreateWorld(string name)
         {
             World world = new World(name);
@@ -49,6 +55,7 @@ namespace Shared
 
             foreach (var bootType in bootstrapTypes)
             {
+                Debug.Log("Attempting to create bootstrap " + bootType.Name);
                 IWorldBootstrap bootstrap = Activator.CreateInstance(bootType) as IWorldBootstrap;
 
                 if (bootstrap != null && bootstrap.Initialize())
@@ -80,7 +87,7 @@ namespace Shared
                         var assemblyTypes = assembly.GetTypes();
                         foreach (var t in assemblyTypes)
                         {
-                            if (type.IsAssignableFrom(t))
+                            if (type.IsAssignableFrom(t) && !t.IsInterface)
                                 types.Add(t);
                         }
                     }
@@ -88,7 +95,7 @@ namespace Shared
                     {
                         foreach (var t in e.Types)
                         {
-                            if (t != null && type.IsAssignableFrom(t))
+                            if (t != null && type.IsAssignableFrom(t) && !t.IsInterface)
                                 types.Add(t);
                         }
 
