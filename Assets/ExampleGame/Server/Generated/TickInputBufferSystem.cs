@@ -13,7 +13,6 @@ using Unity.Networking.Transport;
 //<generated>
 using ExampleGame.Shared.Movement.Components;
 using ExampleGame.Shared.Components;
-
 //</generated>
 
 namespace Server.Generated
@@ -31,7 +30,6 @@ namespace Server.Generated
         public int Tick;
         public MovementInput Input;
     }
-
     public struct ReceivedWeaponInput : IBufferElementData
     {
         public int Tick;
@@ -98,15 +96,16 @@ namespace Server.Generated
             UpdatePlayerInputJob updatePlayerInputJob = new UpdatePlayerInputJob()
             {
                 Tick = GetSingleton<TickData>().Value,
-                MovementInputTypeHandle = GetComponentTypeHandle<MovementInput>(),
-                WeaponInputTypeHandle = GetComponentTypeHandle<WeaponInput>(),
                 
                 //<template:input>
-                //Received##TYPE## = GetBufferTypeHandle<Received##TYPE##>(true),
+                //##TYPE##TypeHandle = GetComponentTypeHandle<##TYPE##>(),
+                //Received##TYPE##TypeHandle = GetBufferTypeHandle<Received##TYPE##>(true),
                 //</template>
 //<generated>
+                MovementInputTypeHandle = GetComponentTypeHandle<MovementInput>(),
                 ReceivedMovementInputTypeHandle = GetBufferTypeHandle<ReceivedMovementInput>(true),
-                ReceivedWeaponInputTypeHandle = GetBufferTypeHandle<ReceivedWeaponInput>(true)
+                WeaponInputTypeHandle = GetComponentTypeHandle<WeaponInput>(),
+                ReceivedWeaponInputTypeHandle = GetBufferTypeHandle<ReceivedWeaponInput>(true),
 //</generated>
             };
             
@@ -141,8 +140,8 @@ namespace Server.Generated
                 //var received##TYPE##s = batchInChunk.GetBufferAccessor(Received##TYPE##);
                 //</template>
 //<generated>
-                var receivedWeaponInputs = batchInChunk.GetBufferAccessor(ReceivedWeaponInput);
                 var receivedMovementInputs = batchInChunk.GetBufferAccessor(ReceivedMovementInput);
+                var receivedWeaponInputs = batchInChunk.GetBufferAccessor(ReceivedWeaponInput);
 //</generated>
 
                 for (int i = 0; i < serverNetworkedEntities.Length; i++)
@@ -196,14 +195,13 @@ namespace Server.Generated
                             {
                                 //<template:input>
                                 //##TYPE## ##TYPELOWER## = new ##TYPE##();
-                                //##TYPELOWER##.ReadSnapshot(ref reader, _compressionModel, last##TYPE##);
+                                //##TYPELOWER##.ReadSnapshot(ref reader, CompressionModel, last##TYPE##);
                                 //last##TYPE## = ##TYPELOWER##;
                                 //</template>
 //<generated>
                                 MovementInput movementInput = new MovementInput();
                                 movementInput.ReadSnapshot(ref reader, CompressionModel, lastMovementInput);
                                 lastMovementInput = movementInput;
-
                                 WeaponInput weaponInput = new WeaponInput();
                                 weaponInput.ReadSnapshot(ref reader, CompressionModel, lastWeaponInput);
                                 lastWeaponInput = weaponInput;
@@ -230,7 +228,6 @@ namespace Server.Generated
                                         Input = movementInput
                                     };
                                 }
-
                                 if (receivedWeaponInput[index].Tick != tick - j)
                                 {
                                     receivedWeaponInput[index] = new ReceivedWeaponInput()
@@ -259,7 +256,6 @@ namespace Server.Generated
 //<generated>
             [ReadOnly] public BufferTypeHandle<ReceivedMovementInput> ReceivedMovementInputTypeHandle;
             public ComponentTypeHandle<MovementInput> MovementInputTypeHandle;
-            
             [ReadOnly] public BufferTypeHandle<ReceivedWeaponInput> ReceivedWeaponInputTypeHandle;
             public ComponentTypeHandle<WeaponInput> WeaponInputTypeHandle;
 //</generated>
@@ -273,7 +269,6 @@ namespace Server.Generated
 //<generated>
                 var movementInputs = batchInChunk.GetNativeArray(MovementInputTypeHandle);
                 var receivedMovementInputs = batchInChunk.GetBufferAccessor(ReceivedMovementInputTypeHandle);
-                
                 var weaponInputs = batchInChunk.GetNativeArray(WeaponInputTypeHandle);
                 var receivedWeaponInputs = batchInChunk.GetBufferAccessor(ReceivedWeaponInputTypeHandle);
 //</generated>
@@ -298,7 +293,6 @@ namespace Server.Generated
                     {
                         movementInputs[i] = movementInput.Input;
                     }
-
                     var receivedWeaponInput = receivedWeaponInputs[i];
                     var weaponInput = receivedWeaponInput[index];
                     if (weaponInput.Tick == Tick)

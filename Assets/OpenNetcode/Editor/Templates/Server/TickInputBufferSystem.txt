@@ -1,6 +1,5 @@
 using OpenNetcode.Server.Components;
 using OpenNetcode.Shared;
-using OpenNetcode.Shared.Components;
 using OpenNetcode.Shared.Systems;
 using OpenNetcode.Shared.Time;
 using OpenNetcode.Shared.Utils;
@@ -9,32 +8,26 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Networking.Transport;
-using UnityEngine;
 
 //<using>
 
 namespace Server.Generated
 {
+    //<template:input>
+    //public struct Received##TYPE## : IBufferElementData
+    //{
+    //    public int Tick;
+    //    public ##TYPE## Input;
+    //}
+    //</template>
+    
     [UpdateInGroup(typeof(TickPreSimulationSystemGroup))]
     [UpdateAfter(typeof(TickServerReceiveSystem))]
+    [DisableAutoCreation]
     public class TickInputBufferSystem : SystemBase
     {
-        public struct InputBufferData
-        {
-            //<template:input>
-            //public ##TYPE## ##TYPE##;
-            //</template>
-            public double ArrivedTime;
-            public int Tick;
-            public int Version;
-            public int BaseLine;
-        }
-
-        private IServerNetworkSystem _server;
-        private NativeHashMap<int, int> _connectionIndex;
-        private NativeList<int> _freeIndexes;
-        private NativeArray<InputBufferData> _inputs;
         private EntityQuery _playersQuery;
+        private IServerNetworkSystem _server;
         private NetworkCompressionModel _compressionModel;
 
         public TickInputBufferSystem(IServerNetworkSystem server)
@@ -44,16 +37,6 @@ namespace Server.Generated
 
         protected override void OnCreate()
         {
-            int maxPlayers = 100;
-            
-            _connectionIndex = new NativeHashMap<int, int>(maxPlayers, Allocator.Persistent);
-            _freeIndexes = new NativeList<int>(maxPlayers, Allocator.Persistent);
-            for (int i = 0; i < _freeIndexes.Capacity; i++)
-            {
-                _freeIndexes.Add(i);
-            }
-            
-            _inputs  = new NativeArray<InputBufferData>(TimeConfig.TicksPerSecond * maxPlayers, Allocator.Persistent);
             _playersQuery = GetEntityQuery(
                 //<template:input>
                 //ComponentType.ReadOnly<##TYPE##>(),
@@ -61,7 +44,6 @@ namespace Server.Generated
                 ComponentType.ReadOnly<ProcessedInput>(),
                 ComponentType.ReadOnly<PlayerControlledTag>(),
                 ComponentType.ReadOnly<ServerNetworkedEntity>()
-
             );
 
             _compressionModel = new NetworkCompressionModel(Allocator.Persistent);
@@ -69,160 +51,157 @@ namespace Server.Generated
             base.OnCreate();
         }
 
-        protected override void OnDestroy()
-        {
-            _connectionIndex.Dispose();
-            _freeIndexes.Dispose();
-            _inputs.Dispose();
-            base.OnDestroy();
-        }
-
         protected override void OnUpdate()
         {
-            var packets = _server.ReceivePackets;
-            
-            if(packets.TryGetFirstValue((int) PacketType.Input, out PacketArrayWrapper wrapper, out NativeMultiHashMapIterator<int> iterator))
+            ReadPlayerInputJob readPlayerInputJob = new ReadPlayerInputJob()
             {
-                do
-                {
-                    var array = wrapper.GetArray<byte>();
-                    var reader = new DataStreamReader(array);
-                    if (!ReadInput(ref reader, _compressionModel, wrapper.InternalId))
-                    {
-                        Debug.Log("Failed");
-                    }
-
-                } while (packets.TryGetNextValue(out wrapper, ref iterator));
-            }
-
-            NativeHashMap<int, int> connectionIndex = _connectionIndex;
-            NativeArray<InputBufferData> inputs = _inputs;
-            
-            UpdatePlayerInputJob job = new UpdatePlayerInputJob()
-            {
-                inputs = inputs,
-                connectionIndex = connectionIndex,
-                tick = GetSingleton<TickData>().Value,
-                NetworkEntityTypeHandle = GetComponentTypeHandle<ServerNetworkedEntity>(true),
-                ProcessedInputTypeHandle = GetBufferTypeHandle<ProcessedInput>(),
+                ElapsedTime = UnityEngine.Time.realtimeSinceStartupAsDouble,
+                CompressionModel = _compressionModel,
+                ReceivedPackets = _server.ReceivePackets,
+                ServerNetworkedEntityTypeHandle = GetComponentTypeHandle<ServerNetworkedEntity>(true),
                 PlayerBaseLineTypeHandle = GetComponentTypeHandle<PlayerBaseLine>(),
+                InputTimeDataTypeHandle = GetComponentTypeHandle<InputTimeData>(),
+                //<template:input>
+                //Received##TYPE## = GetBufferTypeHandle<Received##TYPE##>(),
+                //</template>
+            };
+
+            Dependency = readPlayerInputJob.ScheduleParallel(_playersQuery, 4, Dependency);
+            Dependency.Complete();
+
+            UpdatePlayerInputJob updatePlayerInputJob = new UpdatePlayerInputJob()
+            {
+                Tick = GetSingleton<TickData>().Value,
+                
                 //<template:input>
                 //##TYPE##TypeHandle = GetComponentTypeHandle<##TYPE##>(),
+                //Received##TYPE##TypeHandle = GetBufferTypeHandle<Received##TYPE##>(true),
                 //</template>
             };
             
-            Dependency = job.ScheduleParallel(_playersQuery, 4, Dependency);
+            Dependency = updatePlayerInputJob.ScheduleParallel(_playersQuery, 4, Dependency);
             Dependency.Complete();
         }
 
-        public bool ReadInput(ref DataStreamReader reader, in NetworkCompressionModel compressionModel, int internalId)
+        [BurstCompile]
+        private struct ReadPlayerInputJob : IJobEntityBatch
         {
-            Packets.ReadPacketType(ref reader);
-            int count = (int) reader.ReadRawBits(3);
-            int tick = (int) reader.ReadPackedUInt(compressionModel);
-            int lastReceivedSnapshotTick = (int) reader.ReadPackedUInt(compressionModel);
-            int version = (int) reader.ReadPackedUInt(compressionModel);
+            [ReadOnly] public double ElapsedTime;
+            [ReadOnly] public NetworkCompressionModel CompressionModel;
+            [ReadOnly] public NativeMultiHashMap<int, PacketArrayWrapper> ReceivedPackets;
+            [ReadOnly] public ComponentTypeHandle<ServerNetworkedEntity> ServerNetworkedEntityTypeHandle;
 
-            if (!_connectionIndex.ContainsKey(internalId))
-            {
-                _connectionIndex[internalId] = _freeIndexes[0];
-                _freeIndexes.RemoveAt(0);
-            }
-
-            int offset = _connectionIndex[internalId] * TimeConfig.TicksPerSecond;
-
+            public ComponentTypeHandle<PlayerBaseLine> PlayerBaseLineTypeHandle;
+            public ComponentTypeHandle<InputTimeData> InputTimeDataTypeHandle;
             //<template:input>
-            //##TYPE## last##TYPE## = new ##TYPE##();
+            //public BufferTypeHandle<Received##TYPE##> Received##TYPE##;
             //</template>
             
-            for (int i = 0; i < count; i++)
+            public void Execute(ArchetypeChunk batchInChunk, int batchIndex)
             {
+                var serverNetworkedEntities = batchInChunk.GetNativeArray(ServerNetworkedEntityTypeHandle);
+                var playerBaselines = batchInChunk.GetNativeArray(PlayerBaseLineTypeHandle);
+                var inputTimeDatas = batchInChunk.GetNativeArray(InputTimeDataTypeHandle);
                 //<template:input>
-                //##TYPE## ##TYPELOWER## = new ##TYPE##();
-                //##TYPELOWER##.ReadSnapshot(ref reader, _compressionModel, last##TYPE##);
-                //last##TYPE## = ##TYPELOWER##;
+                //var received##TYPE##s = batchInChunk.GetBufferAccessor(Received##TYPE##);
                 //</template>
-                
-                int index = (tick - i + TimeConfig.TicksPerSecond) % TimeConfig.TicksPerSecond;
 
-                if (_inputs[offset + index].Tick != tick - i)
+                for (int i = 0; i < serverNetworkedEntities.Length; i++)
                 {
-                    var inputBufferData = _inputs[offset + index];
-                    //<template:input>
-                    //inputBufferData.##TYPE## = last##TYPE##;
-                    //</template>
-                    inputBufferData.ArrivedTime = Time.ElapsedTime;
-                    inputBufferData.Tick = tick - i;
-                    inputBufferData.Version = version;
-                    inputBufferData.BaseLine = lastReceivedSnapshotTick;
-                    _inputs[offset + index] = inputBufferData;
+                    var serverNetworkedEntity = serverNetworkedEntities[i];
+                    
+                    if(ReceivedPackets.TryGetFirstValue((int) PacketType.Input, out PacketArrayWrapper wrapper, out NativeMultiHashMapIterator<int> iterator))
+                    {
+                        do
+                        {
+                            if (wrapper.InternalId != serverNetworkedEntity.OwnerNetworkId)
+                                continue;
+
+                            //<template:input>
+                            //var received##TYPE## = received##TYPE##s[i];
+                            //</template>
+                            
+                            var array = wrapper.GetArray<byte>();
+                            var reader = new DataStreamReader(array);
+                            
+                            Packets.ReadPacketType(ref reader);
+                            int count = (int) reader.ReadRawBits(3);
+                            int tick = (int) reader.ReadPackedUInt(CompressionModel);
+                            int lastReceivedSnapshotTick = (int) reader.ReadPackedUInt(CompressionModel);
+                            int version = (int) reader.ReadPackedUInt(CompressionModel);
+
+                            var playerBaseline = playerBaselines[i];
+                            playerBaseline.Version = version;
+                            playerBaseline.BaseLine = lastReceivedSnapshotTick;
+                            playerBaselines[i] = playerBaseline;
+
+                            inputTimeDatas[i] = new InputTimeData()
+                            {
+                                Tick = tick,
+                                ArrivedTime = ElapsedTime
+                            };
+                            
+                            //<template:input>
+                            //##TYPE## last##TYPE## = new ##TYPE##();
+                            //</template>
+
+                            for (int j = 0; j < count; j++)
+                            {
+                                //<template:input>
+                                //##TYPE## ##TYPELOWER## = new ##TYPE##();
+                                //##TYPELOWER##.ReadSnapshot(ref reader, CompressionModel, last##TYPE##);
+                                //last##TYPE## = ##TYPELOWER##;
+                                //</template>
+
+                                int index = (tick - j + TimeConfig.TicksPerSecond) % TimeConfig.TicksPerSecond;
+
+                                //<template:input>
+                                //if (received##TYPE##[index].Tick != tick - j)
+                                //{
+                                //    received##TYPE##[index] = new Received##TYPE##()
+                                //    {
+                                //        Tick = tick - j,
+                                //        Input = ##TYPELOWER##
+                                //    };
+                                //}
+                                //</template>
+                            }
+                        } while (ReceivedPackets.TryGetNextValue(out wrapper, ref iterator));
+                    }
                 }
             }
-
-            return !reader.HasFailedReads;
         }
 
         [BurstCompile]
-        public struct UpdatePlayerInputJob : IJobEntityBatch
+        private struct UpdatePlayerInputJob : IJobEntityBatch
         {
-            [ReadOnly] public NativeArray<InputBufferData> inputs;
-            [ReadOnly] public NativeHashMap<int, int> connectionIndex;
-            [ReadOnly] public int tick;
+            [ReadOnly] public int Tick;
             
             //<template:input>
+            //[ReadOnly] public BufferTypeHandle<Received##TYPE##> Received##TYPE##TypeHandle;
             //public ComponentTypeHandle<##TYPE##> ##TYPE##TypeHandle;
             //</template>
-            public ComponentTypeHandle<PlayerBaseLine> PlayerBaseLineTypeHandle;
-            public BufferTypeHandle<ProcessedInput> ProcessedInputTypeHandle;
-            [ReadOnly] public ComponentTypeHandle<ServerNetworkedEntity> NetworkEntityTypeHandle;
 
             public void Execute(ArchetypeChunk batchInChunk, int batchIndex)
             {
                 //<template:input>
-                //var chunk##TYPE## = batchInChunk.GetNativeArray(##TYPE##TypeHandle);
+                //var ##TYPELOWER##s = batchInChunk.GetNativeArray(##TYPE##TypeHandle);
+                //var received##TYPE##s = batchInChunk.GetBufferAccessor(Received##TYPE##TypeHandle);
                 //</template>
-                var chunkPlayerBaseLines = batchInChunk.GetNativeArray(PlayerBaseLineTypeHandle);
-                var chunkProcessedInput = batchInChunk.GetBufferAccessor(ProcessedInputTypeHandle);
-                var chunkNetworkEntities = batchInChunk.GetNativeArray(NetworkEntityTypeHandle);
+                
 
                 for (int i = 0; i < batchInChunk.Count; i++)
                 {
-                    var networkEntity = chunkNetworkEntities[i];
-                    var processedInputs = chunkProcessedInput[i];
-                    
-                    if (!connectionIndex.ContainsKey(networkEntity.OwnerNetworkId))
-                        return;
+                    int index = (Tick + TimeConfig.TicksPerSecond) % TimeConfig.TicksPerSecond;
 
-                    int offset = connectionIndex[networkEntity.OwnerNetworkId] * TimeConfig.TicksPerSecond;
-                    int index = (tick + TimeConfig.TicksPerSecond) % TimeConfig.TicksPerSecond;
-                    var element = inputs[offset + index];
-
-                    if (element.Tick >= tick)
-                    {
-                        var playerBaseLine = chunkPlayerBaseLines[i];
-                        playerBaseLine.BaseLine = element.BaseLine;
-                        playerBaseLine.Version = element.Version;
-                        chunkPlayerBaseLines[i] = playerBaseLine;
-                    }
-                    
-                    if (element.Tick == tick)
-                    {
-                        //<template:input>
-                        //chunk##TYPE##[i] = element.##TYPE##;
-                        //</template>
-                        processedInputs.Add(new ProcessedInput()
-                        {
-                            ArrivedTime = element.ArrivedTime,
-                            HasInput = true
-                        });
-                    }
-                    else
-                    {
-                        processedInputs.Add(new ProcessedInput()
-                        {
-                            HasInput = false
-                        });
-                    }
+                    //<template:input>
+                    //var received##TYPE## = received##TYPE##s[i];
+                    //var ##TYPELOWER## = received##TYPE##[index];
+                    //if (##TYPELOWER##.Tick == Tick)
+                    //{
+                    //    ##TYPELOWER##s[i] = ##TYPELOWER##.Input;
+                    //}
+                    //</template>
                 }
             }
         }

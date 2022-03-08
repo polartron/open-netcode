@@ -16,11 +16,6 @@ namespace ExampleGame.Server
         public static World World;
         public string Name => "Server World";
 
-        public ServerBootstrap()
-        {
-            Debug.Log("Server Bootstrap");
-        }
-        
         public bool Initialize()
         {
             World = SharedBootstrap.CreateWorld(Name);

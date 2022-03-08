@@ -19,7 +19,7 @@ namespace Server.Generated
     {
         [NativeDisableUnsafePtrRestriction] public void* Buffers;
         [ReadOnly] public int BuffersLength;
-        public NativeHashMap<int, PacketArrayWrapper>.ParallelWriter Results;
+        [NativeDisableContainerSafetyRestriction] public NativeHashMap<int, PacketArrayWrapper>.ParallelWriter Results;
         [ReadOnly] public int JobIndex;
         [ReadOnly] public int Hash;
         [ReadOnly] public int SnapshotIndex;

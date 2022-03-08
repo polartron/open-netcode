@@ -4,14 +4,13 @@ using OpenNetcode.Shared.Time;
 using Shared.Coordinates;
 using Unity.Entities;
 using Unity.Mathematics;
+using OpenNetcode.Server.Components;
+using OpenNetcode.Shared.Components;
 
 //<using>
 //<generated>
 using ExampleGame.Shared.Movement.Components;
 using ExampleGame.Shared.Components;
-using OpenNetcode.Server.Components;
-using OpenNetcode.Shared.Components;
-
 //</generated>
 
 namespace Server.Generated
@@ -53,7 +52,12 @@ namespace Server.Generated
             
             // Set data
             int componentInterestMask = 0;
+            //<template:privatesnapshot>
+            //componentInterestMask = PrivateSnapshotObserver.Observe<##TYPE##>(componentInterestMask);
+            //</template>
+//<generated>
             componentInterestMask = PrivateSnapshotObserver.Observe<EntityHealth>(componentInterestMask);
+//</generated>
                 
             privateSnapshotObservers.Add(new PrivateSnapshotObserver()
             {
@@ -86,17 +90,16 @@ namespace Server.Generated
             if (entityManager.HasComponent<MovementInput>(entity))
             {
                 var buffer = entityManager.AddBuffer<ReceivedMovementInput>(entity);
-
+            
                 for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
                 {
                     buffer.Add(default);
                 }
             }
-            
             if (entityManager.HasComponent<WeaponInput>(entity))
             {
                 var buffer = entityManager.AddBuffer<ReceivedWeaponInput>(entity);
-
+            
                 for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
                 {
                     buffer.Add(default);
