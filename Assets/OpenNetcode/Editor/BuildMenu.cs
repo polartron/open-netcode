@@ -13,6 +13,7 @@ public class BuildMenu
     {
         
         BuildPlayerOptions defaultOptions = new BuildPlayerOptions();
+        EditorUserBuildSettings.SetPlatformSettings("Standalone", "CopyPDBFiles", "true");
         defaultOptions.target = EditorUserBuildSettings.activeBuildTarget;
         defaultOptions.targetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
         defaultOptions.options = BuildOptions.Development;
@@ -26,7 +27,9 @@ public class BuildMenu
             "CLIENT"
         };
         defaultOptions.locationPathName = "Build/Client.exe";
-
+        
+        
+        
         BuildPipeline.BuildPlayer(defaultOptions);
     }
     

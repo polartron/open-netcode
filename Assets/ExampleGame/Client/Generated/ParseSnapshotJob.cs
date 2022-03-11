@@ -304,11 +304,24 @@ namespace Client.Generated
                     {
                         return false;
                     }
-                    
-                    NativeArray<SnapshotBufferElement<T>> buffer = hasCreatedBuffer
-                        ? componentBuffers.GetBufferArray<SnapshotBufferElement<T>>(arrayIndex)
-                        : theBuffer[serverEntity.Entity].ToNativeArray(Allocator.Temp);
-                    
+
+                    NativeArray<SnapshotBufferElement<T>> buffer = default;
+
+                    if (hasCreatedBuffer)
+                    {
+                        buffer = componentBuffers.GetBufferArray<SnapshotBufferElement<T>>(arrayIndex);
+                    }
+                    else
+                    {
+                        if (!theBuffer.HasComponent(serverEntity.Entity))
+                        {
+                            Debug.LogWarning($"Tried to get a buffer on an entity that doesn't have one.");
+                            return false;
+                        }
+                        
+                        buffer = theBuffer[serverEntity.Entity].ToNativeArray(Allocator.Temp);;
+                    }
+
                     buffer[tick % buffer.Length] = new SnapshotBufferElement<T>()
                     {
                         Value = bumpEvent,
@@ -339,10 +352,23 @@ namespace Client.Generated
                 {
                     return false;
                 }
+                
+                NativeArray<SnapshotBufferElement<T>> buffer = default;
 
-                NativeArray<SnapshotBufferElement<T>> buffer = hasCreatedBuffer
-                    ? componentBuffers.GetBufferArray<SnapshotBufferElement<T>>(index)
-                    : theBuffer[serverEntity.Entity].ToNativeArray(Allocator.Temp);
+                if (hasCreatedBuffer)
+                {
+                    buffer = componentBuffers.GetBufferArray<SnapshotBufferElement<T>>(index);
+                }
+                else
+                {
+                    if (!theBuffer.HasComponent(serverEntity.Entity))
+                    {
+                        Debug.LogWarning($"Tried to get a buffer on an entity that doesn't have one.");
+                        return false;
+                    }
+                        
+                    buffer = theBuffer[serverEntity.Entity].ToNativeArray(Allocator.Temp);;
+                }
         
                 int length = buffer.Length;
 

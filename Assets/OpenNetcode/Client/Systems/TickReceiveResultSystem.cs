@@ -55,6 +55,7 @@ namespace OpenNetcode.Client.Systems
         protected override void OnDestroy()
         {
             _sentInputs.Dispose();
+            _timeOffsets.Dispose();
             //_profilerRoundTripTime.Dispose();
         }
 
@@ -65,20 +66,6 @@ namespace OpenNetcode.Client.Systems
                 Tick = tick,
                 Time = sentTime
             };
-        }
-
-        private float GetAverageTimeOffset()
-        {
-            float offset = 0f;
-
-            for (int i = 0; i < _timeOffsets.Length; i++)
-            {
-                offset += _timeOffsets[i];
-            }
-
-            offset /= _timeOffsets.Length;
-
-            return offset;
         }
 
         protected override void OnUpdate()
@@ -128,6 +115,10 @@ namespace OpenNetcode.Client.Systems
                                 float lerpedTime = Mathf.Lerp((float) tickerTime, (float) predictedTimeMs, TimeConfig.FixedDeltaTime);
                                 _tickSystem.SetTime(lerpedTime);
                             }
+                        }
+                        else
+                        {
+                            _tickSystem.SetTime(serverTimeMs + 200 + TimeConfig.CommandBufferLengthMs);
                         }
 
                         break;
