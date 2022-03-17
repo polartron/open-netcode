@@ -9,6 +9,6 @@ namespace Shared.Generated
         public static readonly int PrivateSnapshotSize = 1400;
         public static readonly int PublicSnapshotSize = 50000;
         public static readonly int MaxEntititesInArea = 10000;
-        public static readonly int MaxEventsBufferLength = 4;
+        public const int MaxEventsBufferLength = 4;
     }
 }

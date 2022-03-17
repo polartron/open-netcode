@@ -22,7 +22,7 @@
 #else // 64
         public const int TicksPerSecond = 64;
         public const float FixedDeltaTime = 0.015625f;
-        public const long CommandBufferLengthMs = 46;
+        public const long CommandBufferLengthMs = 93;
 #endif
 
 #if SNAPSHOTRATE_128
@@ -34,9 +34,9 @@
 #elif SNAPSHOTRATE_8
         public const int SnapshotsPerSecond = 8;
 #elif SNAPSHOTRATE_4
-        public const int SnapshotsPerSecond = 4
+        public const int SnapshotsPerSecond = 4;
 #elif SNAPSHOTRATE_2
-        public const int SnapshotsPerSecond = 2
+        public const int SnapshotsPerSecond = 2;
 #else // 16
         public const int SnapshotsPerSecond = 16;
 #endif

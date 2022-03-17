@@ -269,11 +269,13 @@ namespace Server.Generated
             
             foreach (var result in publicSnapshotResults)
             {
-                var packet = Packets.WrapPacket(result.Value.GetArray<byte>(), result.Value.Length);
-                
                 foreach (var player in jobsForPlayers)
                 {
-                    _server.Send(player.Value, packet);
+                    if (player.Key == result.Key)
+                    {
+                        var packet = Packets.WrapPacket(result.Value.GetArray<byte>(), result.Value.Length);
+                        _server.Send(player.Value, packet);
+                    }
                 }
             }
 

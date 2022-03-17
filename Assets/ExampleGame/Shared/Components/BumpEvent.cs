@@ -1,11 +1,10 @@
 using OpenNetcode.Shared.Attributes;
-using OpenNetcode.Shared.Components;
+using Shared.Generated;
 using Unity.Entities;
-using Unity.Networking.Transport;
 
 namespace ExampleGame.Shared.Components
 {
-    [InternalBufferCapacity(4)]
+    [InternalBufferCapacity(SnapshotSettings.MaxEventsBufferLength)]
     [PublicEvent]
     public partial struct BumpEvent : IBufferElementData
     {

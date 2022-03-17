@@ -118,7 +118,7 @@ namespace OpenNetcode.Client.Systems
                         }
                         else
                         {
-                            _tickSystem.SetTime(serverTimeMs + 200 + TimeConfig.CommandBufferLengthMs);
+                            _tickSystem.SetTime(serverTimeMs + 500 + TimeConfig.CommandBufferLengthMs);
                         }
 
                         break;
