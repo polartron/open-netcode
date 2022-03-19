@@ -25,22 +25,22 @@ namespace Server.Generated
     //}
     //</template>
 //<generated>
-    public struct ReceivedMovementInput : IBufferElementData
-    {
-        public int Tick;
-        public MovementInput Input;
-    }
     public struct ReceivedWeaponInput : IBufferElementData
     {
         public int Tick;
         public WeaponInput Input;
+    }
+    public struct ReceivedMovementInput : IBufferElementData
+    {
+        public int Tick;
+        public MovementInput Input;
     }
 //</generated>
     
     [UpdateInGroup(typeof(TickPreSimulationSystemGroup))]
     [UpdateAfter(typeof(TickServerReceiveSystem))]
     [DisableAutoCreation]
-    public class TickInputBufferSystem : SystemBase
+    public partial class TickInputBufferSystem : SystemBase
     {
         private EntityQuery _playersQuery;
         private IServerNetworkSystem _server;
@@ -58,8 +58,8 @@ namespace Server.Generated
                 //ComponentType.ReadOnly<##TYPE##>(),
                 //</template>
 //<generated>
-                ComponentType.ReadOnly<MovementInput>(),
                 ComponentType.ReadOnly<WeaponInput>(),
+                ComponentType.ReadOnly<MovementInput>(),
 //</generated>
                 ComponentType.ReadOnly<ProcessedInput>(),
                 ComponentType.ReadOnly<PlayerControlledTag>(),
@@ -85,12 +85,12 @@ namespace Server.Generated
                 //Received##TYPE## = GetBufferTypeHandle<Received##TYPE##>(),
                 //</template>
 //<generated>
-                ReceivedMovementInput = GetBufferTypeHandle<ReceivedMovementInput>(),
                 ReceivedWeaponInput = GetBufferTypeHandle<ReceivedWeaponInput>(),
+                ReceivedMovementInput = GetBufferTypeHandle<ReceivedMovementInput>(),
 //</generated>
             };
 
-            Dependency = readPlayerInputJob.ScheduleParallel(_playersQuery, 4, Dependency);
+            Dependency = readPlayerInputJob.ScheduleParallel(_playersQuery, Dependency);
             Dependency.Complete();
 
             UpdatePlayerInputJob updatePlayerInputJob = new UpdatePlayerInputJob()
@@ -102,14 +102,14 @@ namespace Server.Generated
                 //Received##TYPE##TypeHandle = GetBufferTypeHandle<Received##TYPE##>(true),
                 //</template>
 //<generated>
-                MovementInputTypeHandle = GetComponentTypeHandle<MovementInput>(),
-                ReceivedMovementInputTypeHandle = GetBufferTypeHandle<ReceivedMovementInput>(true),
                 WeaponInputTypeHandle = GetComponentTypeHandle<WeaponInput>(),
                 ReceivedWeaponInputTypeHandle = GetBufferTypeHandle<ReceivedWeaponInput>(true),
+                MovementInputTypeHandle = GetComponentTypeHandle<MovementInput>(),
+                ReceivedMovementInputTypeHandle = GetBufferTypeHandle<ReceivedMovementInput>(true),
 //</generated>
             };
             
-            Dependency = updatePlayerInputJob.ScheduleParallel(_playersQuery, 4, Dependency);
+            Dependency = updatePlayerInputJob.ScheduleParallel(_playersQuery, Dependency);
             Dependency.Complete();
         }
 
@@ -127,8 +127,8 @@ namespace Server.Generated
             //public BufferTypeHandle<Received##TYPE##> Received##TYPE##;
             //</template>
 //<generated>
-            public BufferTypeHandle<ReceivedMovementInput> ReceivedMovementInput;
             public BufferTypeHandle<ReceivedWeaponInput> ReceivedWeaponInput;
+            public BufferTypeHandle<ReceivedMovementInput> ReceivedMovementInput;
 //</generated>
             
             public void Execute(ArchetypeChunk batchInChunk, int batchIndex)
@@ -140,8 +140,8 @@ namespace Server.Generated
                 //var received##TYPE##s = batchInChunk.GetBufferAccessor(Received##TYPE##);
                 //</template>
 //<generated>
-                var receivedMovementInputs = batchInChunk.GetBufferAccessor(ReceivedMovementInput);
                 var receivedWeaponInputs = batchInChunk.GetBufferAccessor(ReceivedWeaponInput);
+                var receivedMovementInputs = batchInChunk.GetBufferAccessor(ReceivedMovementInput);
 //</generated>
 
                 for (int i = 0; i < serverNetworkedEntities.Length; i++)
@@ -159,8 +159,8 @@ namespace Server.Generated
                             //var received##TYPE## = received##TYPE##s[i];
                             //</template>
 //<generated>
-                            var receivedMovementInput = receivedMovementInputs[i];
                             var receivedWeaponInput = receivedWeaponInputs[i];
+                            var receivedMovementInput = receivedMovementInputs[i];
 //</generated>
                             
                             var array = wrapper.GetArray<byte>();
@@ -187,8 +187,8 @@ namespace Server.Generated
                             //##TYPE## last##TYPE## = new ##TYPE##();
                             //</template>
 //<generated>
-                            MovementInput lastMovementInput = new MovementInput();
                             WeaponInput lastWeaponInput = new WeaponInput();
+                            MovementInput lastMovementInput = new MovementInput();
 //</generated>
 
                             for (int j = 0; j < count; j++)
@@ -199,12 +199,12 @@ namespace Server.Generated
                                 //last##TYPE## = ##TYPELOWER##;
                                 //</template>
 //<generated>
-                                MovementInput movementInput = new MovementInput();
-                                movementInput.ReadSnapshot(ref reader, CompressionModel, lastMovementInput);
-                                lastMovementInput = movementInput;
                                 WeaponInput weaponInput = new WeaponInput();
                                 weaponInput.ReadSnapshot(ref reader, CompressionModel, lastWeaponInput);
                                 lastWeaponInput = weaponInput;
+                                MovementInput movementInput = new MovementInput();
+                                movementInput.ReadSnapshot(ref reader, CompressionModel, lastMovementInput);
+                                lastMovementInput = movementInput;
 //</generated>
 
                                 int index = (tick - j + TimeConfig.TicksPerSecond) % TimeConfig.TicksPerSecond;
@@ -220,20 +220,20 @@ namespace Server.Generated
                                 //}
                                 //</template>
 //<generated>
-                                if (receivedMovementInput[index].Tick != tick - j)
-                                {
-                                    receivedMovementInput[index] = new ReceivedMovementInput()
-                                    {
-                                        Tick = tick - j,
-                                        Input = movementInput
-                                    };
-                                }
                                 if (receivedWeaponInput[index].Tick != tick - j)
                                 {
                                     receivedWeaponInput[index] = new ReceivedWeaponInput()
                                     {
                                         Tick = tick - j,
                                         Input = weaponInput
+                                    };
+                                }
+                                if (receivedMovementInput[index].Tick != tick - j)
+                                {
+                                    receivedMovementInput[index] = new ReceivedMovementInput()
+                                    {
+                                        Tick = tick - j,
+                                        Input = movementInput
                                     };
                                 }
 //</generated>
@@ -254,10 +254,10 @@ namespace Server.Generated
             //public ComponentTypeHandle<##TYPE##> ##TYPE##TypeHandle;
             //</template>
 //<generated>
-            [ReadOnly] public BufferTypeHandle<ReceivedMovementInput> ReceivedMovementInputTypeHandle;
-            public ComponentTypeHandle<MovementInput> MovementInputTypeHandle;
             [ReadOnly] public BufferTypeHandle<ReceivedWeaponInput> ReceivedWeaponInputTypeHandle;
             public ComponentTypeHandle<WeaponInput> WeaponInputTypeHandle;
+            [ReadOnly] public BufferTypeHandle<ReceivedMovementInput> ReceivedMovementInputTypeHandle;
+            public ComponentTypeHandle<MovementInput> MovementInputTypeHandle;
 //</generated>
 
             public void Execute(ArchetypeChunk batchInChunk, int batchIndex)
@@ -267,10 +267,10 @@ namespace Server.Generated
                 //var received##TYPE##s = batchInChunk.GetBufferAccessor(Received##TYPE##TypeHandle);
                 //</template>
 //<generated>
-                var movementInputs = batchInChunk.GetNativeArray(MovementInputTypeHandle);
-                var receivedMovementInputs = batchInChunk.GetBufferAccessor(ReceivedMovementInputTypeHandle);
                 var weaponInputs = batchInChunk.GetNativeArray(WeaponInputTypeHandle);
                 var receivedWeaponInputs = batchInChunk.GetBufferAccessor(ReceivedWeaponInputTypeHandle);
+                var movementInputs = batchInChunk.GetNativeArray(MovementInputTypeHandle);
+                var receivedMovementInputs = batchInChunk.GetBufferAccessor(ReceivedMovementInputTypeHandle);
 //</generated>
                 
 
@@ -287,17 +287,17 @@ namespace Server.Generated
                     //}
                     //</template>
 //<generated>
-                    var receivedMovementInput = receivedMovementInputs[i];
-                    var movementInput = receivedMovementInput[index];
-                    if (movementInput.Tick == Tick)
-                    {
-                        movementInputs[i] = movementInput.Input;
-                    }
                     var receivedWeaponInput = receivedWeaponInputs[i];
                     var weaponInput = receivedWeaponInput[index];
                     if (weaponInput.Tick == Tick)
                     {
                         weaponInputs[i] = weaponInput.Input;
+                    }
+                    var receivedMovementInput = receivedMovementInputs[i];
+                    var movementInput = receivedMovementInput[index];
+                    if (movementInput.Tick == Tick)
+                    {
+                        movementInputs[i] = movementInput.Input;
                     }
 //</generated>
                 }

@@ -33,7 +33,7 @@ namespace Server.Generated
     [DisableAutoCreation]
     [UpdateInGroup(typeof(TickPostSimulationSystemGroup))]
     [UpdateBefore(typeof(TickServerSendSystem))]
-    public unsafe class TickServerSnapshotSystem : SystemBase
+    public unsafe partial class TickServerSnapshotSystem : SystemBase
     {
         private IServerNetworkSystem _server;
         private NativeHashMap<int, Area> _areas;
@@ -131,8 +131,8 @@ namespace Server.Generated
                     //##TYPE##Components = GetComponentDataFromEntity<##TYPE##>(true),
                     //</template>
 //<generated>
-                    EntityPositionComponents = GetComponentDataFromEntity<EntityPosition>(true),
                     EntityVelocityComponents = GetComponentDataFromEntity<EntityVelocity>(true),
+                    EntityPositionComponents = GetComponentDataFromEntity<EntityPosition>(true),
                     PathComponentComponents = GetComponentDataFromEntity<PathComponent>(true),
 //</generated>
                     //<template:privatesnapshot>
@@ -175,8 +175,8 @@ namespace Server.Generated
                 //##TYPE##Components = GetComponentDataFromEntity<##TYPE##>(true),
                 //</template>
 //<generated>
-                EntityPositionComponents = GetComponentDataFromEntity<EntityPosition>(true),
                 EntityVelocityComponents = GetComponentDataFromEntity<EntityVelocity>(true),
+                EntityPositionComponents = GetComponentDataFromEntity<EntityPosition>(true),
                 PathComponentComponents = GetComponentDataFromEntity<PathComponent>(true),
 //</generated>
                 //<template:publicevent>
@@ -187,7 +187,7 @@ namespace Server.Generated
 //</generated>
             };
 
-            Dependency = addEntitiesToAreas.ScheduleParallel(_entitiesQuery, 4, Dependency);
+            Dependency = addEntitiesToAreas.ScheduleParallel(_entitiesQuery, Dependency);
             Dependency.Complete();
 
             var activeAreas = activeAreasList.ToNativeArray(Allocator.Temp);
@@ -238,8 +238,8 @@ namespace Server.Generated
                             //##TYPE##FromEntity = GetComponentDataFromEntity<##TYPE##>(true),
                             //</template>
 //<generated>
-                            EntityPositionFromEntity = GetComponentDataFromEntity<EntityPosition>(true),
                             EntityVelocityFromEntity = GetComponentDataFromEntity<EntityVelocity>(true),
+                            EntityPositionFromEntity = GetComponentDataFromEntity<EntityPosition>(true),
                             PathComponentFromEntity = GetComponentDataFromEntity<PathComponent>(true),
 //</generated>
                             //<template:publicevent>

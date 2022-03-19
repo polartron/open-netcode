@@ -21,7 +21,7 @@ namespace Client.Generated
     [UpdateInGroup(typeof(TickPreSimulationSystemGroup), OrderFirst = true)]
     [UpdateAfter(typeof(TickClientReceiveSystem))]
     [DisableAutoCreation]
-    public class TickClientSnapshotSystem : SystemBase
+    public partial class TickClientSnapshotSystem : SystemBase
     {
         private IClientNetworkSystem _client;
         private NativeHashMap<int, ClientEntitySnapshot> _snapshotEntities;
@@ -58,17 +58,17 @@ namespace Client.Generated
             //}
             //</template>
 //<generated>
-            if (EntityManager.HasComponent<EntityPosition>(clientEntity))
+            if (EntityManager.HasComponent<EntityVelocity>(clientEntity))
             {
-                var buffer = EntityManager.AddBuffer<SnapshotBufferElement<EntityPosition>>(clientEntity);
+                var buffer = EntityManager.AddBuffer<SnapshotBufferElement<EntityVelocity>>(clientEntity);
                 for (int i = 0; i < TimeConfig.SnapshotsPerSecond; i++)
                 {
                     buffer.Add(default);
                 }
             }
-            if (EntityManager.HasComponent<EntityVelocity>(clientEntity))
+            if (EntityManager.HasComponent<EntityPosition>(clientEntity))
             {
-                var buffer = EntityManager.AddBuffer<SnapshotBufferElement<EntityVelocity>>(clientEntity);
+                var buffer = EntityManager.AddBuffer<SnapshotBufferElement<EntityPosition>>(clientEntity);
                 for (int i = 0; i < TimeConfig.SnapshotsPerSecond; i++)
                 {
                     buffer.Add(default);
@@ -249,11 +249,11 @@ namespace Client.Generated
                     //}
                     //</template>
 //<generated>
-                    if (EntityManager.HasComponent(entity, typeof(EntityPosition)))
+                    if (EntityManager.HasComponent(entity, typeof(EntityVelocity)))
                     {
                         componentMask = componentMask | (1 << 0);
                     }
-                    if (EntityManager.HasComponent(entity, typeof(EntityVelocity)))
+                    if (EntityManager.HasComponent(entity, typeof(EntityPosition)))
                     {
                         componentMask = componentMask | (1 << 1);
                     }
@@ -284,15 +284,15 @@ namespace Client.Generated
                     //}
                     //</template>
 //<generated>
-                    if (!EntityManager.HasComponent<SnapshotBufferElement<EntityPosition>>(entity))
-                    {
-                        var buffer = EntityManager.AddBuffer<SnapshotBufferElement<EntityPosition>>(entity);
-                        for (int b = 0; b < TimeConfig.SnapshotsPerSecond; b++)
-                            buffer.Add(default);
-                    }
                     if (!EntityManager.HasComponent<SnapshotBufferElement<EntityVelocity>>(entity))
                     {
                         var buffer = EntityManager.AddBuffer<SnapshotBufferElement<EntityVelocity>>(entity);
+                        for (int b = 0; b < TimeConfig.SnapshotsPerSecond; b++)
+                            buffer.Add(default);
+                    }
+                    if (!EntityManager.HasComponent<SnapshotBufferElement<EntityPosition>>(entity))
+                    {
+                        var buffer = EntityManager.AddBuffer<SnapshotBufferElement<EntityPosition>>(entity);
                         for (int b = 0; b < TimeConfig.SnapshotsPerSecond; b++)
                             buffer.Add(default);
                     }
@@ -340,11 +340,11 @@ namespace Client.Generated
 //<generated>
                 if ((updateMask & (1 << 0)) != 0)
                 {
-                    ReadBufferElement<EntityPosition>(ref reader, observedSnapshot.Entity, snapshotTick);
+                    ReadBufferElement<EntityVelocity>(ref reader, observedSnapshot.Entity, snapshotTick);
                 }
                 if ((updateMask & (1 << 1)) != 0)
                 {
-                    ReadBufferElement<EntityVelocity>(ref reader, observedSnapshot.Entity, snapshotTick);
+                    ReadBufferElement<EntityPosition>(ref reader, observedSnapshot.Entity, snapshotTick);
                 }
                 if ((updateMask & (1 << 2)) != 0)
                 {
@@ -418,8 +418,8 @@ namespace Client.Generated
                 //##TYPE##Buffer = GetBufferFromEntity<SnapshotBufferElement<##TYPE##>>(),
                 //</template>
 //<generated>
-                EntityPositionBuffer = GetBufferFromEntity<SnapshotBufferElement<EntityPosition>>(),
                 EntityVelocityBuffer = GetBufferFromEntity<SnapshotBufferElement<EntityVelocity>>(),
+                EntityPositionBuffer = GetBufferFromEntity<SnapshotBufferElement<EntityPosition>>(),
                 PathComponentBuffer = GetBufferFromEntity<SnapshotBufferElement<PathComponent>>(),
 //</generated>
                 //<template:privatesnapshot>
@@ -479,8 +479,8 @@ namespace Client.Generated
                 //##TYPE##Buffer = GetBufferFromEntity<SnapshotBufferElement<##TYPE##>>(true),
                 //</template>
 //<generated>
-                EntityPositionBuffer = GetBufferFromEntity<SnapshotBufferElement<EntityPosition>>(true),
                 EntityVelocityBuffer = GetBufferFromEntity<SnapshotBufferElement<EntityVelocity>>(true),
+                EntityPositionBuffer = GetBufferFromEntity<SnapshotBufferElement<EntityPosition>>(true),
                 PathComponentBuffer = GetBufferFromEntity<SnapshotBufferElement<PathComponent>>(true),
 //</generated>
             };

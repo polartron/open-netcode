@@ -7,6 +7,7 @@ using Microsoft.CSharp;
 using OpenNetcode.Shared.Attributes;
 using UnityEditor;
 using UnityEngine;
+using System.Runtime.CompilerServices;
 
 namespace OpenNetcode.Editor
 {
@@ -286,6 +287,10 @@ namespace ##NAMESPACE##
             {
                 foreach (Type type in assembly.GetTypes())
                 {
+                    if (type.GetCustomAttributes(typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute), true)
+                        .Length > 0)
+                        continue;
+
                     if (type.GetCustomAttributes(typeof(PublicSnapshot), true).Length > 0)
                     {
                         GenerateSnapshotCodeForComponent(type, settings.CodeGenerationPaths.Shared);
@@ -297,7 +302,7 @@ namespace ##NAMESPACE##
                         GenerateSnapshotCodeForComponent(type, settings.CodeGenerationPaths.Shared);
                         data.PrivateSnapshots.Add(type);
                     }
-
+                    
                     if (type.GetCustomAttributes(typeof(PublicEvent), true).Length > 0)
                     {
                         GenerateSnapshotCodeForComponent(type, settings.CodeGenerationPaths.Shared);

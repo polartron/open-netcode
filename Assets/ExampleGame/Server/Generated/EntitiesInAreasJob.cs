@@ -26,8 +26,8 @@ namespace Server.Generated
         //[ReadOnly] public ComponentDataFromEntity<##TYPE##> ##TYPE##Components;
         //</template>
 //<generated>
-        [ReadOnly] public ComponentDataFromEntity<EntityPosition> EntityPositionComponents;
         [ReadOnly] public ComponentDataFromEntity<EntityVelocity> EntityVelocityComponents;
+        [ReadOnly] public ComponentDataFromEntity<EntityPosition> EntityPositionComponents;
         [ReadOnly] public ComponentDataFromEntity<PathComponent> PathComponentComponents;
 //</generated>
         //<template:publicevent>
@@ -62,11 +62,11 @@ namespace Server.Generated
                 //}
                 //</template>
 //<generated>
-                if (EntityPositionComponents.HasComponent(entity))
+                if (EntityVelocityComponents.HasComponent(entity))
                 {
                     componentMask = componentMask | (1 << 0);
                 }
-                if (EntityVelocityComponents.HasComponent(entity))
+                if (EntityPositionComponents.HasComponent(entity))
                 {
                     componentMask = componentMask | (1 << 1);
                 }

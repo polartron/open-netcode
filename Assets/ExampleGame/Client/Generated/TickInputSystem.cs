@@ -18,7 +18,7 @@ namespace Client.Generated
 {
     [DisableAutoCreation]
     [UpdateInGroup(typeof(TickPreSimulationSystemGroup))]
-    public class TickInputSystem : SystemBase
+    public partial class TickInputSystem : SystemBase
     {
         private Entity _clientEntity;
         private IClientNetworkSystem _clientNetworkSystem;
@@ -29,8 +29,8 @@ namespace Client.Generated
         //private NativeArray<##TYPE##> _##TYPELOWER##History = new NativeArray<##TYPE##>(5, Allocator.Persistent);
         //</template>
 //<generated>
-        private NativeArray<MovementInput> _movementInputHistory = new NativeArray<MovementInput>(5, Allocator.Persistent);
         private NativeArray<WeaponInput> _weaponInputHistory = new NativeArray<WeaponInput>(5, Allocator.Persistent);
+        private NativeArray<MovementInput> _movementInputHistory = new NativeArray<MovementInput>(5, Allocator.Persistent);
 //</generated>
 
         public TickInputSystem(IClientNetworkSystem clientNetworkSystem)
@@ -56,17 +56,17 @@ namespace Client.Generated
             //}
             //</template>
 //<generated>
-            if (EntityManager.HasComponent<MovementInput>(clientEntity))
+            if (EntityManager.HasComponent<WeaponInput>(clientEntity))
             {
-                var buffer = EntityManager.AddBuffer<SavedInput<MovementInput>>(clientEntity);
+                var buffer = EntityManager.AddBuffer<SavedInput<WeaponInput>>(clientEntity);
                 for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
                 {
                     buffer.Add(default);
                 }
             }
-            if (EntityManager.HasComponent<WeaponInput>(clientEntity))
+            if (EntityManager.HasComponent<MovementInput>(clientEntity))
             {
-                var buffer = EntityManager.AddBuffer<SavedInput<WeaponInput>>(clientEntity);
+                var buffer = EntityManager.AddBuffer<SavedInput<MovementInput>>(clientEntity);
                 for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
                 {
                     buffer.Add(default);
@@ -83,8 +83,8 @@ namespace Client.Generated
             //_##TYPELOWER##History.Dispose();
             //</template>
 //<generated>
-            _movementInputHistory.Dispose();
             _weaponInputHistory.Dispose();
+            _movementInputHistory.Dispose();
 //</generated>
             
             base.OnDestroy();
@@ -112,21 +112,6 @@ namespace Client.Generated
             //}
             //</template>
 //<generated>
-            var currentMovementInput = EntityManager.GetComponentData<MovementInput>(entity);
-            _movementInputHistory[tick % inputsLength] = currentMovementInput;
-            var savedMovementInput = EntityManager.GetBuffer<SavedInput<MovementInput>>(entity);
-            savedMovementInput.Add(new SavedInput<MovementInput>()
-            {
-                Value = currentMovementInput
-            });
-            
-            NativeArray<MovementInput> movementInputSorted = new NativeArray<MovementInput>(inputsLength, Allocator.Temp);
-            
-            for (int i = 0; i < inputsLength; i++)
-            {
-                int index = (tick - i + inputsLength) % inputsLength;
-                movementInputSorted[i] = _movementInputHistory[index];
-            }
             var currentWeaponInput = EntityManager.GetComponentData<WeaponInput>(entity);
             _weaponInputHistory[tick % inputsLength] = currentWeaponInput;
             var savedWeaponInput = EntityManager.GetBuffer<SavedInput<WeaponInput>>(entity);
@@ -142,6 +127,21 @@ namespace Client.Generated
                 int index = (tick - i + inputsLength) % inputsLength;
                 weaponInputSorted[i] = _weaponInputHistory[index];
             }
+            var currentMovementInput = EntityManager.GetComponentData<MovementInput>(entity);
+            _movementInputHistory[tick % inputsLength] = currentMovementInput;
+            var savedMovementInput = EntityManager.GetBuffer<SavedInput<MovementInput>>(entity);
+            savedMovementInput.Add(new SavedInput<MovementInput>()
+            {
+                Value = currentMovementInput
+            });
+            
+            NativeArray<MovementInput> movementInputSorted = new NativeArray<MovementInput>(inputsLength, Allocator.Temp);
+            
+            for (int i = 0; i < inputsLength; i++)
+            {
+                int index = (tick - i + inputsLength) % inputsLength;
+                movementInputSorted[i] = _movementInputHistory[index];
+            }
 //</generated>
             
             
@@ -155,8 +155,8 @@ namespace Client.Generated
             //##TYPE## last##TYPE## = new ##TYPE##();
             //</template>
 //<generated>
-            MovementInput lastMovementInput = new MovementInput();
             WeaponInput lastWeaponInput = new WeaponInput();
+            MovementInput lastMovementInput = new MovementInput();
 //</generated>
 
             for (int i = 0; i < inputsLength; i++)
@@ -167,12 +167,12 @@ namespace Client.Generated
                 //last##TYPE## = ##TYPELOWER##;
                 //</template>
 //<generated>
-                var movementInput = movementInputSorted[i];
-                movementInput.WriteSnapshot(ref writer, _compressionModel, lastMovementInput);
-                lastMovementInput = movementInput;
                 var weaponInput = weaponInputSorted[i];
                 weaponInput.WriteSnapshot(ref writer, _compressionModel, lastWeaponInput);
                 lastWeaponInput = weaponInput;
+                var movementInput = movementInputSorted[i];
+                movementInput.WriteSnapshot(ref writer, _compressionModel, lastMovementInput);
+                lastMovementInput = movementInput;
 //</generated>
             }
             
@@ -194,7 +194,7 @@ namespace Client.Generated
 //<generated>
             {
                 DataStreamWriter writer = new DataStreamWriter(10, Allocator.Temp);
-                var input = EntityManager.GetComponentData<MovementInput>(entity);
+                var input = EntityManager.GetComponentData<WeaponInput>(entity);
                 input.WriteSnapshot(ref writer, _compressionModel, default);
                 DataStreamReader reader = new DataStreamReader(writer.AsNativeArray());
                 input.ReadSnapshot(ref reader, _compressionModel, default);
@@ -202,7 +202,7 @@ namespace Client.Generated
             }
             {
                 DataStreamWriter writer = new DataStreamWriter(10, Allocator.Temp);
-                var input = EntityManager.GetComponentData<WeaponInput>(entity);
+                var input = EntityManager.GetComponentData<MovementInput>(entity);
                 input.WriteSnapshot(ref writer, _compressionModel, default);
                 DataStreamReader reader = new DataStreamReader(writer.AsNativeArray());
                 input.ReadSnapshot(ref reader, _compressionModel, default);

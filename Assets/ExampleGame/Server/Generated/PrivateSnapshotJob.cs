@@ -35,8 +35,8 @@ namespace Server.Generated
         //[ReadOnly] public ComponentDataFromEntity<##TYPE##> ##TYPE##Components;
         //</template>
 //<generated>
-        [ReadOnly] public ComponentDataFromEntity<EntityPosition> EntityPositionComponents;
         [ReadOnly] public ComponentDataFromEntity<EntityVelocity> EntityVelocityComponents;
+        [ReadOnly] public ComponentDataFromEntity<EntityPosition> EntityPositionComponents;
         [ReadOnly] public ComponentDataFromEntity<PathComponent> PathComponentComponents;
 //</generated>
         //<template:privatesnapshot>
@@ -112,15 +112,15 @@ namespace Server.Generated
                     //}
                     //</template>
 //<generated>
-                    if ((updateMask & (1 << 0)) != 0 && EntityPositionComponents.HasComponent(targetEntity))
-                    {
-                        var entityPosition = EntityPositionComponents[targetEntity];
-                        entityPosition.WriteSnapshot(ref writer, CompressionModel, default);
-                    }
-                    if ((updateMask & (1 << 1)) != 0 && EntityVelocityComponents.HasComponent(targetEntity))
+                    if ((updateMask & (1 << 0)) != 0 && EntityVelocityComponents.HasComponent(targetEntity))
                     {
                         var entityVelocity = EntityVelocityComponents[targetEntity];
                         entityVelocity.WriteSnapshot(ref writer, CompressionModel, default);
+                    }
+                    if ((updateMask & (1 << 1)) != 0 && EntityPositionComponents.HasComponent(targetEntity))
+                    {
+                        var entityPosition = EntityPositionComponents[targetEntity];
+                        entityPosition.WriteSnapshot(ref writer, CompressionModel, default);
                     }
                     if ((updateMask & (1 << 2)) != 0 && PathComponentComponents.HasComponent(targetEntity))
                     {

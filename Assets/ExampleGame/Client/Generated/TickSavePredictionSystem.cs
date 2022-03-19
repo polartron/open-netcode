@@ -13,7 +13,7 @@ namespace Client.Generated
 {
     [DisableAutoCreation]
     [UpdateInGroup(typeof(TickSimulationSystemGroup), OrderLast = true)]
-    public class TickSavePredictionSystem : SystemBase
+    public partial class TickSavePredictionSystem : SystemBase
     {
         protected override void OnUpdate()
         {
@@ -32,14 +32,6 @@ namespace Client.Generated
             //};
             //</template>
 //<generated>
-            var entityPositionPrediction = EntityManager.GetComponentData<EntityPosition>(clientEntity);
-            var entityPositionPredictions = EntityManager.GetBuffer<Prediction<EntityPosition>>(clientEntity);
-            
-            entityPositionPredictions[index] = new Prediction<EntityPosition>()
-            {
-                Tick = tick,
-                Value = entityPositionPrediction
-            };
             var entityVelocityPrediction = EntityManager.GetComponentData<EntityVelocity>(clientEntity);
             var entityVelocityPredictions = EntityManager.GetBuffer<Prediction<EntityVelocity>>(clientEntity);
             
@@ -47,6 +39,14 @@ namespace Client.Generated
             {
                 Tick = tick,
                 Value = entityVelocityPrediction
+            };
+            var entityPositionPrediction = EntityManager.GetComponentData<EntityPosition>(clientEntity);
+            var entityPositionPredictions = EntityManager.GetBuffer<Prediction<EntityPosition>>(clientEntity);
+            
+            entityPositionPredictions[index] = new Prediction<EntityPosition>()
+            {
+                Tick = tick,
+                Value = entityPositionPrediction
             };
 //</generated>
             

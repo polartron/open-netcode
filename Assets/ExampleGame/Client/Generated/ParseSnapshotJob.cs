@@ -38,8 +38,8 @@ namespace Client.Generated
         //public BufferFromEntity<SnapshotBufferElement<##TYPE##>> ##TYPE##Buffer;
         //</template>
 //<generated>
-        public BufferFromEntity<SnapshotBufferElement<EntityPosition>> EntityPositionBuffer;
         public BufferFromEntity<SnapshotBufferElement<EntityVelocity>> EntityVelocityBuffer;
+        public BufferFromEntity<SnapshotBufferElement<EntityPosition>> EntityPositionBuffer;
         public BufferFromEntity<SnapshotBufferElement<PathComponent>> PathComponentBuffer;
 //</generated>
         //<template:privatesnapshot>
@@ -102,8 +102,8 @@ namespace Client.Generated
             //var base##TYPE## = Area.##TYPE##BaseLine.GetBaseline(baseLine);
             //</template>
 //<generated>
-            var baseEntityPosition = Area.EntityPositionBaseLine.GetBaseline(baseLine);
             var baseEntityVelocity = Area.EntityVelocityBaseLine.GetBaseline(baseLine);
+            var baseEntityPosition = Area.EntityPositionBaseLine.GetBaseline(baseLine);
             var basePathComponent = Area.PathComponentBaseLine.GetBaseline(baseLine);
 //</generated>
 
@@ -226,16 +226,16 @@ namespace Client.Generated
                 //}
                 //</template>
 //<generated>
-                if (!ParseComponent<EntityPosition>(tick, 0, activeEntity.BaseEntity.EntityPositionIndex, ref componentBuffers,
+                if (!ParseComponent<EntityVelocity>(tick, 0, activeEntity.BaseEntity.EntityVelocityIndex, ref componentBuffers,
                     hasCreatedBuffer, serverEntity, activeEntity, ref reader,
-                    baseEntityPosition, ref EntityPositionBuffer, CompressionModel))
+                    baseEntityVelocity, ref EntityVelocityBuffer, CompressionModel))
                 {
                     Success[0] = false;
                     return;
                 }
-                if (!ParseComponent<EntityVelocity>(tick, 1, activeEntity.BaseEntity.EntityVelocityIndex, ref componentBuffers,
+                if (!ParseComponent<EntityPosition>(tick, 1, activeEntity.BaseEntity.EntityPositionIndex, ref componentBuffers,
                     hasCreatedBuffer, serverEntity, activeEntity, ref reader,
-                    baseEntityVelocity, ref EntityVelocityBuffer, CompressionModel))
+                    baseEntityPosition, ref EntityPositionBuffer, CompressionModel))
                 {
                     Success[0] = false;
                     return;
@@ -460,33 +460,33 @@ namespace Client.Generated
 //<generated>
             if (created)
             {
-                var entityPositionBuffer = EntityCommandBuffer.AddBuffer<SnapshotBufferElement<EntityPosition>>(entity);
-                for (int i = 0; i < TimeConfig.SnapshotsPerSecond; i++)
-                    entityPositionBuffer.Add(default);
-                var array = entityPositionBuffer.AsNativeArray();
-                componentBuffers.Set(array.GetUnsafePtr(), array.Length, 0);
-            }
-            else
-            {
-                if (EntityPositionBuffer.HasComponent(entity))
-                {
-                    var array = EntityPositionBuffer[entity].AsNativeArray();
-                    componentBuffers.Set(array.GetUnsafePtr(), array.Length, 0);
-                }
-            }
-            if (created)
-            {
                 var entityVelocityBuffer = EntityCommandBuffer.AddBuffer<SnapshotBufferElement<EntityVelocity>>(entity);
                 for (int i = 0; i < TimeConfig.SnapshotsPerSecond; i++)
                     entityVelocityBuffer.Add(default);
                 var array = entityVelocityBuffer.AsNativeArray();
-                componentBuffers.Set(array.GetUnsafePtr(), array.Length, 1);
+                componentBuffers.Set(array.GetUnsafePtr(), array.Length, 0);
             }
             else
             {
                 if (EntityVelocityBuffer.HasComponent(entity))
                 {
                     var array = EntityVelocityBuffer[entity].AsNativeArray();
+                    componentBuffers.Set(array.GetUnsafePtr(), array.Length, 0);
+                }
+            }
+            if (created)
+            {
+                var entityPositionBuffer = EntityCommandBuffer.AddBuffer<SnapshotBufferElement<EntityPosition>>(entity);
+                for (int i = 0; i < TimeConfig.SnapshotsPerSecond; i++)
+                    entityPositionBuffer.Add(default);
+                var array = entityPositionBuffer.AsNativeArray();
+                componentBuffers.Set(array.GetUnsafePtr(), array.Length, 1);
+            }
+            else
+            {
+                if (EntityPositionBuffer.HasComponent(entity))
+                {
+                    var array = EntityPositionBuffer[entity].AsNativeArray();
                     componentBuffers.Set(array.GetUnsafePtr(), array.Length, 1);
                 }
             }
@@ -574,11 +574,11 @@ namespace Client.Generated
             //}
             //</template>
 //<generated>
-            if (componentTypes.Contains(ComponentType.ReadWrite<EntityPosition>()))
+            if (componentTypes.Contains(ComponentType.ReadWrite<EntityVelocity>()))
             {
                 mask = mask | (1 << 0);
             }
-            if (componentTypes.Contains(ComponentType.ReadWrite<EntityVelocity>()))
+            if (componentTypes.Contains(ComponentType.ReadWrite<EntityPosition>()))
             {
                 mask = mask | (1 << 1);
             }

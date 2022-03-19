@@ -23,11 +23,11 @@ namespace Server.Generated
             //}
             //</template>
 //<generated>
-            if (typeof(T) == typeof(EntityPosition))
+            if (typeof(T) == typeof(EntityVelocity))
             {
                 return mask | (1 << 0);
             }
-            if (typeof(T) == typeof(EntityVelocity))
+            if (typeof(T) == typeof(EntityPosition))
             {
                 return mask | (1 << 1);
             }

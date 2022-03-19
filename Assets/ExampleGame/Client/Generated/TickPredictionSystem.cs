@@ -15,7 +15,7 @@ namespace Client.Generated
 {
     [DisableAutoCreation]
     [UpdateInGroup(typeof(TickPreSimulationSystemGroup), OrderLast = true)]
-    public class TickPredictionSystem : SystemBase
+    public partial class TickPredictionSystem : SystemBase
     {
         private TickSystem _tickSystem;
 
@@ -36,17 +36,17 @@ namespace Client.Generated
             //}
             //</template>
 //<generated>
-            if (EntityManager.HasComponent<EntityPosition>(clientEntity))
+            if (EntityManager.HasComponent<EntityVelocity>(clientEntity))
             {
-                var buffer = EntityManager.AddBuffer<Prediction<EntityPosition>>(clientEntity);
+                var buffer = EntityManager.AddBuffer<Prediction<EntityVelocity>>(clientEntity);
                 for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
                 {
                     buffer.Add(default);
                 }
             }
-            if (EntityManager.HasComponent<EntityVelocity>(clientEntity))
+            if (EntityManager.HasComponent<EntityPosition>(clientEntity))
             {
-                var buffer = EntityManager.AddBuffer<Prediction<EntityVelocity>>(clientEntity);
+                var buffer = EntityManager.AddBuffer<Prediction<EntityPosition>>(clientEntity);
                 for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
                 {
                     buffer.Add(default);
@@ -63,8 +63,8 @@ namespace Client.Generated
             //DoRollback<##TYPE##>(entity, tick);
             //</template>
 //<generated>
-            DoRollback<EntityPosition>(entity, tick);
             DoRollback<EntityVelocity>(entity, tick);
+            DoRollback<EntityPosition>(entity, tick);
             DoRollback<PathComponent>(entity, tick);
 //</generated>
         }
@@ -137,14 +137,14 @@ namespace Client.Generated
             //}
             //</template>
 //<generated>
-            if (IsPredictionError<EntityPosition>(clientData, clientEntity, out int entityPositionErrorTick))
-            {
-                rollbackFromTick = entityPositionErrorTick;
-                rollback = true;
-            }
             if (IsPredictionError<EntityVelocity>(clientData, clientEntity, out int entityVelocityErrorTick))
             {
                 rollbackFromTick = entityVelocityErrorTick;
+                rollback = true;
+            }
+            if (IsPredictionError<EntityPosition>(clientData, clientEntity, out int entityPositionErrorTick))
+            {
+                rollbackFromTick = entityPositionErrorTick;
                 rollback = true;
             }
 //</generated>
@@ -161,10 +161,10 @@ namespace Client.Generated
                 //var ##TYPELOWER##Saved = EntityManager.GetBuffer<SavedInput<##TYPE##>>(clientEntity);
                 //</template>
 //<generated>
-                var movementInputCached = EntityManager.GetComponentData<MovementInput>(clientEntity);
-                var movementInputSaved = EntityManager.GetBuffer<SavedInput<MovementInput>>(clientEntity);
                 var weaponInputCached = EntityManager.GetComponentData<WeaponInput>(clientEntity);
                 var weaponInputSaved = EntityManager.GetBuffer<SavedInput<WeaponInput>>(clientEntity);
+                var movementInputCached = EntityManager.GetComponentData<MovementInput>(clientEntity);
+                var movementInputSaved = EntityManager.GetBuffer<SavedInput<MovementInput>>(clientEntity);
 //</generated>
                 
                 for (int i = 1; i < rollbackTicks; i++)
@@ -180,8 +180,8 @@ namespace Client.Generated
                     //EntityManager.SetComponentData(clientEntity, ##TYPELOWER##Saved[index].Value);
                     //</template>
 //<generated>
-                    EntityManager.SetComponentData(clientEntity, movementInputSaved[index].Value);
                     EntityManager.SetComponentData(clientEntity, weaponInputSaved[index].Value);
+                    EntityManager.SetComponentData(clientEntity, movementInputSaved[index].Value);
 //</generated>
                     
                     _tickSystem.StepSimulation();
@@ -196,8 +196,8 @@ namespace Client.Generated
                 //EntityManager.SetComponentData(clientEntity, ##TYPELOWER##Cached);
                 //</template>
 //<generated>
-                EntityManager.SetComponentData(clientEntity, movementInputCached);
                 EntityManager.SetComponentData(clientEntity, weaponInputCached);
+                EntityManager.SetComponentData(clientEntity, movementInputCached);
 //</generated>
             }
         }

@@ -15,7 +15,7 @@ namespace Client.Generated
 {
     [UpdateInGroup(typeof(TickPreSimulationSystemGroup), OrderLast = true)]
     [DisableAutoCreation]
-    public class TickApplySnapshotSystem : SystemBase
+    public partial class TickApplySnapshotSystem : SystemBase
     {
         private TickSystem _tickSystem;
         
@@ -23,8 +23,8 @@ namespace Client.Generated
         //private EntityQuery _##TYPELOWER##Query;
         //</template>
 //<generated>
-        private EntityQuery _entityPositionQuery;
         private EntityQuery _entityVelocityQuery;
+        private EntityQuery _entityPositionQuery;
         private EntityQuery _pathComponentQuery;
 //</generated>
         //<template:privatesnapshot>
@@ -51,14 +51,14 @@ namespace Client.Generated
             //    ComponentType.ReadWrite<##TYPE##>());
             //</template>
 //<generated>
-            _entityPositionQuery = GetEntityQuery(
-                ComponentType.Exclude<Prediction<EntityPosition>>(),
-                ComponentType.ReadOnly<SnapshotBufferElement<EntityPosition>>(),
-                ComponentType.ReadWrite<EntityPosition>());
             _entityVelocityQuery = GetEntityQuery(
                 ComponentType.Exclude<Prediction<EntityVelocity>>(),
                 ComponentType.ReadOnly<SnapshotBufferElement<EntityVelocity>>(),
                 ComponentType.ReadWrite<EntityVelocity>());
+            _entityPositionQuery = GetEntityQuery(
+                ComponentType.Exclude<Prediction<EntityPosition>>(),
+                ComponentType.ReadOnly<SnapshotBufferElement<EntityPosition>>(),
+                ComponentType.ReadWrite<EntityPosition>());
             _pathComponentQuery = GetEntityQuery(
                 ComponentType.Exclude<Prediction<PathComponent>>(),
                 ComponentType.ReadOnly<SnapshotBufferElement<PathComponent>>(),
@@ -110,13 +110,6 @@ namespace Client.Generated
             //Dependency = ##TYPELOWER##Job.ScheduleParallel(_##TYPELOWER##Query, Dependency);
             //</template>
 //<generated>
-            ApplyFromBufferJob<EntityPosition> entityPositionJob = new ApplyFromBufferJob<EntityPosition>()
-            {
-                Tick = (int) tickFrom,
-                SnapshotBufferFromEntity = GetBufferTypeHandle<SnapshotBufferElement<EntityPosition>>(true),
-                ComponentDataFromEntity = GetComponentTypeHandle<EntityPosition>()
-            };
-            Dependency = entityPositionJob.ScheduleParallel(_entityPositionQuery, Dependency);
             ApplyFromBufferJob<EntityVelocity> entityVelocityJob = new ApplyFromBufferJob<EntityVelocity>()
             {
                 Tick = (int) tickFrom,
@@ -124,6 +117,13 @@ namespace Client.Generated
                 ComponentDataFromEntity = GetComponentTypeHandle<EntityVelocity>()
             };
             Dependency = entityVelocityJob.ScheduleParallel(_entityVelocityQuery, Dependency);
+            ApplyFromBufferJob<EntityPosition> entityPositionJob = new ApplyFromBufferJob<EntityPosition>()
+            {
+                Tick = (int) tickFrom,
+                SnapshotBufferFromEntity = GetBufferTypeHandle<SnapshotBufferElement<EntityPosition>>(true),
+                ComponentDataFromEntity = GetComponentTypeHandle<EntityPosition>()
+            };
+            Dependency = entityPositionJob.ScheduleParallel(_entityPositionQuery, Dependency);
             ApplyFromBufferJob<PathComponent> pathComponentJob = new ApplyFromBufferJob<PathComponent>()
             {
                 Tick = (int) tickFrom,

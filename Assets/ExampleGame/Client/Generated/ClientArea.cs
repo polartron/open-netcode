@@ -18,8 +18,8 @@ namespace Client.Generated
         //public BaseLines<##TYPE##> ##TYPE##BaseLine;
         //</template>
 //<generated>
-        public BaseLines<EntityPosition> EntityPositionBaseLine;
         public BaseLines<EntityVelocity> EntityVelocityBaseLine;
+        public BaseLines<EntityPosition> EntityPositionBaseLine;
         public BaseLines<PathComponent> PathComponentBaseLine;
 //</generated>
         
@@ -30,8 +30,8 @@ namespace Client.Generated
             //##TYPE##BaseLine = new BaseLines<##TYPE##>(capacity, TimeConfig.SnapshotsPerSecond);
             //</template>
 //<generated>
-            EntityPositionBaseLine = new BaseLines<EntityPosition>(capacity, TimeConfig.SnapshotsPerSecond);
             EntityVelocityBaseLine = new BaseLines<EntityVelocity>(capacity, TimeConfig.SnapshotsPerSecond);
+            EntityPositionBaseLine = new BaseLines<EntityPosition>(capacity, TimeConfig.SnapshotsPerSecond);
             PathComponentBaseLine = new BaseLines<PathComponent>(capacity, TimeConfig.SnapshotsPerSecond);
 //</generated>
         }
@@ -43,8 +43,8 @@ namespace Client.Generated
             //##TYPE##BaseLine.Dispose();
             //</template>
 //<generated>
-            EntityPositionBaseLine.Dispose();
             EntityVelocityBaseLine.Dispose();
+            EntityPositionBaseLine.Dispose();
             PathComponentBaseLine.Dispose();
 //</generated>
         }

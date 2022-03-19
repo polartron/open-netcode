@@ -20,8 +20,8 @@ namespace Server.Generated
         //public int ##TYPE##Index;
         //</template>
 //<generated>
-        public int EntityPositionIndex;
         public int EntityVelocityIndex;
+        public int EntityPositionIndex;
         public int PathComponentIndex;
 //</generated>
 

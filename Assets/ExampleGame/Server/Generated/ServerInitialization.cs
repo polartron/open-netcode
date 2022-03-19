@@ -1,7 +1,6 @@
 using OpenNetcode.Server.Systems;
 using OpenNetcode.Shared.Systems;
 using OpenNetcode.Shared.Time;
-using Shared.Coordinates;
 using Unity.Entities;
 using Unity.Mathematics;
 using OpenNetcode.Server.Components;
@@ -87,18 +86,18 @@ namespace Server.Generated
             //}
             //</template>
 //<generated>
-            if (entityManager.HasComponent<MovementInput>(entity))
+            if (entityManager.HasComponent<WeaponInput>(entity))
             {
-                var buffer = entityManager.AddBuffer<ReceivedMovementInput>(entity);
+                var buffer = entityManager.AddBuffer<ReceivedWeaponInput>(entity);
             
                 for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
                 {
                     buffer.Add(default);
                 }
             }
-            if (entityManager.HasComponent<WeaponInput>(entity))
+            if (entityManager.HasComponent<MovementInput>(entity))
             {
-                var buffer = entityManager.AddBuffer<ReceivedWeaponInput>(entity);
+                var buffer = entityManager.AddBuffer<ReceivedMovementInput>(entity);
             
                 for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
                 {
