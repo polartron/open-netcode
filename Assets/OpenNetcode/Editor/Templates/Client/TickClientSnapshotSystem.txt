@@ -17,7 +17,7 @@ namespace Client.Generated
     [UpdateInGroup(typeof(TickPreSimulationSystemGroup), OrderFirst = true)]
     [UpdateAfter(typeof(TickClientReceiveSystem))]
     [DisableAutoCreation]
-    public class TickClientSnapshotSystem : SystemBase
+    public partial class TickClientSnapshotSystem : SystemBase
     {
         private IClientNetworkSystem _client;
         private NativeHashMap<int, ClientEntitySnapshot> _snapshotEntities;

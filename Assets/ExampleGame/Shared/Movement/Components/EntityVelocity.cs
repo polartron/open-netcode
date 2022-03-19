@@ -1,5 +1,5 @@
 ﻿using OpenNetcode.Shared.Attributes;
-using Shared.Coordinates;
+using OpenNetcode.Shared.Components;
 using Unity.Collections;
 using Unity.Entities;
 

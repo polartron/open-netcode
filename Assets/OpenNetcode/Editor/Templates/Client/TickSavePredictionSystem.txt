@@ -9,7 +9,7 @@ namespace Client.Generated
 {
     [DisableAutoCreation]
     [UpdateInGroup(typeof(TickSimulationSystemGroup), OrderLast = true)]
-    public class TickSavePredictionSystem : SystemBase
+    public partial class TickSavePredictionSystem : SystemBase
     {
         protected override void OnUpdate()
         {

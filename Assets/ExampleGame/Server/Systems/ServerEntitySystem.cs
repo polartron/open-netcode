@@ -5,7 +5,6 @@ using OpenNetcode.Server.Components;
 using OpenNetcode.Shared.Components;
 using OpenNetcode.Shared.Systems;
 using Server.Generated;
-using Shared.Coordinates;
 using Unity.Entities;
 using Unity.Transforms;
 using UnityEngine;
@@ -15,7 +14,7 @@ namespace ExampleGame.Server.Systems
     [DisableAutoCreation]
     [UpdateInGroup(typeof(InitializationSystemGroup))]
     [UpdateAfter(typeof(NetworkedPrefabSystem))]
-    public class ServerEntitySystem : SystemBase
+    public partial class ServerEntitySystem : SystemBase
     {
         internal Entity Player;
         internal Entity Monster;

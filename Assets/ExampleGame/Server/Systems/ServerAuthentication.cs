@@ -12,7 +12,7 @@ namespace ExampleGame.Server.Systems
     [UpdateInGroup(typeof(TickPreSimulationSystemGroup))]
     [UpdateAfter(typeof(TickServerReceiveSystem))]
     [DisableAutoCreation]
-    public class ServerGuestAuthentication : SystemBase
+    public partial class ServerGuestAuthentication : SystemBase
     {
         private readonly IServerNetworkSystem _server;
         private ServerEntitySystem _serverEntitySystem;

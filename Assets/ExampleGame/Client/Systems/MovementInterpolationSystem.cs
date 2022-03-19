@@ -3,7 +3,6 @@ using OpenNetcode.Client.Components;
 using OpenNetcode.Shared.Components;
 using OpenNetcode.Shared.Systems;
 using OpenNetcode.Shared.Time;
-using Shared.Coordinates;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -15,7 +14,7 @@ namespace ExampleGame.Client.Systems
     [UpdateInGroup(typeof(SimulationSystemGroup))]
     [UpdateAfter(typeof(TickSystem))]
     [DisableAutoCreation]
-    public class MovementInterpolationSystem : SystemBase
+    public partial class MovementInterpolationSystem : SystemBase
     {
         private TickSystem _tickSystem;
 

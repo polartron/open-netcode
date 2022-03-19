@@ -11,7 +11,7 @@ namespace Client.Generated
 {
     [UpdateInGroup(typeof(TickPreSimulationSystemGroup), OrderLast = true)]
     [DisableAutoCreation]
-    public class TickApplySnapshotSystem : SystemBase
+    public partial class TickApplySnapshotSystem : SystemBase
     {
         private TickSystem _tickSystem;
         

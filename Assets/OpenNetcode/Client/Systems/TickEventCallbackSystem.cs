@@ -4,7 +4,7 @@ using Unity.Entities;
 
 namespace OpenNetcode.Client.Systems
 {
-    public abstract class TickEventCallbackSystem<T> : SystemBase where T : unmanaged, IBufferElementData
+    public abstract partial class TickEventCallbackSystem<T> : SystemBase where T : unmanaged, IBufferElementData
     {
         private EntityQuery _query;
 

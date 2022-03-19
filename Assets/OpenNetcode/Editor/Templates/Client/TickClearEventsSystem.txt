@@ -9,7 +9,7 @@ namespace Client.Generated
 {
     [UpdateInGroup(typeof(TickPostSimulationSystemGroup))]
     [DisableAutoCreation]
-    public class TickClearEventsSystem : SystemBase
+    public partial class TickClearEventsSystem : SystemBase
     {
         //<template:publicevent>
         //private EntityQuery _##TYPELOWER##Query;

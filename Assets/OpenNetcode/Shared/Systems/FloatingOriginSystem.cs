@@ -1,9 +1,10 @@
 ﻿using System.Diagnostics.Contracts;
+using OpenNetcode.Shared.Components;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace Shared.Coordinates
+namespace OpenNetcode.Shared.Systems
 {
     public struct FloatingOrigin : IComponentData
     {
@@ -32,7 +33,7 @@ namespace Shared.Coordinates
     }
 
     [DisableAutoCreation]
-    public class FloatingOriginSystem : SystemBase
+    public partial class FloatingOriginSystem : SystemBase
     {
         private readonly float3 _offset;
 

@@ -10,7 +10,7 @@ using UnityEngine;
 namespace ExampleGame.Client.Systems
 {
     [DisableAutoCreation]
-    public class SoundSystem : SystemBase
+    public partial class SoundSystem : SystemBase
     {
         private Dictionary<Entity, AudioSource> _activeSounds = new Dictionary<Entity, AudioSource>();
         private Dictionary<string, AudioClip> _audioClips = new Dictionary<string, AudioClip>();

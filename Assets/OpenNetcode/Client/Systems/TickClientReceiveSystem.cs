@@ -5,7 +5,7 @@ namespace OpenNetcode.Client.Systems
 {
     [DisableAutoCreation]
     [UpdateInGroup(typeof(TickPreSimulationSystemGroup), OrderFirst = true)]
-    public unsafe class TickClientReceiveSystem : SystemBase
+    public partial class TickClientReceiveSystem : SystemBase
     {
         private IClientNetworkSystem _clientNetworkSystem;
 

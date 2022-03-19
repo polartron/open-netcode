@@ -26,7 +26,7 @@ namespace OpenNetcode.Client.Systems
     }
     
     [DisableAutoCreation]
-    public class ClientNetworkSystem : SystemBase, IClientNetworkSystem
+    public partial class ClientNetworkSystem : SystemBase, IClientNetworkSystem
     {
         public NativeMultiHashMap<int, PacketArrayWrapper> ReceivedPackets { get; private set; }
         public NativeList<PacketArrayWrapper> SendPackets { get; private set; }

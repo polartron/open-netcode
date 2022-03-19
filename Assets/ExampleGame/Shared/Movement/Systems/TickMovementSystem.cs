@@ -2,7 +2,6 @@
 using OpenNetcode.Shared.Components;
 using OpenNetcode.Shared.Systems;
 using OpenNetcode.Shared.Time;
-using Shared.Coordinates;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -13,7 +12,7 @@ namespace ExampleGame.Shared.Movement.Systems
 {
     [DisableAutoCreation]
     [UpdateInGroup(typeof(TickSimulationSystemGroup))]
-    public class TickMovementSystem : SystemBase
+    public partial class TickMovementSystem : SystemBase
     {
         private EntityQuery _movingEntitiesQuery;
         private EntityQuery _pathingEntitiesQuery;

@@ -14,7 +14,7 @@ namespace Client.Generated
 {
     [DisableAutoCreation]
     [UpdateInGroup(typeof(TickPreSimulationSystemGroup))]
-    public class TickInputSystem : SystemBase
+    public partial class TickInputSystem : SystemBase
     {
         private Entity _clientEntity;
         private IClientNetworkSystem _clientNetworkSystem;

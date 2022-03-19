@@ -10,7 +10,7 @@ namespace ExampleGame.Client.Systems
     [UpdateInGroup(typeof(SimulationSystemGroup))]
     [UpdateBefore(typeof(TickSystem))]
     [DisableAutoCreation]
-    public class PlayerInputSystem : SystemBase
+    public partial class PlayerInputSystem : SystemBase
     {
         protected override void OnUpdate()
         {

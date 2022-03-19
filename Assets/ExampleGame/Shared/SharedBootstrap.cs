@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Unity.Entities;
 using UnityEngine;
+using UnityEngine.LowLevel;
 
 #if !UNITY_EDITOR
 using System.Reflection;
@@ -27,7 +28,10 @@ namespace Shared
         {
             World world = new World(name);
             DefaultWorldInitialization.AddSystemsToRootLevelSystemGroups(world, DefaultWorldInitialization.GetAllSystems(WorldSystemFilterFlags.Default));
-            ScriptBehaviourUpdateOrder.AddWorldToCurrentPlayerLoop(world);
+            var loop = PlayerLoop.GetCurrentPlayerLoop();
+            ScriptBehaviourUpdateOrder.AppendWorldToPlayerLoop(world, ref loop);
+            PlayerLoop.SetPlayerLoop(loop);
+            
             return world;
         }
         
@@ -49,7 +53,9 @@ namespace Shared
             
             DefaultWorldInitialization.AddSystemsToRootLevelSystemGroups(defaultWorld, list);
             World.DefaultGameObjectInjectionWorld = defaultWorld;
-            ScriptBehaviourUpdateOrder.AddWorldToCurrentPlayerLoop(defaultWorld);
+            var loop = PlayerLoop.GetCurrentPlayerLoop();
+            ScriptBehaviourUpdateOrder.AppendWorldToPlayerLoop(defaultWorld, ref loop);
+            PlayerLoop.SetPlayerLoop(loop);
             
             var bootstrapTypes = GetTypesDerivedFrom(typeof(IWorldBootstrap));
 

@@ -1,7 +1,6 @@
 using OpenNetcode.Server.Systems;
 using OpenNetcode.Shared.Systems;
 using OpenNetcode.Shared.Time;
-using Shared.Coordinates;
 using Unity.Entities;
 using Unity.Mathematics;
 using OpenNetcode.Server.Components;

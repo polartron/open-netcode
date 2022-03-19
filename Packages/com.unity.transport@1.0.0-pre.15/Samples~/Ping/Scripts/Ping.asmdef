@@ -1,0 +1,28 @@
+{
+    "name": "Ping",
+    "rootNamespace": "",
+    "references": [
+        "Unity.Burst",
+        "Unity.Entities",
+        "Unity.Collections",
+        "Unity.Networking.Transport",
+        "Unity.Jobs"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "ENABLE_JOBS"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.unity.jobs",
+            "expression": "0.0",
+            "define": "ENABLE_JOBS"
+        }
+    ],
+    "noEngineReferences": false
+}

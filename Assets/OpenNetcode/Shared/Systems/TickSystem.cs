@@ -11,7 +11,7 @@ namespace OpenNetcode.Shared.Systems
     {
         public TickPreSimulationSystemGroup()
         {
-            FixedRateManager = null;
+            RateManager = null;
         }
     }
     
@@ -22,7 +22,7 @@ namespace OpenNetcode.Shared.Systems
     {
         public TickSimulationSystemGroup()
         {
-            FixedRateManager = null;
+            RateManager = null;
         }
     }
     
@@ -33,7 +33,7 @@ namespace OpenNetcode.Shared.Systems
     {
         public TickPostSimulationSystemGroup()
         {
-            FixedRateManager = null;
+            RateManager = null;
         }
     }
     
@@ -57,7 +57,7 @@ namespace OpenNetcode.Shared.Systems
     
     [DisableAutoCreation]
     [UpdateInGroup(typeof(SimulationSystemGroup))]
-    public class TickSystem : SystemBase, ITickable
+    public partial class TickSystem : SystemBase, ITickable
     {
         public int Tick => (int) _ticker.TickFloat;
         public float TickFloat => _ticker.TickFloat;

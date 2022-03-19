@@ -29,7 +29,7 @@ namespace Server.Generated
     [DisableAutoCreation]
     [UpdateInGroup(typeof(TickPostSimulationSystemGroup))]
     [UpdateBefore(typeof(TickServerSendSystem))]
-    public unsafe class TickServerSnapshotSystem : SystemBase
+    public unsafe partial class TickServerSnapshotSystem : SystemBase
     {
         private IServerNetworkSystem _server;
         private NativeHashMap<int, Area> _areas;
@@ -167,7 +167,7 @@ namespace Server.Generated
                 //</template>
             };
 
-            Dependency = addEntitiesToAreas.ScheduleParallel(_entitiesQuery, 4, Dependency);
+            Dependency = addEntitiesToAreas.ScheduleParallel(_entitiesQuery, Dependency);
             Dependency.Complete();
 
             var activeAreas = activeAreasList.ToNativeArray(Allocator.Temp);
@@ -241,11 +241,13 @@ namespace Server.Generated
             
             foreach (var result in publicSnapshotResults)
             {
-                var packet = Packets.WrapPacket(result.Value.GetArray<byte>(), result.Value.Length);
-                
                 foreach (var player in jobsForPlayers)
                 {
-                    _server.Send(player.Value, packet);
+                    if (player.Key == result.Key)
+                    {
+                        var packet = Packets.WrapPacket(result.Value.GetArray<byte>(), result.Value.Length);
+                        _server.Send(player.Value, packet);
+                    }
                 }
             }
 

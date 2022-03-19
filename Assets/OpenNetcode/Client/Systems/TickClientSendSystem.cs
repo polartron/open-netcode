@@ -11,7 +11,7 @@ namespace OpenNetcode.Client.Systems
 {
     [DisableAutoCreation]
     [UpdateInGroup(typeof(TickPostSimulationSystemGroup), OrderLast = true)]
-    public class TickClientSendSystem : SystemBase
+    public partial class TickClientSendSystem : SystemBase
     {
         private IClientNetworkSystem _clientNetworkSystem;
 

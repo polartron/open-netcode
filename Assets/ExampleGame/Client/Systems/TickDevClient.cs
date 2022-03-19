@@ -12,7 +12,7 @@ namespace ExampleGame.Client.Systems
     [DisableAutoCreation]    
     [UpdateInGroup(typeof(TickPreSimulationSystemGroup))]
     [UpdateAfter(typeof(TickClientReceiveSystem))]
-    public class TickDevClient : SystemBase
+    public partial class TickDevClient : SystemBase
     {
         private IClientNetworkSystem _client;
         private bool _connecting = false;

@@ -3,7 +3,6 @@ using ExampleGame.Shared.Components;
 using ExampleGame.Shared.Movement.Components;
 using OpenNetcode.Shared.Systems;
 using OpenNetcode.Shared.Time;
-using Shared.Coordinates;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -15,7 +14,7 @@ namespace ExampleGame.Server.Systems
 
     [DisableAutoCreation]
     [UpdateInGroup(typeof(TickPreSimulationSystemGroup))]
-    public class TickDevServer : SystemBase
+    public partial class TickDevServer : SystemBase
     {
         protected override void OnCreate()
         {

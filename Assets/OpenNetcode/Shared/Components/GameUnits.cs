@@ -1,10 +1,10 @@
 ﻿using System;
-using OpenNetcode.Shared.Components;
+using OpenNetcode.Shared.Systems;
 using Unity.Mathematics;
 using Unity.Networking.Transport;
 using UnityEngine;
 
-namespace Shared.Coordinates
+namespace OpenNetcode.Shared.Components
 {
     [Serializable]
     public struct GameUnits : IEquatable<GameUnits>

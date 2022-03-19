@@ -12,7 +12,7 @@ namespace OpenNetcode.Server.Systems
     [UpdateInGroup(typeof(TickPostSimulationSystemGroup), OrderLast = true)]
     [UpdateBefore(typeof(TickServerSendSystem))]
     [DisableAutoCreation]
-    public unsafe class TickSendResultSystem : SystemBase
+    public partial class TickSendResultSystem : SystemBase
     {
         private IServerNetworkSystem _server;
         private NetworkCompressionModel _compressionModel;

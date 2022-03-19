@@ -24,7 +24,7 @@ namespace OpenNetcode.Server.Systems
     }
     
     [DisableAutoCreation]
-    public class ServerNetworkSystem : SystemBase, IServerNetworkSystem
+    public partial class ServerNetworkSystem : SystemBase, IServerNetworkSystem
     {
         public NativeMultiHashMap<int, PacketArrayWrapper> ReceivePackets { get; private set; }
         public NativeMultiHashMap<int, PacketArrayWrapper> SendPackets { get; private set; }
@@ -166,7 +166,6 @@ namespace OpenNetcode.Server.Systems
                         var reader = new DataStreamReader(bytes);
                         PacketType type = Packets.ReadPacketType(ref reader);
                         reader.SeekSet(0);
-                        reader.ReadBytes(bytes);
                         
                         ReceivedMessages.Add((int) type, new PacketArrayWrapper()
                         {

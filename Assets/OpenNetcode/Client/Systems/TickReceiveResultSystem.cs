@@ -20,7 +20,7 @@ namespace OpenNetcode.Client.Systems
     [DisableAutoCreation]
     [UpdateInGroup(typeof(TickPreSimulationSystemGroup))]
     [UpdateAfter(typeof(TickClientReceiveSystem))]
-    public class TickReceiveResultSystem : SystemBase, ITickReceiveResultSystem
+    public partial class TickReceiveResultSystem : SystemBase, ITickReceiveResultSystem
     {
         private struct SentTime
         {

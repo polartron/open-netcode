@@ -102,7 +102,7 @@ namespace OpenNetcode.Shared.Time
 
         public void Update()
         {
-            double tickFloat = GetTickFloat(_tickerData, _tickerConfig);
+            double tickFloat = Mathf.Max(0f, (float) GetTickFloat(_tickerData, _tickerConfig));
             
             int ticksToSimulate = Mathf.Clamp((int) tickFloat - _tickerData.LastTick, 0, 10);
             int nextTick = _tickerData.LastTick + 1;

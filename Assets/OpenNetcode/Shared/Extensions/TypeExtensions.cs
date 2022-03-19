@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Shared.Coordinates;
+using OpenNetcode.Shared.Components;
 using Unity.Collections;
 using Unity.Mathematics;
 using Unity.Networking.Transport;

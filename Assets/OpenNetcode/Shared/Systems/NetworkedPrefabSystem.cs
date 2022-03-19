@@ -8,7 +8,7 @@ namespace OpenNetcode.Shared.Systems
 {
     [DisableAutoCreation]
     [UpdateInGroup(typeof(InitializationSystemGroup))]
-    public class NetworkedPrefabSystem : SystemBase
+    public partial class NetworkedPrefabSystem : SystemBase
     {
         public NativeHashMap<int, Entity> Prefabs = new NativeHashMap<int, Entity>(100, Allocator.Persistent);
         public NativeHashMap<int, EntityArchetype> PrefabEntityArchetypes = new NativeHashMap<int, EntityArchetype>(100, Allocator.Persistent);

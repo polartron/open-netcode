@@ -10,7 +10,7 @@ namespace OpenNetcode.Server.Systems
 {
     [DisableAutoCreation]
     [UpdateInGroup(typeof(TickSimulationSystemGroup), OrderFirst = true)]
-    public class TopDownSpatialHashingSystem : SystemBase
+    public partial class TopDownSpatialHashingSystem : SystemBase
     {
         private EntityQuery _entityQuery;
         

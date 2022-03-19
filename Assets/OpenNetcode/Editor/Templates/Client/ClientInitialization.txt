@@ -3,7 +3,6 @@ using OpenNetcode.Client.Systems;
 using OpenNetcode.Shared.Components;
 using OpenNetcode.Shared.Systems;
 using OpenNetcode.Shared.Time;
-using Shared.Coordinates;
 using Shared.Time;
 using Unity.Entities;
 using Unity.Mathematics;

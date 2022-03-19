@@ -97,7 +97,7 @@ MonoBehaviour:
   Acceleration: 64
   MaxSpeed: 5
   StoppingSpeed: 2
-  Friction: 5
+  Friction: 4
 --- !u!114 &-1158846684388280474
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -11,7 +11,7 @@ namespace OpenNetcode.Client.Systems
     [UpdateInGroup(typeof(TickPreSimulationSystemGroup))]
     [UpdateAfter(typeof(TickClientReceiveSystem))]
     [DisableAutoCreation]
-    public class TickReceiveClientInfoSystem : SystemBase
+    public partial class TickReceiveClientInfoSystem : SystemBase
     {
         private IClientNetworkSystem _clientNetworkSystem;
         private NetworkCompressionModel _compressionModel;

@@ -2,8 +2,8 @@
     "name": "Client",
     "rootNamespace": "",
     "references": [
-        "GUID:6055be8ebefd69e48b49212b09b47b2f",
         "GUID:970cd1fcc71dcbb478e2f566db9d81d7",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
         "GUID:d8b63aba1907145bea998dd612889d6b",
         "GUID:e0cd26848372d4e5c891c569017e11f1",
         "GUID:2665a8d13d1b3f18800f46e256720795",
@@ -12,12 +12,10 @@
         "GUID:a5baed0c9693541a5bd947d336ec7659",
         "GUID:8819f35a0fc84499b990e90a4ca1911f",
         "GUID:7a450cf7ca9694b5a8bfa3fd83ec635a",
-        "GUID:4bfd98e98a63057439711b334e035c9f",
         "GUID:f2d49d9fa7e7eb3418e39723a7d3b92f",
         "GUID:e4eac4ae9a0f8ae4684b3a43dcfa7c14",
         "GUID:0d8c0cb81c978424ba60256af2e2bf82",
-        "GUID:233c35f59d6e0e8408daf832645dce94",
-        "GUID:f3e7b160b057d944dac3b55c181e0622"
+        "GUID:233c35f59d6e0e8408daf832645dce94"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

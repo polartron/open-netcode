@@ -5,7 +5,7 @@ namespace OpenNetcode.Server.Systems
 {
     [DisableAutoCreation]
     [UpdateInGroup(typeof(TickPreSimulationSystemGroup), OrderFirst = true)]
-    public class TickServerReceiveSystem : SystemBase
+    public partial class TickServerReceiveSystem : SystemBase
     {
         private IServerNetworkSystem _server;
 
