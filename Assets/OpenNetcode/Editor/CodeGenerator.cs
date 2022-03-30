@@ -287,8 +287,7 @@ namespace ##NAMESPACE##
             {
                 foreach (Type type in assembly.GetTypes())
                 {
-                    if (type.GetCustomAttributes(typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute), true)
-                        .Length > 0)
+                    if (type.GetCustomAttributes(typeof(CompilerGeneratedAttribute), true).Length > 0)
                         continue;
 
                     if (type.GetCustomAttributes(typeof(PublicSnapshot), true).Length > 0)

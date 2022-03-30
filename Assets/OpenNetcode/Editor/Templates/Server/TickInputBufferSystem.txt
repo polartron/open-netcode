@@ -55,7 +55,7 @@ namespace Server.Generated
         {
             ReadPlayerInputJob readPlayerInputJob = new ReadPlayerInputJob()
             {
-                ElapsedTime = UnityEngine.Time.realtimeSinceStartupAsDouble,
+                ElapsedTime = Time.ElapsedTime,
                 CompressionModel = _compressionModel,
                 ReceivedPackets = _server.ReceivePackets,
                 ServerNetworkedEntityTypeHandle = GetComponentTypeHandle<ServerNetworkedEntity>(true),

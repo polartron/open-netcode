@@ -62,6 +62,7 @@ namespace OpenNetcode.Shared.Systems
         public int Tick => (int) _ticker.TickFloat;
         public float TickFloat => _ticker.TickFloat;
         public double TickerTime => _ticker.Time;
+        public double RttHalf => _ticker.RttHalf;
         
         private Ticker _ticker;
         private TickPreSimulationSystemGroup _tickPreSimulationSystemGroup;
@@ -82,6 +83,11 @@ namespace OpenNetcode.Shared.Systems
         public void SetTime(double time)
         {
             _ticker.SetTime(time);
+        }
+        
+        public void SetRttHalf(float rtt)
+        {
+            _ticker.SetRttHalf(rtt);
         }
 
         protected override void OnCreate()

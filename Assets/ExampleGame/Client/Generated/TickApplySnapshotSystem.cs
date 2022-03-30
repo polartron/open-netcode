@@ -94,8 +94,7 @@ namespace Client.Generated
 
         protected override void OnUpdate()
         {
-            var roundTripTime = GetSingleton<RoundTripTime>();
-            double rttHalf = roundTripTime.Value / 2;
+            double rttHalf = _tickSystem.RttHalf / 2;
             double tickFloat = _tickSystem.TickFloat;
             double tickServer = tickFloat - (rttHalf + TimeConfig.CommandBufferLengthMs) / 1000f * TimeConfig.TicksPerSecond;
             double tickFrom = tickServer - TimeConfig.TicksPerSecond * Mathf.Min(0.1f, 1f / TimeConfig.SnapshotsPerSecond);

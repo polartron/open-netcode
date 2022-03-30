@@ -32,21 +32,21 @@ namespace OpenNetcode.Server.Systems
         {
             int tick = GetSingleton<TickData>().Value;
 
-            if (tick % (TimeConfig.TicksPerSecond / TimeConfig.SnapshotsPerSecond) != 0)
+            if (tick % (TimeConfig.TicksPerSecond / 2) != 0)
             {
                 return;
             }
             
             NetworkCompressionModel compressionModel = _compressionModel;
             NativeMultiHashMap<int, PacketArrayWrapper> packets = _server.SendPackets;
-            float timeSinceStartup = UnityEngine.Time.realtimeSinceStartup;
+            float timeSinceStartup = (float) Time.ElapsedTime;
             
             Entities.WithAll<PlayerControlledTag>().ForEach((in InputTimeData inputTimeData, in DynamicBuffer<ProcessedInput> processedInputs, in ServerNetworkedEntity networkEntity, in Entity entity) =>
             {
                 DataStreamWriter writer = new DataStreamWriter(20, Allocator.Temp);
                 Packets.WritePacketType(PacketType.Result, ref writer);
                 writer.WritePackedUInt((uint) inputTimeData.Tick, compressionModel);
-                writer.WritePackedUInt((uint) tick, compressionModel);
+                writer.WritePackedFloat(timeSinceStartup, compressionModel);
                 writer.WritePackedFloat((float)(timeSinceStartup - inputTimeData.ArrivedTime), compressionModel);
                 packets.Add(networkEntity.OwnerNetworkId, Packets.WrapPacket(writer));
             }).Run();

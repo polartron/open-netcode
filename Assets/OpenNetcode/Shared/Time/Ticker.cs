@@ -12,6 +12,8 @@ namespace OpenNetcode.Shared.Time
 
     public struct TickerData
     {
+        public float Rtt;
+        public float SmoothRttHalf;
         public int LastTick;
         public double TimeUpdated;
         public double Offset;
@@ -50,6 +52,7 @@ namespace OpenNetcode.Shared.Time
 
         private List<ITickable> _tickables = new List<ITickable>();
         public float TickFloat => (float) GetTickFloat(_tickerData, _tickerConfig);
+        public float RttHalf => _tickerData.SmoothRttHalf;
 
         public double Time
         {
@@ -102,6 +105,8 @@ namespace OpenNetcode.Shared.Time
 
         public void Update()
         {
+            _tickerData.SmoothRttHalf = Mathf.Lerp(_tickerData.SmoothRttHalf, _tickerData.Rtt, TimeConfig.FixedDeltaTime);
+            
             double tickFloat = Mathf.Max(0f, (float) GetTickFloat(_tickerData, _tickerConfig));
             
             int ticksToSimulate = Mathf.Clamp((int) tickFloat - _tickerData.LastTick, 0, 10);
@@ -116,6 +121,11 @@ namespace OpenNetcode.Shared.Time
             }
 
             _tickerData.LastTick = (int) tickFloat;
+        }
+
+        public void SetRttHalf(float rtt)
+        {
+            _tickerData.Rtt = rtt;
         }
 
         public void SetTime(double time)
@@ -138,7 +148,7 @@ namespace OpenNetcode.Shared.Time
         {
             double timeInMs = TimeUtils.CurrentTimeInMs();
             double elapsed = timeInMs - data.TimeUpdated;
-            double current = BaseTime(data, config, timeInMs) + elapsed;
+            double current = BaseTime(data, config, timeInMs) + elapsed + data.SmoothRttHalf + TimeConfig.CommandBufferLengthMs;
             double seconds = current / 1000;
 
             double tick = seconds * config.TicksPerSecond;

@@ -42,7 +42,6 @@ namespace ExampleGame.Client.Systems
         protected override void OnUpdate()
         {
             var floatingOrigin = GetSingleton<FloatingOrigin>();
-            var roundTripTime = GetSingleton<RoundTripTime>();
             float deltaTime = Time.DeltaTime;
 
             int tick = _tickSystem.Tick;
@@ -63,7 +62,7 @@ namespace ExampleGame.Client.Systems
             //    translation.Value = target;
             //}).WithoutBurst().Run();
             
-            double rttHalf = roundTripTime.Value / 2;
+            double rttHalf = _tickSystem.RttHalf;
             double tickFloat = _tickSystem.TickFloat;
             double tickServer = tickFloat - (rttHalf + TimeConfig.CommandBufferLengthMs) / 1000f * TimeConfig.TicksPerSecond;
             double tickFrom = tickServer - TimeConfig.TicksPerSecond * Mathf.Min(1, 1f / TimeConfig.SnapshotsPerSecond);

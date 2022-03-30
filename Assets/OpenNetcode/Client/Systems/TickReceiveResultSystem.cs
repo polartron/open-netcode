@@ -1,14 +1,11 @@
 ﻿using System;
 using OpenNetcode.Client.Components;
 using OpenNetcode.Shared;
-using OpenNetcode.Shared.Components;
 using OpenNetcode.Shared.Systems;
 using OpenNetcode.Shared.Time;
-using Shared.Time;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Networking.Transport;
-using Unity.Profiling;
 using UnityEngine;
 
 namespace OpenNetcode.Client.Systems
@@ -34,7 +31,8 @@ namespace OpenNetcode.Client.Systems
         private float _dilationMs;
         private NetworkCompressionModel _compressionModel;
 
-        private NativeArray<float> _timeOffsets;
+        private NativeList<double> _timeOffsets;
+        private bool _timeSet;
         private int _timeOffsetIndex = 0;
 
         public TickReceiveResultSystem(IClientNetworkSystem client)
@@ -47,16 +45,13 @@ namespace OpenNetcode.Client.Systems
             _tickSystem = World.GetExistingSystem<TickSystem>();
             _compressionModel = new NetworkCompressionModel(Allocator.Persistent);
             _sentInputs = new NativeHashMap<int, SentTime>(TimeConfig.TicksPerSecond, Allocator.Persistent);
-            _timeOffsets = new NativeArray<float>(TimeConfig.TicksPerSecond, Allocator.Persistent);
-            
-           // _profilerRoundTripTime = ProfilerRecorder.StartNew(ProfilerCategory.Network, "Round Trip Time");
+            _timeOffsets = new NativeList<double>(10, Allocator.Persistent);
         }
 
         protected override void OnDestroy()
         {
             _sentInputs.Dispose();
             _timeOffsets.Dispose();
-            //_profilerRoundTripTime.Dispose();
         }
 
         public void AddSentInput(int tick, float sentTime)
@@ -80,11 +75,9 @@ namespace OpenNetcode.Client.Systems
                         Packets.ReadPacketType(ref reader);
                         
                         int resultTick = (int) reader.ReadPackedUInt(_compressionModel);
-                        int serverTick = (int) reader.ReadPackedUInt(_compressionModel);
+                        double serverTime = reader.ReadPackedFloat(_compressionModel);
                         float processedTime = reader.ReadPackedFloat(_compressionModel);
-                        
-                        double serverTimeMs = ((float) serverTick / TimeConfig.TicksPerSecond) * 1000f;
-                        
+
                         if (_sentInputs.TryGetValue(resultTick % _sentInputs.Capacity, out SentTime sentTime))
                         {
                             if (sentTime.Tick != resultTick)
@@ -92,33 +85,39 @@ namespace OpenNetcode.Client.Systems
                                 break;
                             }
                             
-                            //Calculate round trip time
                             double rttMs = (Time.ElapsedTime - sentTime.Time) * 1000f;
                             rttMs -= (processedTime * 1000f);
                             float rttHalf = (float) rttMs / 2;
-                            
-                            SetSingleton(new RoundTripTime()
-                            {
-                                Value = (float) rttMs
-                            });
+                            _tickSystem.SetRttHalf(rttHalf);
 
-                            //No sudden time changes. Slowly move towards predicted time. 
-                            double tickerTime = _tickSystem.TickerTime;
-            
-                            if (tickerTime < serverTimeMs || tickerTime > serverTimeMs + 1000)
+                            if (!_timeSet)
                             {
-                                _tickSystem.SetTime(serverTimeMs + rttHalf + TimeConfig.CommandBufferLengthMs);
+                                double offset = Time.ElapsedTime - serverTime;
+                                _timeOffsets.Add(offset);
+                                
+                                // If we have enough time offsets then let's goo
+                                if (_timeOffsets.Length >= 5)
+                                {
+                                    _timeSet = true;
+                                    
+                                    double avgOffset = 0f;
+
+                                    for (int i = 0; i < _timeOffsets.Length; i++)
+                                    {
+                                        avgOffset += _timeOffsets[i];
+                                    }
+
+                                    avgOffset = avgOffset / _timeOffsets.Length;
+
+                                    double time = Time.ElapsedTime + avgOffset;
+                                    _tickSystem.SetTime(time * 1000f);
+                                }
+                                else
+                                {
+                                    double time = Time.ElapsedTime + offset;
+                                    _tickSystem.SetTime(time * 1000f);
+                                }
                             }
-                            else
-                            {
-                                double predictedTimeMs = serverTimeMs + rttHalf + TimeConfig.CommandBufferLengthMs + _dilationMs;
-                                float lerpedTime = Mathf.Lerp((float) tickerTime, (float) predictedTimeMs, TimeConfig.FixedDeltaTime);
-                                _tickSystem.SetTime(lerpedTime);
-                            }
-                        }
-                        else
-                        {
-                            _tickSystem.SetTime(serverTimeMs + 500 + TimeConfig.CommandBufferLengthMs);
                         }
 
                         break;

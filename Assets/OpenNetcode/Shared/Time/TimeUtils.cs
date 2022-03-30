@@ -4,9 +4,9 @@ namespace Shared.Time
 {
     public class TimeUtils
     {
-        public static long CurrentTimeInMs()
+        public static double CurrentTimeInMs()
         {
-            return (long) (UnityEngine.Time.time * 1000f);
+            return (UnityEngine.Time.time * 1000f);
         }
     }
 }
