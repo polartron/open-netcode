@@ -118,7 +118,7 @@ namespace Server.Generated
         {
             [ReadOnly] public double ElapsedTime;
             [ReadOnly] public NetworkCompressionModel CompressionModel;
-            [ReadOnly] public NativeMultiHashMap<int, PacketArrayWrapper> ReceivedPackets;
+            [ReadOnly] public NativeMultiHashMap<int, IncomingPacket> ReceivedPackets;
             [ReadOnly] public ComponentTypeHandle<ServerNetworkedEntity> ServerNetworkedEntityTypeHandle;
 
             public ComponentTypeHandle<PlayerBaseLine> PlayerBaseLineTypeHandle;
@@ -148,11 +148,11 @@ namespace Server.Generated
                 {
                     var serverNetworkedEntity = serverNetworkedEntities[i];
                     
-                    if(ReceivedPackets.TryGetFirstValue((int) PacketType.Input, out PacketArrayWrapper wrapper, out NativeMultiHashMapIterator<int> iterator))
+                    if(ReceivedPackets.TryGetFirstValue((int) PacketType.Input, out IncomingPacket wrapper, out NativeMultiHashMapIterator<int> iterator))
                     {
                         do
                         {
-                            if (wrapper.InternalId != serverNetworkedEntity.OwnerNetworkId)
+                            if (wrapper.Connection.InternalId != serverNetworkedEntity.OwnerNetworkId)
                                 continue;
 
                             //<template:input>
@@ -163,8 +163,7 @@ namespace Server.Generated
                             var receivedMovementInput = receivedMovementInputs[i];
 //</generated>
                             
-                            var array = wrapper.GetArray<byte>();
-                            var reader = new DataStreamReader(array);
+                            var reader = wrapper.Reader;
                             
                             Packets.ReadPacketType(ref reader);
                             int count = (int) reader.ReadRawBits(3);

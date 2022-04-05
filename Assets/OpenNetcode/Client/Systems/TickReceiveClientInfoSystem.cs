@@ -34,8 +34,7 @@ namespace OpenNetcode.Client.Systems
                 {
                     case PacketType.ClientInfo:
                     {
-                        var data = packet.Value.GetArray<byte>();
-                        var reader = new DataStreamReader(data);
+                        var reader = packet.Value.Reader;
                         int entityId = ClientInfoMessage.Read(ref reader, _compressionModel);
 
                         Debug.Log($"Local Server Id = {entityId}");

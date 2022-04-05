@@ -1,4 +1,5 @@
-﻿using OpenNetcode.Server.Components;
+﻿using System;
+using OpenNetcode.Server.Components;
 using OpenNetcode.Shared;
 using OpenNetcode.Shared.Systems;
 using OpenNetcode.Shared.Time;
@@ -39,15 +40,18 @@ namespace OpenNetcode.Server.Systems
             
             NetworkCompressionModel compressionModel = _compressionModel;
             NativeMultiHashMap<int, PacketArrayWrapper> packets = _server.SendPackets;
-            float timeSinceStartup = (float) Time.ElapsedTime;
+            float elapsedTime = (float) Time.ElapsedTime;
             
-            Entities.WithAll<PlayerControlledTag>().ForEach((in InputTimeData inputTimeData, in DynamicBuffer<ProcessedInput> processedInputs, in ServerNetworkedEntity networkEntity, in Entity entity) =>
+            Entities.WithAll<PlayerControlledTag>().ForEach((in InputTimeData inputTimeData, in DynamicBuffer<ProcessedInput> movementInputs, in ServerNetworkedEntity networkEntity, in Entity entity) =>
             {
+                bool loss = movementInputs[tick & TimeConfig.TicksPerSecond].Tick != tick;
+
                 DataStreamWriter writer = new DataStreamWriter(20, Allocator.Temp);
                 Packets.WritePacketType(PacketType.Result, ref writer);
                 writer.WritePackedUInt((uint) inputTimeData.Tick, compressionModel);
-                writer.WritePackedFloat(timeSinceStartup, compressionModel);
-                writer.WritePackedFloat((float)(timeSinceStartup - inputTimeData.ArrivedTime), compressionModel);
+                writer.WritePackedFloat(elapsedTime, compressionModel);
+                writer.WritePackedFloat((float)(elapsedTime - inputTimeData.ArrivedTime), compressionModel);
+                writer.WriteRawBits(Convert.ToUInt32(loss), 1);
                 packets.Add(networkEntity.OwnerNetworkId, Packets.WrapPacket(writer));
             }).Run();
         }

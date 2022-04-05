@@ -15,7 +15,7 @@ namespace OpenNetcode.Client.Systems
 {
     public interface IClientNetworkSystem
     {
-        public NativeMultiHashMap<int, PacketArrayWrapper> ReceivedPackets { get; }
+        public NativeMultiHashMap<int, IncomingPacket> ReceivedPackets { get; }
         public bool Connected { get; }
 
         public void Send(PacketArrayWrapper packet);
@@ -28,7 +28,7 @@ namespace OpenNetcode.Client.Systems
     [DisableAutoCreation]
     public partial class ClientNetworkSystem : SystemBase, IClientNetworkSystem
     {
-        public NativeMultiHashMap<int, PacketArrayWrapper> ReceivedPackets { get; private set; }
+        public NativeMultiHashMap<int, IncomingPacket> ReceivedPackets { get; private set; }
         public NativeList<PacketArrayWrapper> SendPackets { get; private set; }
         public bool Connected { get; private set; }
         
@@ -39,7 +39,7 @@ namespace OpenNetcode.Client.Systems
         protected override void OnCreate()
         {
             SendPackets = new NativeList<PacketArrayWrapper>(100, Allocator.Persistent);
-            ReceivedPackets = new NativeMultiHashMap<int, PacketArrayWrapper>(100, Allocator.Persistent);
+            ReceivedPackets = new NativeMultiHashMap<int, IncomingPacket>(100, Allocator.Persistent);
             
             var clientSettings = new NetworkSettings();
             clientSettings
@@ -146,20 +146,13 @@ namespace OpenNetcode.Client.Systems
                 }
                 else if (cmd == NetworkEvent.Type.Data)
                 {
-                    var data = new NativeArray<byte>(reader.Length, Allocator.Temp);
                     var type = Packets.ReadPacketType(ref reader);
                     reader.SeekSet(0);
-                    reader.ReadBytes(data);
-
-                    unsafe
+                    
+                    ReceivedPackets.Add((int) type, new IncomingPacket()
                     {
-                        ReceivedPackets.Add((int) type, new PacketArrayWrapper()
-                        {
-                            Pointer = data.GetUnsafePtr(),
-                            Length = data.Length,
-                            Allocator = Allocator.Temp
-                        });
-                    }
+                        Reader = reader
+                    });
                 }
             }
         }

@@ -2,8 +2,7 @@
 
 namespace OpenNetcode.Server.Components
 {
-    [InternalBufferCapacity(10)]
-    public struct ProcessedInput : IBufferElementData
+    public struct ProcessedInput : IComponentData
     {
         public bool HasInput;
         public double ArrivedTime;

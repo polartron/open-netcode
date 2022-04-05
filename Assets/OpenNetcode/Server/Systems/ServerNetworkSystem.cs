@@ -16,7 +16,7 @@ namespace OpenNetcode.Server.Systems
 
     public interface IServerNetworkSystem
     {
-        public NativeMultiHashMap<int, PacketArrayWrapper> ReceivePackets { get; }
+        public NativeMultiHashMap<int, IncomingPacket> ReceivePackets { get; }
         public NativeMultiHashMap<int, PacketArrayWrapper> SendPackets { get; }
         public void Send(int networkId, PacketArrayWrapper wrapper);
         public void SendUpdate();
@@ -26,7 +26,7 @@ namespace OpenNetcode.Server.Systems
     [DisableAutoCreation]
     public partial class ServerNetworkSystem : SystemBase, IServerNetworkSystem
     {
-        public NativeMultiHashMap<int, PacketArrayWrapper> ReceivePackets { get; private set; }
+        public NativeMultiHashMap<int, IncomingPacket> ReceivePackets { get; private set; }
         public NativeMultiHashMap<int, PacketArrayWrapper> SendPackets { get; private set; }
         
         private NetworkDriver _driver;
@@ -40,7 +40,7 @@ namespace OpenNetcode.Server.Systems
 
         protected override void OnCreate()
         {
-            ReceivePackets = new NativeMultiHashMap<int, PacketArrayWrapper>(10000, Allocator.Persistent);
+            ReceivePackets = new NativeMultiHashMap<int, IncomingPacket>(10000, Allocator.Persistent);
             SendPackets = new NativeMultiHashMap<int, PacketArrayWrapper>(10000, Allocator.Persistent);
             _connections = new NativeList<NetworkConnection>(10000, Allocator.Persistent);
 
@@ -147,7 +147,7 @@ namespace OpenNetcode.Server.Systems
         {
             public NetworkDriver.Concurrent Driver;
             [ReadOnly] public NativeList<NetworkConnection> Connections;
-            public NativeMultiHashMap<int, PacketArrayWrapper>.ParallelWriter ReceivedMessages;
+            public NativeMultiHashMap<int, IncomingPacket>.ParallelWriter ReceivedMessages;
 
             public void Execute(int index)
             {
@@ -159,20 +159,17 @@ namespace OpenNetcode.Server.Systems
 
                 NetworkEvent.Type cmd;
                 
-                while ((cmd = Driver.PopEventForConnection(Connections[index], out NativeArray<byte> bytes)) != NetworkEvent.Type.Empty)
+                while ((cmd = Driver.PopEventForConnection(Connections[index], out DataStreamReader reader)) != NetworkEvent.Type.Empty)
                 {
                     if (cmd == NetworkEvent.Type.Data)
                     {
-                        var reader = new DataStreamReader(bytes);
                         PacketType type = Packets.ReadPacketType(ref reader);
                         reader.SeekSet(0);
                         
-                        ReceivedMessages.Add((int) type, new PacketArrayWrapper()
+                        ReceivedMessages.Add((int) type, new IncomingPacket()
                         {
-                            Pointer = bytes.GetUnsafeReadOnlyPtr(),
-                            Length = bytes.Length,
-                            InternalId = Connections[index].InternalId,
-                            Allocator = Allocator.Temp
+                            Reader = reader,
+                            Connection = Connections[index]
                         });
                     }
                     else if (cmd == NetworkEvent.Type.Disconnect)

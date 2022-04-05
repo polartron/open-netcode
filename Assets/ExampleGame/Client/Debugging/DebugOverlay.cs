@@ -1,9 +1,12 @@
-using ExampleGame.Server;
 using OpenNetcode.Client.Components;
 using OpenNetcode.Shared.Systems;
 using OpenNetcode.Shared.Time;
 using Unity.Rendering;
 using UnityEngine;
+
+#if UNITY_EDITOR
+using ExampleGame.Server;
+#endif
 
 namespace ExampleGame.Client.Debugging
 {
@@ -13,8 +16,10 @@ namespace ExampleGame.Client.Debugging
 
         void Start()
         {
+            #if UNITY_EDITOR
             ServerBootstrap.World.GetExistingSystem<HybridRendererSystem>().Enabled = false;
             ClientBootstrap.World.GetExistingSystem<HybridRendererSystem>().Enabled = true;
+            #endif
         }
         
         void OnGUI()

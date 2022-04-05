@@ -125,7 +125,7 @@ namespace OpenNetcode.Shared.Time
 
         public void SetRttHalf(float rtt)
         {
-            _tickerData.Rtt = rtt;
+            _tickerData.Rtt = _tickerData.Rtt * 0.8f + rtt * 0.2f;
         }
 
         public void SetTime(double time)
@@ -148,7 +148,7 @@ namespace OpenNetcode.Shared.Time
         {
             double timeInMs = TimeUtils.CurrentTimeInMs();
             double elapsed = timeInMs - data.TimeUpdated;
-            double current = BaseTime(data, config, timeInMs) + elapsed + data.SmoothRttHalf + TimeConfig.CommandBufferLengthMs;
+            double current = BaseTime(data, config, timeInMs) + elapsed + data.SmoothRttHalf;
             double seconds = current / 1000;
 
             double tick = seconds * config.TicksPerSecond;

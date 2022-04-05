@@ -1,10 +1,18 @@
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
+using Unity.Networking.Transport;
 
 namespace OpenNetcode.Shared.Utils
 {
+    public unsafe struct IncomingPacket
+    {
+        public DataStreamReader Reader;
+        public NetworkConnection Connection;
+    }
+    
     public unsafe struct PacketArrayWrapper
     {
+        public DataStreamReader Reader;
         public void* Pointer;
         public int Length;
         public int InternalId;

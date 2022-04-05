@@ -23,12 +23,13 @@ namespace Client.Generated
     [BurstCompile]
     public unsafe struct ParsePublicSnapshotJob : IJob
     {
+        [NativeDisableUnsafePtrRestriction] public DataStreamReader Reader;
+        
         public NativeArray<bool> Success;
         public EntityCommandBuffer EntityCommandBuffer;
         public NativeHashMap<int, EntityArchetype> EntityArchetypes;
         public NativeHashMap<int, Entity> Prefabs;
         public ClientData ClientData;
-        [ReadOnly] public NativeArray<byte> Snapshot;
         public NetworkCompressionModel CompressionModel;
         public ClientArea Area;
         public NativeHashMap<int, ClientEntitySnapshot> SnapshotEntities;
@@ -89,7 +90,7 @@ namespace Client.Generated
 
         public void Execute()
         {
-            var reader = new DataStreamReader(Snapshot);
+            var reader = Reader;
             Packets.ReadPacketType(ref reader);
             int snapshotIndex = (int) reader.ReadPackedUInt(CompressionModel); // SnapshotIndex
             int hash = reader.ReadPackedInt(CompressionModel); // Hash

@@ -131,9 +131,7 @@ namespace Client.Generated
                 {
                     case PacketType.PublicSnapshot:
                     {
-                        var data = packet.Value.GetArray<byte>();
-
-                        bool success = ReadPublicSnapshotJob(data, out int latestSnapshotIndex, out int latestSnapshotTick);
+                        bool success = ReadPublicSnapshotJob(packet.Value.Reader, out int latestSnapshotIndex, out int latestSnapshotTick);
 
                         var clientData = GetSingleton<ClientData>();
 
@@ -180,8 +178,7 @@ namespace Client.Generated
 
                     case PacketType.PrivateSnapshot:
                     {
-                        var data = packet.Value.GetArray<byte>();
-                        ReadPrivateSnapshot(data);
+                        ReadPrivateSnapshot(packet.Value.Reader);
                         break;
                     }
                 }
@@ -201,11 +198,10 @@ namespace Client.Generated
             };
         }
 
-        private void ReadPrivateSnapshot(in NativeArray<byte> data)
+        private void ReadPrivateSnapshot(DataStreamReader reader)
         {
             var clientData = GetSingleton<ClientData>();
 
-            var reader = new DataStreamReader(data);
             Packets.ReadPacketType(ref reader);
             int snapshotTick = (int) reader.ReadPackedUInt(_compressionModel);
             int version = (int) reader.ReadPackedUInt(_compressionModel);
@@ -366,10 +362,9 @@ namespace Client.Generated
             }
         }
 
-        public bool ReadPublicSnapshotJob(in NativeArray<byte> data, out int latestSnapshotIndex,
+        public bool ReadPublicSnapshotJob(DataStreamReader reader, out int latestSnapshotIndex,
             out int latestSnapshotTick)
         {
-            var reader = new DataStreamReader(data);
             Packets.ReadPacketType(ref reader);
             int snapshotIndex = (int) reader.ReadPackedUInt(_compressionModel); // SnapshotIndex
             int hash = reader.ReadPackedInt(_compressionModel); // Hash
@@ -402,11 +397,13 @@ namespace Client.Generated
 
             NativeArray<bool> parseJobSuccessful = new NativeArray<bool>(1, Allocator.TempJob);
             
+            reader.SeekSet(0);
+            
             var parseSnapshotJob = new ParsePublicSnapshotJob()
             {
                 Success = parseJobSuccessful,
                 Area = _areas[hash],
-                Snapshot = data,
+                Reader = reader,
                 ClientData = clientData,
                 CompressionModel = _compressionModel,
                 EntityArchetypes = _networkedPrefabSystem.PrefabEntityArchetypes,

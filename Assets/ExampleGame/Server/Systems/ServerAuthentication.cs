@@ -39,9 +39,8 @@ namespace ExampleGame.Server.Systems
             {
                 do
                 {
-                    NativeArray<byte> array = wrapper.GetArray<byte>();
-                    DataStreamReader reader = new DataStreamReader(array);
-                    LoginMessage.Read(ref loginMessages, ref reader, wrapper.InternalId);
+                    DataStreamReader reader = wrapper.Reader;
+                    LoginMessage.Read(ref loginMessages, ref reader, wrapper.Connection.InternalId);
 
                 } while (receivedMessages.TryGetNextValue(out wrapper, ref iterator));
             }

@@ -70,13 +70,13 @@ namespace OpenNetcode.Client.Systems
                 switch ((PacketType) packet.Key)
                 {
                     case PacketType.Result:
-                        var data = packet.Value.GetArray<byte>();
-                        DataStreamReader reader = new DataStreamReader(data);
+                        DataStreamReader reader = packet.Value.Reader;
                         Packets.ReadPacketType(ref reader);
                         
                         int resultTick = (int) reader.ReadPackedUInt(_compressionModel);
                         double serverTime = reader.ReadPackedFloat(_compressionModel);
                         float processedTime = reader.ReadPackedFloat(_compressionModel);
+                        bool hasLostInput = Convert.ToBoolean(reader.ReadRawBits(1));
 
                         if (_sentInputs.TryGetValue(resultTick % _sentInputs.Capacity, out SentTime sentTime))
                         {
@@ -90,33 +90,17 @@ namespace OpenNetcode.Client.Systems
                             float rttHalf = (float) rttMs / 2;
                             _tickSystem.SetRttHalf(rttHalf);
 
-                            if (!_timeSet)
+                            if(hasLostInput)
+                                Debug.Log("Lost input");
+                            
+                            if (!_timeSet || hasLostInput)
                             {
-                                double offset = Time.ElapsedTime - serverTime;
-                                _timeOffsets.Add(offset);
-                                
-                                // If we have enough time offsets then let's goo
-                                if (_timeOffsets.Length >= 5)
-                                {
-                                    _timeSet = true;
-                                    
-                                    double avgOffset = 0f;
+                                double time = serverTime * 1000f;
+                                time += rttHalf;
+                                time += TimeConfig.CommandBufferLengthMs * 2;
+                                _tickSystem.SetTime(time);
 
-                                    for (int i = 0; i < _timeOffsets.Length; i++)
-                                    {
-                                        avgOffset += _timeOffsets[i];
-                                    }
-
-                                    avgOffset = avgOffset / _timeOffsets.Length;
-
-                                    double time = Time.ElapsedTime + avgOffset;
-                                    _tickSystem.SetTime(time * 1000f);
-                                }
-                                else
-                                {
-                                    double time = Time.ElapsedTime + offset;
-                                    _tickSystem.SetTime(time * 1000f);
-                                }
+                                _timeSet = true;
                             }
                         }
 
