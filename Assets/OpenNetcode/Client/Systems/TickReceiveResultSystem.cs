@@ -90,8 +90,10 @@ namespace OpenNetcode.Client.Systems
                             float rttHalf = (float) rttMs / 2;
                             _tickSystem.SetRttHalf(rttHalf);
 
-                            if(hasLostInput)
-                                Debug.Log("Lost input");
+                            if (hasLostInput)
+                            {
+                                Debug.LogWarning("The server didn't receive input in time. Possible spike in latency.");
+                            }
                             
                             if (!_timeSet || hasLostInput)
                             {

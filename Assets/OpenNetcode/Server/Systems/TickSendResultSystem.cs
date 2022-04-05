@@ -42,13 +42,14 @@ namespace OpenNetcode.Server.Systems
             NativeMultiHashMap<int, PacketArrayWrapper> packets = _server.SendPackets;
             float elapsedTime = (float) Time.ElapsedTime;
             
-            Entities.WithAll<PlayerControlledTag>().ForEach((in InputTimeData inputTimeData, in DynamicBuffer<ProcessedInput> movementInputs, in ServerNetworkedEntity networkEntity, in Entity entity) =>
+            Entities.WithAll<PlayerControlledTag>().ForEach((in InputTimeData inputTimeData, in ServerNetworkedEntity networkEntity, in Entity entity) =>
             {
-                bool loss = movementInputs[tick & TimeConfig.TicksPerSecond].Tick != tick;
+                bool loss = inputTimeData.ProcessedTick != tick;
+                
 
                 DataStreamWriter writer = new DataStreamWriter(20, Allocator.Temp);
                 Packets.WritePacketType(PacketType.Result, ref writer);
-                writer.WritePackedUInt((uint) inputTimeData.Tick, compressionModel);
+                writer.WritePackedUInt((uint) inputTimeData.LatestReceivedTick, compressionModel);
                 writer.WritePackedFloat(elapsedTime, compressionModel);
                 writer.WritePackedFloat((float)(elapsedTime - inputTimeData.ArrivedTime), compressionModel);
                 writer.WriteRawBits(Convert.ToUInt32(loss), 1);

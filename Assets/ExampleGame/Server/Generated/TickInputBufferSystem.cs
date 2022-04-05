@@ -106,6 +106,7 @@ namespace Server.Generated
                 ReceivedWeaponInputTypeHandle = GetBufferTypeHandle<ReceivedWeaponInput>(true),
                 MovementInputTypeHandle = GetComponentTypeHandle<MovementInput>(),
                 ReceivedMovementInputTypeHandle = GetBufferTypeHandle<ReceivedMovementInput>(true),
+                InputTimeDataHandle = GetComponentTypeHandle<InputTimeData>()
 //</generated>
             };
             
@@ -178,7 +179,7 @@ namespace Server.Generated
 
                             inputTimeDatas[i] = new InputTimeData()
                             {
-                                Tick = tick,
+                                LatestReceivedTick = tick,
                                 ArrivedTime = ElapsedTime
                             };
                             
@@ -237,6 +238,7 @@ namespace Server.Generated
                                 }
 //</generated>
                             }
+
                         } while (ReceivedPackets.TryGetNextValue(out wrapper, ref iterator));
                     }
                 }
@@ -247,6 +249,7 @@ namespace Server.Generated
         private struct UpdatePlayerInputJob : IJobEntityBatch
         {
             [ReadOnly] public int Tick;
+            public ComponentTypeHandle<InputTimeData> InputTimeDataHandle;
             
             //<template:input>
             //[ReadOnly] public BufferTypeHandle<Received##TYPE##> Received##TYPE##TypeHandle;
@@ -261,6 +264,8 @@ namespace Server.Generated
 
             public void Execute(ArchetypeChunk batchInChunk, int batchIndex)
             {
+                var inputTimeDatas = batchInChunk.GetNativeArray(InputTimeDataHandle);
+
                 //<template:input>
                 //var ##TYPELOWER##s = batchInChunk.GetNativeArray(##TYPE##TypeHandle);
                 //var received##TYPE##s = batchInChunk.GetBufferAccessor(Received##TYPE##TypeHandle);
@@ -277,6 +282,8 @@ namespace Server.Generated
                 {
                     int index = (Tick + TimeConfig.TicksPerSecond) % TimeConfig.TicksPerSecond;
 
+                    bool appliedAtThisTick = false;
+                    
                     //<template:input>
                     //var received##TYPE## = received##TYPE##s[i];
                     //var ##TYPELOWER## = received##TYPE##[index];
@@ -288,17 +295,29 @@ namespace Server.Generated
 //<generated>
                     var receivedWeaponInput = receivedWeaponInputs[i];
                     var weaponInput = receivedWeaponInput[index];
+                    
                     if (weaponInput.Tick == Tick)
                     {
                         weaponInputs[i] = weaponInput.Input;
+                        appliedAtThisTick = true;
                     }
+                    
                     var receivedMovementInput = receivedMovementInputs[i];
                     var movementInput = receivedMovementInput[index];
+                    
                     if (movementInput.Tick == Tick)
                     {
                         movementInputs[i] = movementInput.Input;
+                        appliedAtThisTick = true;
                     }
 //</generated>
+
+                    if (appliedAtThisTick)
+                    {
+                        var data = inputTimeDatas[i];
+                        data.ProcessedTick = Tick;
+                        inputTimeDatas[i] = data;
+                    }
                 }
             }
         }

@@ -8,7 +8,8 @@ namespace OpenNetcode.Server.Components
     /// </summary>
     public struct InputTimeData : IComponentData
     {
-        public int Tick;
+        public int LatestReceivedTick;
         public double ArrivedTime;
+        public int ProcessedTick;
     }
 }
