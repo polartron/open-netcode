@@ -65,7 +65,7 @@ namespace OpenNetcode.Shared.Time
             }
         }
         
-        public Ticker(int ticksPerSecond, long timeInMs, long smoothTimeMs = 500)
+        public Ticker(int ticksPerSecond, long timeInMs, long smoothTimeMs = 0)
         {
             _tickerConfig = TickerConfig.Default;
             _tickerConfig.TicksPerSecond = ticksPerSecond;
@@ -149,7 +149,7 @@ namespace OpenNetcode.Shared.Time
             double timeInMs = TimeUtils.CurrentTimeInMs();
             double elapsed = timeInMs - data.TimeUpdated;
             double current = BaseTime(data, config, timeInMs) + elapsed + data.SmoothRttHalf;
-            double seconds = current / 1000;
+            double seconds = current / 1000f;
 
             double tick = seconds * config.TicksPerSecond;
             double dilation = GetDilationAmount(data, config, tick);

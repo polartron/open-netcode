@@ -1,7 +1,9 @@
+using ExampleGame.Shared.Debugging;
 using OpenNetcode.Client.Systems;
 using OpenNetcode.Shared;
 using OpenNetcode.Shared.Messages;
 using OpenNetcode.Shared.Systems;
+using OpenNetcode.Shared.Time;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Networking.Transport;
@@ -46,6 +48,12 @@ namespace ExampleGame.Client.Systems
                 
                 _client.Send(Packets.WrapPacket(writer));
             }
+            
+            DebugOverlay.AddTickElement("Client Tick", new TickElement()
+            {
+                Color = Color.green,
+                Tick = GetSingleton<TickData>().Value
+            });
         }
     }
 }

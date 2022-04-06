@@ -19,12 +19,13 @@ namespace Client.Generated
     [BurstCompile]
     public unsafe struct ParsePublicSnapshotJob : IJob
     {
+        [NativeDisableUnsafePtrRestriction] public DataStreamReader Reader;
+        
         public NativeArray<bool> Success;
         public EntityCommandBuffer EntityCommandBuffer;
         public NativeHashMap<int, EntityArchetype> EntityArchetypes;
         public NativeHashMap<int, Entity> Prefabs;
         public ClientData ClientData;
-        [ReadOnly] public NativeArray<byte> Snapshot;
         public NetworkCompressionModel CompressionModel;
         public ClientArea Area;
         public NativeHashMap<int, ClientEntitySnapshot> SnapshotEntities;
@@ -74,7 +75,7 @@ namespace Client.Generated
 
         public void Execute()
         {
-            var reader = new DataStreamReader(Snapshot);
+            var reader = Reader;
             Packets.ReadPacketType(ref reader);
             int snapshotIndex = (int) reader.ReadPackedUInt(CompressionModel); // SnapshotIndex
             int hash = reader.ReadPackedInt(CompressionModel); // Hash
@@ -197,7 +198,7 @@ namespace Client.Generated
                 ComponentBuffers componentBuffers = hasCreatedBuffer ? entityComponentBuffers[serverEntity.ServerId] : default;
 
                 //<template:publicsnapshot>
-                //if (!ParseComponent<##TYPE##>(tick, ##INDEX##, activeEntity.BaseEntity.##TYPE##Index, ref componentBuffers,
+                //if (!ParseComponent<##TYPE##>(tick, ##INDEX##, snapshotIndex, activeEntity.BaseEntity.##TYPE##Index, ref componentBuffers,
                 //    hasCreatedBuffer, serverEntity, activeEntity, ref reader,
                 //    base##TYPE##, ref ##TYPE##Buffer, CompressionModel))
                 //{
@@ -215,7 +216,7 @@ namespace Client.Generated
                     int eventMask = (int) reader.ReadRawBits(eventMaskBits); // What type of events?
 
                     //<template:publicevent>
-                    //if (!ParseEvent<##TYPE##>(eventMask, ##INDEXOFFSET##, tick, ##INDEX##, ref componentBuffers, hasCreatedBuffer,
+                    //if (!ParseEvent<##TYPE##>(eventMask, ##INDEXOFFSET##, tick, ##INDEX##, snapshotIndex, ref componentBuffers, hasCreatedBuffer,
                     //    serverEntity,
                     //    ref reader, ref ##TYPE##Buffer, CompressionModel))
                     //{
@@ -232,7 +233,7 @@ namespace Client.Generated
             }
         }
         
-        static bool ParseEvent<T>(int eventMask, int arrayIndex, int tick, int index, ref ComponentBuffers componentBuffers, bool hasCreatedBuffer, in ClientEntitySnapshot serverEntity, ref DataStreamReader reader, ref BufferFromEntity<SnapshotBufferElement<T>> theBuffer, in NetworkCompressionModel compressionModel) where T : unmanaged, ISnapshotComponent<T>
+        static bool ParseEvent<T>(int eventMask, int arrayIndex, int tick, int index, int snapshotIndex, ref ComponentBuffers componentBuffers, bool hasCreatedBuffer, in ClientEntitySnapshot serverEntity, ref DataStreamReader reader, ref BufferFromEntity<SnapshotBufferElement<T>> theBuffer, in NetworkCompressionModel compressionModel) where T : unmanaged, ISnapshotComponent<T>
         {
             if ((eventMask & (1 << index)) != 0)
             {
@@ -281,7 +282,7 @@ namespace Client.Generated
             return true;
         }
 
-        private static bool ParseComponent<T>(int tick, int index, int baselineIndex, ref ComponentBuffers componentBuffers, bool hasCreatedBuffer, in ClientEntitySnapshot serverEntity, in ActiveEntity activeEntity, ref DataStreamReader reader, in NativeSlice<T> baseline, ref BufferFromEntity<SnapshotBufferElement<T>> theBuffer, in NetworkCompressionModel compressionModel) where T : unmanaged, ISnapshotComponent<T>
+        private static bool ParseComponent<T>(int tick, int index, int snapshotIndex, int baselineIndex, ref ComponentBuffers componentBuffers, bool hasCreatedBuffer, in ClientEntitySnapshot serverEntity, in ActiveEntity activeEntity, ref DataStreamReader reader, in NativeSlice<T> baseline, ref BufferFromEntity<SnapshotBufferElement<T>> theBuffer, in NetworkCompressionModel compressionModel) where T : unmanaged, ISnapshotComponent<T>
         {
             if ((serverEntity.ComponentMask & (1 << index)) != 0)
             {
@@ -315,7 +316,7 @@ namespace Client.Generated
         
                 int length = buffer.Length;
 
-                buffer[tick % length] = new SnapshotBufferElement<T>()
+                buffer[snapshotIndex % length] = new SnapshotBufferElement<T>()
                 {
                     Value = component,
                     Tick = tick

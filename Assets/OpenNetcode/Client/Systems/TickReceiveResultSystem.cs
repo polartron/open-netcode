@@ -74,7 +74,7 @@ namespace OpenNetcode.Client.Systems
                         Packets.ReadPacketType(ref reader);
                         
                         int resultTick = (int) reader.ReadPackedUInt(_compressionModel);
-                        double serverTime = reader.ReadPackedFloat(_compressionModel);
+                        int serverTick = (int) reader.ReadPackedUInt(_compressionModel);
                         float processedTime = reader.ReadPackedFloat(_compressionModel);
                         bool hasLostInput = Convert.ToBoolean(reader.ReadRawBits(1));
 
@@ -97,11 +97,9 @@ namespace OpenNetcode.Client.Systems
                             
                             if (!_timeSet || hasLostInput)
                             {
-                                double time = serverTime * 1000f;
-                                time += rttHalf;
-                                time += TimeConfig.CommandBufferLengthMs * 2;
+                                double time = ((float) serverTick / TimeConfig.TicksPerSecond) * 1000f;
+                                time += TimeConfig.CommandBufferLengthMs;
                                 _tickSystem.SetTime(time);
-
                                 _timeSet = true;
                             }
                         }

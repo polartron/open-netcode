@@ -1,5 +1,6 @@
 using ExampleGame.Server.Components;
 using ExampleGame.Shared.Components;
+using ExampleGame.Shared.Debugging;
 using ExampleGame.Shared.Movement.Components;
 using OpenNetcode.Shared.Systems;
 using OpenNetcode.Shared.Time;
@@ -25,7 +26,7 @@ namespace ExampleGame.Server.Systems
             //    spawner.SpawnPathingMonster(new Vector3(0, 0, 0) + new Vector3(Random.Range(-10, 10), 0f, Random.Range(-10, 10)));
             //}
             //
-            for (int i = 0; i < 50; i++)
+            for (int i = 0; i < 1; i++)
             {
                 spawner.SpawnMonster(new Vector3(0, 0, 0) + new Vector3(Random.Range(-10, 10), 0f, Random.Range(-10, 10)));
             }
@@ -85,6 +86,12 @@ namespace ExampleGame.Server.Systems
                     pathComponent.Stop = tick + (int) (distance * 0.5f * TimeConfig.TicksPerSecond);
                 }
             }).Run();
+            
+            DebugOverlay.AddTickElement("Server Tick", new TickElement()
+            {
+                Color = Color.red,
+                Tick = GetSingleton<TickData>().Value
+            });
         }
     }
 }

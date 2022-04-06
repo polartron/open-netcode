@@ -40,7 +40,7 @@ namespace Server.Generated
             entityManager.AddComponent<SpatialHash>(entity);
             entityManager.AddComponent<ServerNetworkedEntity>(entity);
             entityManager.AddComponent<PlayerControlledTag>(entity);
-            entityManager.AddBuffer<ProcessedInput>(entity);
+            entityManager.AddComponent<ProcessedInput>(entity);
             entityManager.AddComponent<PlayerBaseLine>(entity);
             entityManager.AddComponent<InputTimeData>(entity);
             var privateSnapshotObservers = entityManager.AddBuffer<PrivateSnapshotObserver>(entity);

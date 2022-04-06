@@ -45,12 +45,11 @@ namespace OpenNetcode.Server.Systems
             Entities.WithAll<PlayerControlledTag>().ForEach((in InputTimeData inputTimeData, in ServerNetworkedEntity networkEntity, in Entity entity) =>
             {
                 bool loss = inputTimeData.ProcessedTick != tick;
-                
 
                 DataStreamWriter writer = new DataStreamWriter(20, Allocator.Temp);
                 Packets.WritePacketType(PacketType.Result, ref writer);
                 writer.WritePackedUInt((uint) inputTimeData.LatestReceivedTick, compressionModel);
-                writer.WritePackedFloat(elapsedTime, compressionModel);
+                writer.WritePackedUInt((uint) tick, compressionModel);
                 writer.WritePackedFloat((float)(elapsedTime - inputTimeData.ArrivedTime), compressionModel);
                 writer.WriteRawBits(Convert.ToUInt32(loss), 1);
                 packets.Add(networkEntity.OwnerNetworkId, Packets.WrapPacket(writer));

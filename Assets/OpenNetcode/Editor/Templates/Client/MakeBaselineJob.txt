@@ -54,7 +54,7 @@ namespace Client.Generated
                 //if ((mask & (1 << ##INDEX##)) != 0)
                 //{
                 //    var buffer = ##TYPE##Buffer[snapshot.Entity];
-                //    ##TYPELOWER##s[##TYPELOWER##Index] = buffer[Tick % buffer.Length].Value;
+                //    ##TYPELOWER##s[##TYPELOWER##Index] = buffer[SnapshotIndex % buffer.Length].Value;
                 //    snapshot.##TYPE##Index = ##TYPELOWER##Index;
                 //    ##TYPELOWER##Index++;
                 //}

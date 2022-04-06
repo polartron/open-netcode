@@ -59,7 +59,7 @@ namespace Client.Generated
         private bool IsPredictionError<T>(in ClientData clientData, in Entity entity, out int errorTick) where T : unmanaged, IEquatable<T>
         {
             var resultBuffer = EntityManager.GetBuffer<SnapshotBufferElement<T>>(entity);
-            var resultElement = resultBuffer[clientData.LastReceivedSnapshotTick % resultBuffer.Length];
+            var resultElement = resultBuffer[clientData.LastReceivedSnapshotIndex % resultBuffer.Length];
             errorTick = resultElement.Tick;
 
             if (resultElement.Tick != clientData.LastReceivedSnapshotTick)

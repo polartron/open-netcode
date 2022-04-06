@@ -1,4 +1,5 @@
-﻿using ExampleGame.Shared.Movement.Components;
+﻿using ExampleGame.Shared.Debugging;
+using ExampleGame.Shared.Movement.Components;
 using OpenNetcode.Client.Components;
 using OpenNetcode.Shared.Components;
 using OpenNetcode.Shared.Systems;
@@ -6,6 +7,7 @@ using OpenNetcode.Shared.Time;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
 
@@ -17,9 +19,11 @@ namespace ExampleGame.Client.Systems
     public partial class MovementInterpolationSystem : SystemBase
     {
         private TickSystem _tickSystem;
-
         private EntityQuery _movingEntityQuery;
         private EntityQuery _pathingEntityQuery;
+
+        private Ticker _lerpTicker;
+        private int _lastTick;
         
         protected override void OnCreate()
         {
@@ -27,6 +31,7 @@ namespace ExampleGame.Client.Systems
 
             _movingEntityQuery = GetEntityQuery(
                 ComponentType.ReadWrite<Translation>(),
+                ComponentType.ReadWrite<CachedTranslation>(),
                 ComponentType.ReadOnly<SnapshotBufferElement<EntityPosition>>(),
                 ComponentType.ReadOnly<SnapshotBufferElement<EntityVelocity>>(),
                 ComponentType.Exclude<SimulatedEntity>());
@@ -35,6 +40,9 @@ namespace ExampleGame.Client.Systems
                 ComponentType.ReadWrite<Translation>(),
                 ComponentType.ReadOnly<PathComponent>(),
                 ComponentType.Exclude<SimulatedEntity>());
+            
+            _lerpTicker = new Ticker(TimeConfig.TicksPerSecond, 0);
+            
             
             base.OnCreate();
         }
@@ -61,18 +69,40 @@ namespace ExampleGame.Client.Systems
             //    Vector3 target = Vector3.Lerp(fromVector, toVector, fraction);
             //    translation.Value = target;
             //}).WithoutBurst().Run();
+
+            int lastReceivedSnapshotTick = GetSingleton<ClientData>().LastReceivedSnapshotTick;
+
+            if (_lastTick != lastReceivedSnapshotTick)
+            {
+                _lerpTicker.SetTime(((float) lastReceivedSnapshotTick / TimeConfig.TicksPerSecond) * 1000f);
+                _lastTick = lastReceivedSnapshotTick;
+            }
+
+            double tickServer = _lerpTicker.TickFloat;
+            double interpolationTime = (1f / TimeConfig.SnapshotsPerSecond) * TimeConfig.TicksPerSecond;
+            double tickFrom = _lerpTicker.TickFloat - interpolationTime;
             
-            double rttHalf = _tickSystem.RttHalf;
-            double tickFloat = _tickSystem.TickFloat;
-            double tickServer = tickFloat - (rttHalf + TimeConfig.CommandBufferLengthMs) / 1000f * TimeConfig.TicksPerSecond;
-            double tickFrom = tickServer - TimeConfig.TicksPerSecond * Mathf.Min(1, 1f / TimeConfig.SnapshotsPerSecond);
+            DebugOverlay.AddTickElement("Interpolation From", new TickElement()
+            {
+                Color = Color.yellow,
+                Tick = (int) tickFrom
+            });
+            
+            DebugOverlay.AddTickElement("Estimated Server Tick", new TickElement()
+            {
+                Color = Color.yellow,
+                Tick = (int) tickServer
+            });
+            
 
             MovementInterpolationJob movementInterpolationJob = new MovementInterpolationJob()
             {
+                DeltaTime = Time.DeltaTime,
                 FloatingOrigin = floatingOrigin,
                 TickFrom = tickFrom,
                 TickServer = tickServer,
                 TranslationTypeHandle = GetComponentTypeHandle<Translation>(),
+                CachedTranslationTypeHandle = GetComponentTypeHandle<CachedTranslation>(),
                 EntityPositionBufferTypeHandle = GetBufferTypeHandle<SnapshotBufferElement<EntityPosition>>(true),
                 EntityVelocityBufferTypeHandle = GetBufferTypeHandle<SnapshotBufferElement<EntityVelocity>>(true)
             };
@@ -120,6 +150,7 @@ namespace ExampleGame.Client.Systems
         [BurstCompile]
         private struct MovementInterpolationJob : IJobEntityBatch
         {
+            [ReadOnly] public float DeltaTime;
             [ReadOnly] public double TickFrom;
             [ReadOnly] public double TickServer;
 
@@ -128,12 +159,16 @@ namespace ExampleGame.Client.Systems
             [ReadOnly] public BufferTypeHandle<SnapshotBufferElement<EntityPosition>> EntityPositionBufferTypeHandle;
             [ReadOnly] public BufferTypeHandle<SnapshotBufferElement<EntityVelocity>> EntityVelocityBufferTypeHandle;
             public ComponentTypeHandle<Translation> TranslationTypeHandle;
+            public ComponentTypeHandle<CachedTranslation> CachedTranslationTypeHandle;
 
             public void Execute(ArchetypeChunk batchInChunk, int batchIndex)
             {
                 var entityPositionBuffers = batchInChunk.GetBufferAccessor(EntityPositionBufferTypeHandle);
                 var entityVelocityBuffers = batchInChunk.GetBufferAccessor(EntityVelocityBufferTypeHandle);
                 var translations = batchInChunk.GetNativeArray(TranslationTypeHandle);
+                var cachedTranslations = batchInChunk.GetNativeArray(CachedTranslationTypeHandle);
+                
+                float fromIndex = (float) TickFrom / ((float) TimeConfig.TicksPerSecond / TimeConfig.SnapshotsPerSecond);
 
                 for (int b = 0; b < batchInChunk.Count; b++)
                 {
@@ -143,63 +178,95 @@ namespace ExampleGame.Client.Systems
                     SnapshotBufferElement<EntityPosition> p1 = default;
                     SnapshotBufferElement<EntityVelocity> v1 = default;
                     
-                    for (int i = 0; i < positionBuffer.Length; i++)
-                    {
-                        var p = positionBuffer[i];
-                        var v = velocityBuffer[i];
-
-                        if (p.Tick > p1.Tick)
-                        {
-                            p1 = p;
-                            v1 = v;
-                        }
-                    }
-
                     SnapshotBufferElement<EntityPosition> p2 = default;
                     SnapshotBufferElement<EntityVelocity> v2 = default;
 
-                    for (int i = 0; i < positionBuffer.Length; i++)
-                    {
-                        var p = positionBuffer[i];
-                        var v = velocityBuffer[i];
+                    p1 = positionBuffer[(Mathf.FloorToInt(fromIndex) % TimeConfig.SnapshotsPerSecond)];
+                    v1 = velocityBuffer[(Mathf.FloorToInt(fromIndex) % TimeConfig.SnapshotsPerSecond)];
+                    
+                    p2 = positionBuffer[(Mathf.FloorToInt(fromIndex) + 1) % TimeConfig.SnapshotsPerSecond];
+                    v2 = velocityBuffer[(Mathf.FloorToInt(fromIndex) + 1) % TimeConfig.SnapshotsPerSecond];
+                    
+                    Debug.DrawRay(FloatingOrigin.GetUnityVector(p1.Value.Value), Vector3.up * 2f, Color.yellow);
+                    Debug.DrawRay(FloatingOrigin.GetUnityVector(p2.Value.Value), Vector3.up * 2f, Color.cyan);
 
-                        if (p.Tick > p2.Tick && p.Tick < p1.Tick)
-                        {
-                            p2 = p;
-                            v2 = v;
-                        }
-                    }
+                    Vector3 target = FloatingOrigin.GetUnityVector(p1.Value.Value);
 
-                    Vector3 target;
-                    if (p1.Tick > TickFrom && p1.Tick < TickServer && v1.Tick == p1.Tick)
+                    if (p2.Tick > p1.Tick)
                     {
-                        var fromPosition = p2;
-                        var fromVelocity = v2;
+                        double lerpFrom = TickFrom - TimeConfig.TicksPerSecond * 0.1f;
                         
-                        float t1 = (float) (TickFrom - fromPosition.Tick) / TimeConfig.TicksPerSecond;
-                        float t2 = (float) (TickFrom - p1.Tick) / TimeConfig.TicksPerSecond;
-
-                        var ex1 = Extrapolate(FloatingOrigin.GetUnityVector(fromPosition.Value.Value),
-                            fromVelocity.Value.Value.ToUnityVector3(), new Vector3(0f, 0f, 0f), t1);
-
-                        var ex2 = Extrapolate(FloatingOrigin.GetUnityVector(p1.Value.Value),
-                            v1.Value.Value.ToUnityVector3(), new Vector3(0f, 0f, 0f), t2);
-
-                        float il = Mathf.InverseLerp(fromPosition.Tick, p1.Tick, (float) TickFrom);
-                        target = Vector3.Lerp(ex1, ex2, il);
+                        // Interpolate
+                        float t = Mathf.InverseLerp(p1.Tick, p2.Tick, (float) lerpFrom);
+                        target = FloatingOrigin.GetUnityVector(GameUnits.Lerp(p1.Value.Value, p2.Value.Value, t));
+                        //Debug.DrawRay(target, Vector3.up, Color.white, 5f);
                     }
                     else
                     {
+                        // Extrapolate
+                        
                         float t = (float) (TickFrom - p1.Tick) / TimeConfig.TicksPerSecond;
-
+                    
                         target = Extrapolate(FloatingOrigin.GetUnityVector(p1.Value.Value),
                             v1.Value.Value.ToUnityVector3(), new Vector3(0f, 0f, 0f), t);
+                        //Debug.DrawRay(target, Vector3.up, Color.blue, 5f);
                     }
+                    
+                    //if (p1.Tick >= (int) TickFrom && p1.Tick < TickServer)
+                    //{
+                    //    var fromPosition = p2;
+                    //    var fromVelocity = v2;
+//
+                    //    float t1 = (float) (TickFrom - fromPosition.Tick) / TimeConfig.TicksPerSecond;
+                    //    float t2 = (float) (TickFrom - p1.Tick) / TimeConfig.TicksPerSecond;
+//
+                    //    var ex1 = Extrapolate(FloatingOrigin.GetUnityVector(fromPosition.Value.Value),
+                    //        fromVelocity.Value.Value.ToUnityVector3(), new Vector3(0f, 0f, 0f), t1);
+//
+                    //    var ex2 = Extrapolate(FloatingOrigin.GetUnityVector(p1.Value.Value),
+                    //        v1.Value.Value.ToUnityVector3(), new Vector3(0f, 0f, 0f), t2);
+//
+                    //    float il = Mathf.InverseLerp(fromPosition.Tick, p1.Tick, (float) TickFrom);
+                    //    target = Vector3.Lerp(ex1, ex2, il);
+                    //}
+                    //else if(p1.Tick > 0)
+                    //{
+                    //    float t = (float) (TickFrom - p1.Tick) / TimeConfig.TicksPerSecond;
+                    //
+                    //    target = Extrapolate(FloatingOrigin.GetUnityVector(p1.Value.Value),
+                    //        v1.Value.Value.ToUnityVector3(), new Vector3(0f, 0f, 0f), t);
+                    //}
 
-                    translations[b] = new Translation()
+                    if (!cachedTranslations[b].IsSet && p1.Tick > 0)
                     {
-                        Value = target
-                    };
+                        translations[b] = new Translation()
+                        {
+                            Value = target
+                        };
+                        
+                        cachedTranslations[b] = new CachedTranslation()
+                        {
+                            Value = target,
+                            IsSet = true
+                        };
+                    }
+                    else if (cachedTranslations[b].IsSet)
+                    {
+                        Vector3 from = cachedTranslations[b].Value;
+                        Vector3 result = Vector3.Lerp(from, target, DeltaTime * 2f * math.length(FloatingOrigin.GetUnityVector(v1.Value.Value)));
+
+                        translations[b] = new Translation()
+                        {
+                            Value = result
+                        };
+
+                        cachedTranslations[b] = new CachedTranslation()
+                        {
+                            Value = result,
+                            IsSet = true
+                        };
+                        //Debug.DrawRay(result, Vector3.up, Color.green, 5f);
+                    }
                 }
             }
         }

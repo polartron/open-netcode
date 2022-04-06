@@ -88,7 +88,7 @@ namespace Server.Generated
         {
             [ReadOnly] public double ElapsedTime;
             [ReadOnly] public NetworkCompressionModel CompressionModel;
-            [ReadOnly] public NativeMultiHashMap<int, PacketArrayWrapper> ReceivedPackets;
+            [ReadOnly] public NativeMultiHashMap<int, IncomingPacket> ReceivedPackets;
             [ReadOnly] public ComponentTypeHandle<ServerNetworkedEntity> ServerNetworkedEntityTypeHandle;
 
             public ComponentTypeHandle<PlayerBaseLine> PlayerBaseLineTypeHandle;
@@ -110,19 +110,18 @@ namespace Server.Generated
                 {
                     var serverNetworkedEntity = serverNetworkedEntities[i];
                     
-                    if(ReceivedPackets.TryGetFirstValue((int) PacketType.Input, out PacketArrayWrapper wrapper, out NativeMultiHashMapIterator<int> iterator))
+                    if(ReceivedPackets.TryGetFirstValue((int) PacketType.Input, out IncomingPacket wrapper, out NativeMultiHashMapIterator<int> iterator))
                     {
                         do
                         {
-                            if (wrapper.InternalId != serverNetworkedEntity.OwnerNetworkId)
+                            if (wrapper.Connection.InternalId != serverNetworkedEntity.OwnerNetworkId)
                                 continue;
 
                             //<template:input>
                             //var received##TYPE## = received##TYPE##s[i];
                             //</template>
                             
-                            var array = wrapper.GetArray<byte>();
-                            var reader = new DataStreamReader(array);
+                            var reader = wrapper.Reader;
                             
                             Packets.ReadPacketType(ref reader);
                             int count = (int) reader.ReadRawBits(3);
@@ -137,7 +136,7 @@ namespace Server.Generated
 
                             inputTimeDatas[i] = new InputTimeData()
                             {
-                                Tick = tick,
+                                LatestReceivedTick = tick,
                                 ArrivedTime = ElapsedTime
                             };
                             
@@ -166,6 +165,7 @@ namespace Server.Generated
                                 //}
                                 //</template>
                             }
+
                         } while (ReceivedPackets.TryGetNextValue(out wrapper, ref iterator));
                     }
                 }
@@ -176,6 +176,7 @@ namespace Server.Generated
         private struct UpdatePlayerInputJob : IJobEntityBatch
         {
             [ReadOnly] public int Tick;
+            public ComponentTypeHandle<InputTimeData> InputTimeDataHandle;
             
             //<template:input>
             //[ReadOnly] public BufferTypeHandle<Received##TYPE##> Received##TYPE##TypeHandle;
@@ -184,6 +185,8 @@ namespace Server.Generated
 
             public void Execute(ArchetypeChunk batchInChunk, int batchIndex)
             {
+                var inputTimeDatas = batchInChunk.GetNativeArray(InputTimeDataHandle);
+
                 //<template:input>
                 //var ##TYPELOWER##s = batchInChunk.GetNativeArray(##TYPE##TypeHandle);
                 //var received##TYPE##s = batchInChunk.GetBufferAccessor(Received##TYPE##TypeHandle);
@@ -194,6 +197,8 @@ namespace Server.Generated
                 {
                     int index = (Tick + TimeConfig.TicksPerSecond) % TimeConfig.TicksPerSecond;
 
+                    bool appliedAtThisTick = false;
+                    
                     //<template:input>
                     //var received##TYPE## = received##TYPE##s[i];
                     //var ##TYPELOWER## = received##TYPE##[index];
@@ -202,6 +207,13 @@ namespace Server.Generated
                     //    ##TYPELOWER##s[i] = ##TYPELOWER##.Input;
                     //}
                     //</template>
+
+                    if (appliedAtThisTick)
+                    {
+                        var data = inputTimeDatas[i];
+                        data.ProcessedTick = Tick;
+                        inputTimeDatas[i] = data;
+                    }
                 }
             }
         }

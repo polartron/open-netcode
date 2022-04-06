@@ -218,7 +218,7 @@ namespace Client.Generated
                 ComponentBuffers componentBuffers = hasCreatedBuffer ? entityComponentBuffers[serverEntity.ServerId] : default;
 
                 //<template:publicsnapshot>
-                //if (!ParseComponent<##TYPE##>(tick, ##INDEX##, activeEntity.BaseEntity.##TYPE##Index, ref componentBuffers,
+                //if (!ParseComponent<##TYPE##>(tick, ##INDEX##, snapshotIndex, activeEntity.BaseEntity.##TYPE##Index, ref componentBuffers,
                 //    hasCreatedBuffer, serverEntity, activeEntity, ref reader,
                 //    base##TYPE##, ref ##TYPE##Buffer, CompressionModel))
                 //{
@@ -227,21 +227,21 @@ namespace Client.Generated
                 //}
                 //</template>
 //<generated>
-                if (!ParseComponent<EntityVelocity>(tick, 0, activeEntity.BaseEntity.EntityVelocityIndex, ref componentBuffers,
+                if (!ParseComponent<EntityVelocity>(tick, 0, snapshotIndex, activeEntity.BaseEntity.EntityVelocityIndex, ref componentBuffers,
                     hasCreatedBuffer, serverEntity, activeEntity, ref reader,
                     baseEntityVelocity, ref EntityVelocityBuffer, CompressionModel))
                 {
                     Success[0] = false;
                     return;
                 }
-                if (!ParseComponent<EntityPosition>(tick, 1, activeEntity.BaseEntity.EntityPositionIndex, ref componentBuffers,
+                if (!ParseComponent<EntityPosition>(tick, 1, snapshotIndex, activeEntity.BaseEntity.EntityPositionIndex, ref componentBuffers,
                     hasCreatedBuffer, serverEntity, activeEntity, ref reader,
                     baseEntityPosition, ref EntityPositionBuffer, CompressionModel))
                 {
                     Success[0] = false;
                     return;
                 }
-                if (!ParseComponent<PathComponent>(tick, 2, activeEntity.BaseEntity.PathComponentIndex, ref componentBuffers,
+                if (!ParseComponent<PathComponent>(tick, 2, snapshotIndex, activeEntity.BaseEntity.PathComponentIndex, ref componentBuffers,
                     hasCreatedBuffer, serverEntity, activeEntity, ref reader,
                     basePathComponent, ref PathComponentBuffer, CompressionModel))
                 {
@@ -264,7 +264,7 @@ namespace Client.Generated
                     int eventMask = (int) reader.ReadRawBits(eventMaskBits); // What type of events?
 
                     //<template:publicevent>
-                    //if (!ParseEvent<##TYPE##>(eventMask, ##INDEXOFFSET##, tick, ##INDEX##, ref componentBuffers, hasCreatedBuffer,
+                    //if (!ParseEvent<##TYPE##>(eventMask, ##INDEXOFFSET##, tick, ##INDEX##, snapshotIndex, ref componentBuffers, hasCreatedBuffer,
                     //    serverEntity,
                     //    ref reader, ref ##TYPE##Buffer, CompressionModel))
                     //{
@@ -273,7 +273,7 @@ namespace Client.Generated
                     //}
                     //</template>
 //<generated>
-                    if (!ParseEvent<BumpEvent>(eventMask, 3, tick, 0, ref componentBuffers, hasCreatedBuffer,
+                    if (!ParseEvent<BumpEvent>(eventMask, 3, tick, 0, snapshotIndex, ref componentBuffers, hasCreatedBuffer,
                         serverEntity,
                         ref reader, ref BumpEventBuffer, CompressionModel))
                     {
@@ -290,7 +290,7 @@ namespace Client.Generated
             }
         }
         
-        static bool ParseEvent<T>(int eventMask, int arrayIndex, int tick, int index, ref ComponentBuffers componentBuffers, bool hasCreatedBuffer, in ClientEntitySnapshot serverEntity, ref DataStreamReader reader, ref BufferFromEntity<SnapshotBufferElement<T>> theBuffer, in NetworkCompressionModel compressionModel) where T : unmanaged, ISnapshotComponent<T>
+        static bool ParseEvent<T>(int eventMask, int arrayIndex, int tick, int index, int snapshotIndex, ref ComponentBuffers componentBuffers, bool hasCreatedBuffer, in ClientEntitySnapshot serverEntity, ref DataStreamReader reader, ref BufferFromEntity<SnapshotBufferElement<T>> theBuffer, in NetworkCompressionModel compressionModel) where T : unmanaged, ISnapshotComponent<T>
         {
             if ((eventMask & (1 << index)) != 0)
             {
@@ -339,7 +339,7 @@ namespace Client.Generated
             return true;
         }
 
-        private static bool ParseComponent<T>(int tick, int index, int baselineIndex, ref ComponentBuffers componentBuffers, bool hasCreatedBuffer, in ClientEntitySnapshot serverEntity, in ActiveEntity activeEntity, ref DataStreamReader reader, in NativeSlice<T> baseline, ref BufferFromEntity<SnapshotBufferElement<T>> theBuffer, in NetworkCompressionModel compressionModel) where T : unmanaged, ISnapshotComponent<T>
+        private static bool ParseComponent<T>(int tick, int index, int snapshotIndex, int baselineIndex, ref ComponentBuffers componentBuffers, bool hasCreatedBuffer, in ClientEntitySnapshot serverEntity, in ActiveEntity activeEntity, ref DataStreamReader reader, in NativeSlice<T> baseline, ref BufferFromEntity<SnapshotBufferElement<T>> theBuffer, in NetworkCompressionModel compressionModel) where T : unmanaged, ISnapshotComponent<T>
         {
             if ((serverEntity.ComponentMask & (1 << index)) != 0)
             {
@@ -373,7 +373,7 @@ namespace Client.Generated
         
                 int length = buffer.Length;
 
-                buffer[tick % length] = new SnapshotBufferElement<T>()
+                buffer[snapshotIndex % length] = new SnapshotBufferElement<T>()
                 {
                     Value = component,
                     Tick = tick

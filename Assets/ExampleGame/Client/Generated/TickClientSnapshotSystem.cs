@@ -14,6 +14,8 @@ using OpenNetcode.Shared.Time;
 //<generated>
 using ExampleGame.Shared.Movement.Components;
 using ExampleGame.Shared.Components;
+using ExampleGame.Shared.Debugging;
+
 //</generated>
 
 namespace Client.Generated
@@ -141,6 +143,12 @@ namespace Client.Generated
                             {
                                 clientData.LastReceivedSnapshotIndex = latestSnapshotIndex;
                                 clientData.LastReceivedSnapshotTick = latestSnapshotTick;
+                                
+                                DebugOverlay.AddTickElement("Latest Snapshot", new TickElement()
+                                {
+                                    Color = Color.green,
+                                    Tick = latestSnapshotTick
+                                });
                             }
                         }
                         else

@@ -71,7 +71,7 @@ namespace Client.Generated
                 //if ((mask & (1 << ##INDEX##)) != 0)
                 //{
                 //    var buffer = ##TYPE##Buffer[snapshot.Entity];
-                //    ##TYPELOWER##s[##TYPELOWER##Index] = buffer[Tick % buffer.Length].Value;
+                //    ##TYPELOWER##s[##TYPELOWER##Index] = buffer[SnapshotIndex % buffer.Length].Value;
                 //    snapshot.##TYPE##Index = ##TYPELOWER##Index;
                 //    ##TYPELOWER##Index++;
                 //}
@@ -80,21 +80,21 @@ namespace Client.Generated
                 if ((mask & (1 << 0)) != 0)
                 {
                     var buffer = EntityVelocityBuffer[snapshot.Entity];
-                    entityVelocitys[entityVelocityIndex] = buffer[Tick % buffer.Length].Value;
+                    entityVelocitys[entityVelocityIndex] = buffer[SnapshotIndex % buffer.Length].Value;
                     snapshot.EntityVelocityIndex = entityVelocityIndex;
                     entityVelocityIndex++;
                 }
                 if ((mask & (1 << 1)) != 0)
                 {
                     var buffer = EntityPositionBuffer[snapshot.Entity];
-                    entityPositions[entityPositionIndex] = buffer[Tick % buffer.Length].Value;
+                    entityPositions[entityPositionIndex] = buffer[SnapshotIndex % buffer.Length].Value;
                     snapshot.EntityPositionIndex = entityPositionIndex;
                     entityPositionIndex++;
                 }
                 if ((mask & (1 << 2)) != 0)
                 {
                     var buffer = PathComponentBuffer[snapshot.Entity];
-                    pathComponents[pathComponentIndex] = buffer[Tick % buffer.Length].Value;
+                    pathComponents[pathComponentIndex] = buffer[SnapshotIndex % buffer.Length].Value;
                     snapshot.PathComponentIndex = pathComponentIndex;
                     pathComponentIndex++;
                 }
