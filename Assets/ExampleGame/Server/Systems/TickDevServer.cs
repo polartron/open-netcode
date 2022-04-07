@@ -1,9 +1,11 @@
 using ExampleGame.Server.Components;
 using ExampleGame.Shared.Components;
-using ExampleGame.Shared.Debugging;
 using ExampleGame.Shared.Movement.Components;
+using OpenNetcode.Server.Systems;
+using OpenNetcode.Shared.Debugging;
 using OpenNetcode.Shared.Systems;
 using OpenNetcode.Shared.Time;
+using SourceConsole;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -17,6 +19,8 @@ namespace ExampleGame.Server.Systems
     [UpdateInGroup(typeof(TickPreSimulationSystemGroup))]
     public partial class TickDevServer : SystemBase
     {
+        private ServerNetworkSystem _server;
+        
         protected override void OnCreate()
         {
             var spawner = World.GetExistingSystem<ServerEntitySystem>();
@@ -30,8 +34,22 @@ namespace ExampleGame.Server.Systems
             {
                 spawner.SpawnMonster(new Vector3(0, 0, 0) + new Vector3(Random.Range(-10, 10), 0f, Random.Range(-10, 10)));
             }
+
+            _server = World.GetExistingSystem<ServerNetworkSystem>();
             
             base.OnCreate();
+        }
+
+        [ConCommand("server_start")]
+        public static void StartServer(int port)
+        {
+            ServerBootstrap.World.GetExistingSystem<ServerNetworkSystem>().StartServer((ushort) port);
+        }
+        
+        [ConCommand("server_stop")]
+        public static void StopServer()
+        {
+            ServerBootstrap.World.GetExistingSystem<ServerNetworkSystem>().StopServer();
         }
 
         protected override void OnUpdate()

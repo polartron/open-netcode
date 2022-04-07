@@ -1,3 +1,4 @@
+using System.Reflection;
 using ExampleGame.Server.Systems;
 using ExampleGame.Shared.Movement.Components;
 using ExampleGame.Shared.Movement.Systems;
@@ -42,6 +43,13 @@ namespace ExampleGame.Server
             //Simulation
             tickSystem.AddSimulationSystem(new TickMovementSystem());
             tickSystem.AddSimulationSystem(new TopDownSpatialHashingSystem());
+            
+            
+            // Disable rendering on server
+            World.GetExistingSystem<PresentationSystemGroup>().Enabled = false;
+            
+            SourceConsole.SourceConsole.AddAssembly(Assembly.GetExecutingAssembly());
+            SourceConsole.SourceConsole.RefreshCommands();
 
             return true;
         }

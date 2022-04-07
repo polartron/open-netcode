@@ -1,7 +1,7 @@
-﻿using ExampleGame.Shared.Debugging;
-using ExampleGame.Shared.Movement.Components;
+﻿using ExampleGame.Shared.Movement.Components;
 using OpenNetcode.Client.Components;
 using OpenNetcode.Shared.Components;
+using OpenNetcode.Shared.Debugging;
 using OpenNetcode.Shared.Systems;
 using OpenNetcode.Shared.Time;
 using Unity.Burst;

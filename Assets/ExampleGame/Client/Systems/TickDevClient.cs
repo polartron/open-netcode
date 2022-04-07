@@ -1,9 +1,10 @@
-using ExampleGame.Shared.Debugging;
 using OpenNetcode.Client.Systems;
 using OpenNetcode.Shared;
+using OpenNetcode.Shared.Debugging;
 using OpenNetcode.Shared.Messages;
 using OpenNetcode.Shared.Systems;
 using OpenNetcode.Shared.Time;
+using SourceConsole;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Networking.Transport;
@@ -25,18 +26,49 @@ namespace ExampleGame.Client.Systems
             _client = client;
         }
 
-        protected override void OnUpdate()
+        public void TryConnect(string ip, ushort port)
         {
             if (!_client.Connected && !_connecting)
             {
                 _connecting = true;
-                _client.Connect("0.0.0.0", 27015, b =>
+                _client.Connect(ip, port, b =>
                 {
                     Debug.Log("Connected " + b);
                     _connecting = false;
                 });
             }
+        }
 
+        [ConCommand("disconnect")]
+        public static void Disconnect()
+        {
+            ClientBootstrap.World.GetExistingSystem<ClientNetworkSystem>().Disconnect();
+        }
+        
+        [ConCommand("connect")]
+        public static void Connect(string ipAndPort)
+        {
+            string[] split = ipAndPort.Split(':');
+            if (split.Length < 2)
+            {
+                Debug.LogError($"Failed to get IP and Port from the string {ipAndPort}. Make sure it's in the correct format <ip>:<port>");
+                return;
+            }
+
+            string ipString = split[0];
+            string portString = split[1];
+            if (!ushort.TryParse(portString, out ushort port))
+            {
+                Debug.LogError($"Failed to parse port from the string {portString}");
+                return;
+            }
+
+            ClientBootstrap.World.GetExistingSystem<TickDevClient>().TryConnect(ipString, port);
+
+        }
+
+        protected override void OnUpdate()
+        {
             if (!_loggingIn && _client.Connected)
             {
                 _loggingIn = true;

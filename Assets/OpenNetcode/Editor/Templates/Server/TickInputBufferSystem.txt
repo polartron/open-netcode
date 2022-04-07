@@ -72,6 +72,7 @@ namespace Server.Generated
             UpdatePlayerInputJob updatePlayerInputJob = new UpdatePlayerInputJob()
             {
                 Tick = GetSingleton<TickData>().Value,
+                InputTimeDataHandle = GetComponentTypeHandle<InputTimeData>(),
                 
                 //<template:input>
                 //##TYPE##TypeHandle = GetComponentTypeHandle<##TYPE##>(),
@@ -205,6 +206,7 @@ namespace Server.Generated
                     //if (##TYPELOWER##.Tick == Tick)
                     //{
                     //    ##TYPELOWER##s[i] = ##TYPELOWER##.Input;
+                    //    appliedAtThisTick = true;
                     //}
                     //</template>
 

@@ -1,3 +1,5 @@
+using System;
+using System.Reflection;
 using Shared;
 using Unity.Entities;
 using UnityEngine;
@@ -41,7 +43,10 @@ namespace ExampleGame.Client
             //Simulation
             tickSystem.AddSimulationSystem(new TickMovementSystem());
             tickSystem.AddPostSimulationSystem(new BumpEventSystem());
-
+            
+            SourceConsole.SourceConsole.AddAssembly(Assembly.GetExecutingAssembly());
+            SourceConsole.SourceConsole.RefreshCommands();
+            
             return world;
         }
     }

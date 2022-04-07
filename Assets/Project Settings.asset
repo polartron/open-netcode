@@ -17,5 +17,5 @@ MonoBehaviour:
     Server: ExampleGame/Server/Generated/
     Shared: ExampleGame/Shared/Generated/
   TickSettings:
-    TicksPerSecond: 1
+    TicksPerSecond: 2
     SnapshotsPerSecond: 3

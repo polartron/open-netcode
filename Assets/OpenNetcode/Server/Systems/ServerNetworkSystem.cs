@@ -1,4 +1,5 @@
 using OpenNetcode.Shared;
+using OpenNetcode.Shared.Systems;
 using OpenNetcode.Shared.Utils;
 using Unity.Assertions;
 using Unity.Burst;
@@ -24,6 +25,7 @@ namespace OpenNetcode.Server.Systems
     }
     
     [DisableAutoCreation]
+    [UpdateInGroup(typeof(TickPreSimulationSystemGroup))]
     public partial class ServerNetworkSystem : SystemBase, IServerNetworkSystem
     {
         public NativeMultiHashMap<int, IncomingPacket> ReceivePackets { get; private set; }
@@ -43,7 +45,30 @@ namespace OpenNetcode.Server.Systems
             ReceivePackets = new NativeMultiHashMap<int, IncomingPacket>(10000, Allocator.Persistent);
             SendPackets = new NativeMultiHashMap<int, PacketArrayWrapper>(10000, Allocator.Persistent);
             _connections = new NativeList<NetworkConnection>(10000, Allocator.Persistent);
+            
+            base.OnCreate();
+        }
 
+        public void StopServer()
+        {
+            for (int i = _connections.Length - 1; i >= 0; i--)
+            {
+                _connections[i].Disconnect(_driver);
+                _connections.RemoveAt(i);
+            }
+            
+            Dependency = _driver.ScheduleUpdate();
+            Dependency.Complete();
+            _driver.Dispose();
+            _driver = default;
+            _pipeline = default;
+            
+            ReceivePackets.Clear();
+            SendPackets.Clear();
+        }
+
+        public void StartServer(ushort port)
+        {
             var serverSettings = new NetworkSettings();
             
             serverSettings
@@ -53,9 +78,9 @@ namespace OpenNetcode.Server.Systems
             _driver = NetworkDriver.Create(serverSettings);
             _pipeline = _driver.CreatePipeline(typeof(FragmentationPipelineStage));
 
-            ushort port = 27015;
+            ushort tryOpenPort = port;
             
-            for (; port < 27020; port++)
+            for (; tryOpenPort < port + 5; tryOpenPort++)
             {
                 var endpoint = NetworkEndPoint.AnyIpv4;
                 endpoint.Port = port;
@@ -79,8 +104,6 @@ namespace OpenNetcode.Server.Systems
                 _driver.Listen();
                 Debug.Log($"Listening on port {port}");
             }
-            
-            base.OnCreate();
         }
 
         protected override void OnDestroy()
@@ -104,6 +127,9 @@ namespace OpenNetcode.Server.Systems
 
         public void SendUpdate()
         {
+            if (!_driver.IsCreated)
+                return;
+            
             SendPacketsJob sendPacketsJob = new SendPacketsJob()
             {
                 Connections = _connections,
@@ -119,8 +145,10 @@ namespace OpenNetcode.Server.Systems
 
         public void ReceiveUpdate()
         {
-            Dependency.Complete();
+            if (!_driver.IsCreated)
+                return;
             
+            Dependency.Complete();
             ReceivePackets.Clear();
             
             var connectionJob = new ServerUpdateConnectionsJob
@@ -140,6 +168,13 @@ namespace OpenNetcode.Server.Systems
             Dependency = connectionJob.Schedule(Dependency);
             Dependency = parsePacketsJob.Schedule(_connections, 4, Dependency);
             Dependency.Complete();
+
+            for (int i = _connections.Length - 1; i >= 0; i--)
+            {
+                var connection = _connections[i];
+                if(_driver.GetConnectionState(connection) == NetworkConnection.State.Disconnected)
+                    _connections.RemoveAt(i);
+            }
         }
         
         [BurstCompile]
@@ -175,7 +210,6 @@ namespace OpenNetcode.Server.Systems
                     else if (cmd == NetworkEvent.Type.Disconnect)
                     {
                         Debug.Log("Client disconnected from server");
-                        Connections[index] = default(NetworkConnection);
                     }
                 }
             }
@@ -220,7 +254,11 @@ namespace OpenNetcode.Server.Systems
             public void Execute(int index)
             {
                 var connection = Connections[index];
+
+
                 int id = connection.InternalId;
+                if (Driver.GetConnectionState(connection) == NetworkConnection.State.Disconnected)
+                    return;
 
                 if (Packets.ContainsKey(id))
                 {

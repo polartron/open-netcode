@@ -1,6 +1,8 @@
 using System;
 using OpenNetcode.Shared;
+using OpenNetcode.Shared.Systems;
 using OpenNetcode.Shared.Utils;
+using SourceConsole;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
@@ -15,6 +17,8 @@ namespace OpenNetcode.Client.Systems
 {
     public interface IClientNetworkSystem
     {
+        public Action OnDisconnected { get; set; }
+
         public NativeMultiHashMap<int, IncomingPacket> ReceivedPackets { get; }
         public bool Connected { get; }
 
@@ -22,19 +26,31 @@ namespace OpenNetcode.Client.Systems
         
         public void SendUpdate();
         public void ReceiveUpdate();
-        public void Connect(string address, ushort port, Action<bool> onConnected = default);
+        public void Connect(string address, ushort port, Action<bool> onConnected = default, float timeout = 5f, int attempts = 3);
     }
     
     [DisableAutoCreation]
+    [UpdateInGroup(typeof(TickPreSimulationSystemGroup))]
+    [UpdateAfter(typeof(TickClientReceiveSystem))]
     public partial class ClientNetworkSystem : SystemBase, IClientNetworkSystem
     {
         public NativeMultiHashMap<int, IncomingPacket> ReceivedPackets { get; private set; }
         public NativeList<PacketArrayWrapper> SendPackets { get; private set; }
         public bool Connected { get; private set; }
+
+        public Action OnDisconnected { get; set; }
         
         private NetworkDriver _driver;
         private NativeArray<byte> _done;
         private NativeArray<NetworkConnection> _connection;
+        
+        // Connecting to the server
+        private Action<bool> _connectAttemptCallback;
+        private double _triedToConnectAtTime;
+        private float _connectionAttemptTimeout;
+        private int _connectionAttempts;
+        
+        
         
         protected override void OnCreate()
         {
@@ -43,7 +59,7 @@ namespace OpenNetcode.Client.Systems
             
             var clientSettings = new NetworkSettings();
             clientSettings
-                .WithNetworkConfigParameters(disconnectTimeoutMS: 90 * 1000, fixedFrameTimeMS: 0)
+                .WithNetworkConfigParameters(disconnectTimeoutMS: 5 * 1000, fixedFrameTimeMS: 0)
                 .WithFragmentationStageParameters(payloadCapacity: 50 * 1024);
 
             _driver = NetworkDriver.Create(clientSettings);
@@ -63,13 +79,24 @@ namespace OpenNetcode.Client.Systems
 
             ReceivedPackets.Dispose();
         }
+
+        public void Disconnect()
+        {
+            _driver.Disconnect(_connection[0]);
+            
+            OnDisconnected?.Invoke();
+        }
         
-        public void Connect(string address, ushort port, Action<bool> onConnected = default)
+        public void Connect(string address, ushort port, Action<bool> onConnected = default, float timeout = 5f, int attempts = 3)
         {
             var endpoint = NetworkEndPoint.LoopbackIpv4;
             endpoint.Port = port;
             _connection[0] = _driver.Connect(endpoint);
-            onConnected?.Invoke(_connection[0] != default(NetworkConnection));
+
+            _connectAttemptCallback = onConnected;
+            _triedToConnectAtTime = Time.ElapsedTime;
+            _connectionAttemptTimeout = timeout;
+            _connectionAttempts = attempts;
         }
 
         protected override void OnUpdate()
@@ -143,6 +170,8 @@ namespace OpenNetcode.Client.Systems
                     Debug.Log("Client got disconnected from server");
                     Connected = false;
                     _connection[0] = default(NetworkConnection);
+                    
+                    OnDisconnected?.Invoke();
                 }
                 else if (cmd == NetworkEvent.Type.Data)
                 {
@@ -153,6 +182,20 @@ namespace OpenNetcode.Client.Systems
                     {
                         Reader = reader
                     });
+                }
+            }
+            
+            if (_connectAttemptCallback != null)
+            {
+                if (Connected)
+                {
+                    _connectAttemptCallback?.Invoke(true);
+                    _connectAttemptCallback = null;
+                }
+                else if (Time.ElapsedTime > _triedToConnectAtTime + _connectionAttemptTimeout)
+                {
+                    _connectAttemptCallback?.Invoke(false);
+                    _connectAttemptCallback = null;
                 }
             }
         }

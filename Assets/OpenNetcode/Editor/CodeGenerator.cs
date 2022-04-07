@@ -253,8 +253,6 @@ namespace ##NAMESPACE##
                 var bytes = new UTF8Encoding(true).GetBytes(text);
                 fs.Write(bytes, 0, bytes.Length);
             }
-
-            Debug.Log(text);
         }
 
         private class CodeGenerationData

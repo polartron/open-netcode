@@ -9,6 +9,7 @@ using OpenNetcode.Shared;
 using OpenNetcode.Shared.Components;
 using OpenNetcode.Shared.Systems;
 using OpenNetcode.Shared.Time;
+using OpenNetcode.Shared.Debugging;
 
 //<using>
 

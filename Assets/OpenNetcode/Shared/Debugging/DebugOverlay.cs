@@ -1,9 +1,10 @@
 using OpenNetcode.Shared.Time;
+using SourceConsole.UI;
 using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
 
-namespace ExampleGame.Shared.Debugging
+namespace OpenNetcode.Shared.Debugging
 {
     public struct TickElement
     {
@@ -45,6 +46,9 @@ namespace ExampleGame.Shared.Debugging
         
         void OnGUI()
         {
+            if (!ConsoleCanvasController.IsVisible())
+                return;
+            
             Rect elementsRect = new Rect(20, 20, 500, 200);
 
             float labelWidth = 150;
