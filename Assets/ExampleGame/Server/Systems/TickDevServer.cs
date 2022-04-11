@@ -30,7 +30,7 @@ namespace ExampleGame.Server.Systems
             //    spawner.SpawnPathingMonster(new Vector3(0, 0, 0) + new Vector3(Random.Range(-10, 10), 0f, Random.Range(-10, 10)));
             //}
             //
-            for (int i = 0; i < 1; i++)
+            for (int i = 0; i < 30; i++)
             {
                 spawner.SpawnMonster(new Vector3(0, 0, 0) + new Vector3(Random.Range(-10, 10), 0f, Random.Range(-10, 10)));
             }

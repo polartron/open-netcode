@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2771557698028262393}
   - component: {fileID: 1557773901321772067}
   - component: {fileID: 1019040989618712775}
+  - component: {fileID: 6124511541607589208}
   m_Layer: 0
   m_Name: Red Player Visuals
   m_TagString: Untagged
@@ -81,3 +82,15 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &6124511541607589208
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1272446535114167022}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 158da17ec0564c046a0c14716413e416, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

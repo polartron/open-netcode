@@ -93,6 +93,8 @@ namespace SourceConsole.UI
 
             textOutput.lineSpacing = -textOutput.fontSize;
 
+            Clear();
+            
             StartCoroutine(GetStartupSize());
             StartCoroutine(ProcessPreInitialPrints());
         }

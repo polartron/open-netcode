@@ -10,6 +10,5 @@ namespace ExampleGame.Shared.Movement.Components
     public partial struct EntityPosition : IComponentData
     {
         public GameUnits Value;
-        public int Test;
     }
 }

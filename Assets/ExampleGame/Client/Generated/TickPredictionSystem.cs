@@ -9,6 +9,8 @@ using Unity.Entities;
 //<generated>
 using ExampleGame.Shared.Movement.Components;
 using ExampleGame.Shared.Components;
+using UnityEngine;
+
 //</generated>
 
 namespace Client.Generated

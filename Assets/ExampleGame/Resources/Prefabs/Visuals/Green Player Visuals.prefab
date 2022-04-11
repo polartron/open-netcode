@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8514913221462385876}
   - component: {fileID: 4506978935991058444}
   - component: {fileID: 4002758869103499674}
+  - component: {fileID: 593951985826074073}
   m_Layer: 0
   m_Name: Green Player Visuals
   m_TagString: Untagged
@@ -81,3 +82,15 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &593951985826074073
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 380342704740825020}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 158da17ec0564c046a0c14716413e416, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

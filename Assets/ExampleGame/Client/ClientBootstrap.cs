@@ -43,9 +43,11 @@ namespace ExampleGame.Client
             //Simulation
             tickSystem.AddSimulationSystem(new TickMovementSystem());
             tickSystem.AddPostSimulationSystem(new BumpEventSystem());
+            tickSystem.AddPostSimulationSystem(new LinkToGameObjectSystem());
             
             SourceConsole.SourceConsole.AddAssembly(Assembly.GetExecutingAssembly());
             SourceConsole.SourceConsole.RefreshCommands();
+            
             
             return world;
         }

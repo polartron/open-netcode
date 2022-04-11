@@ -12,9 +12,6 @@ namespace ExampleGame.Shared.Movement.Components
             writer.WriteRawBits(Convert.ToUInt32(!Value.Equals(baseSnapshot.Value)), 1);
             if(!Value.Equals(baseSnapshot.Value)) Value.Write(ref writer, compressionModel, baseSnapshot.Value);
 
-            writer.WriteRawBits(Convert.ToUInt32(!Test.Equals(baseSnapshot.Test)), 1);
-            if(!Test.Equals(baseSnapshot.Test)) Test.Write(ref writer, compressionModel, baseSnapshot.Test);
-
         }
 
         public void ReadSnapshot(ref DataStreamReader reader, in NetworkCompressionModel compressionModel, in EntityPosition baseSnapshot)
@@ -25,11 +22,6 @@ namespace ExampleGame.Shared.Movement.Components
             else
                 Value.Read(ref reader, compressionModel, baseSnapshot.Value);
 
-            if (reader.ReadRawBits(1) == 0)
-                Test = baseSnapshot.Test;
-            else
-                Test.Read(ref reader, compressionModel, baseSnapshot.Test);
-
         }
 
         public bool Equals(EntityPosition other)
@@ -37,7 +29,6 @@ namespace ExampleGame.Shared.Movement.Components
             bool equals = true;
             //<equals>
             equals = equals && Value.Equals(other.Value);
-            equals = equals && Test.Equals(other.Test);
             return equals;
         }
 
@@ -53,7 +44,6 @@ namespace ExampleGame.Shared.Movement.Components
                 int hash = 17;
                 //<hash>
                 hash = hash * 23 + Value.GetHashCode();
-                hash = hash * 23 + Test.GetHashCode();
                 return hash;
             }
         }

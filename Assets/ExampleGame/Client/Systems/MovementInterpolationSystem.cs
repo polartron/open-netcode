@@ -187,8 +187,8 @@ namespace ExampleGame.Client.Systems
                     p2 = positionBuffer[(Mathf.FloorToInt(fromIndex) + 1) % TimeConfig.SnapshotsPerSecond];
                     v2 = velocityBuffer[(Mathf.FloorToInt(fromIndex) + 1) % TimeConfig.SnapshotsPerSecond];
                     
-                    Debug.DrawRay(FloatingOrigin.GetUnityVector(p1.Value.Value), Vector3.up * 2f, Color.yellow);
-                    Debug.DrawRay(FloatingOrigin.GetUnityVector(p2.Value.Value), Vector3.up * 2f, Color.cyan);
+                    //Debug.DrawRay(FloatingOrigin.GetUnityVector(p1.Value.Value), Vector3.up * 2f, Color.yellow);
+                    //Debug.DrawRay(FloatingOrigin.GetUnityVector(p2.Value.Value), Vector3.up * 2f, Color.cyan);
 
                     Vector3 target = FloatingOrigin.GetUnityVector(p1.Value.Value);
 
