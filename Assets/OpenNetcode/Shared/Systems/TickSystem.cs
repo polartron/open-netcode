@@ -99,6 +99,14 @@ namespace OpenNetcode.Shared.Systems
             AddPreSimulationSystem(new TickPreSimulationEntityCommandBufferSystem());
             AddSimulationSystem(new TickSimulationEntityCommandBufferSystem());
             AddPostSimulationSystem(new TickPostSimulationEntityCommandBufferSystem());
+            
+            var fg = World.GetExistingSystem<FixedStepSimulationSystemGroup>();
+
+            foreach (var system in fg.Systems)
+            {
+                _tickSimulationSystemGroup.AddSystemToUpdateList(system);
+                fg.RemoveSystemFromUpdateList(system);
+            }
 
             base.OnCreate();
         }
