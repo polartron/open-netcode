@@ -7,11 +7,13 @@ using Shared.Time;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
+using ExampleGame.Shared.Physics;
 
 //<using>
 //<generated>
 using ExampleGame.Shared.Movement.Components;
 using ExampleGame.Shared.Components;
+
 //</generated>
 
 namespace Client.Generated
@@ -59,6 +61,9 @@ namespace Client.Generated
             tickSystem.AddPreSimulationSystem(new TickInputSystem(clientNetworkSystem));
             tickSystem.AddSimulationSystem(new TickSavePredictionSystem());
             tickSystem.AddPostSimulationSystem(new TickClearEventsSystem());
+            
+            tickSystem.AddSimulationSystem(new TickPrePhysicsSimulationSystem());
+            tickSystem.AddSimulationSystem(new TickPostPhysicsSimulationSystem());
         }
     }
 }

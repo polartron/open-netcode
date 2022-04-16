@@ -208,7 +208,7 @@ namespace ExampleGame.Client.Systems
                         float t = (float) (TickFrom - p1.Tick) / TimeConfig.TicksPerSecond;
                     
                         target = Extrapolate(FloatingOrigin.GetUnityVector(p1.Value.Value),
-                            v1.Value.Value.ToUnityVector3(), new Vector3(0f, 0f, 0f), t);
+                            v1.Value.Linear.ToUnityVector3(), new Vector3(0f, 0f, 0f), t);
                         //Debug.DrawRay(target, Vector3.up, Color.blue, 5f);
                     }
                     
@@ -253,7 +253,7 @@ namespace ExampleGame.Client.Systems
                     else if (cachedTranslations[b].IsSet)
                     {
                         Vector3 from = cachedTranslations[b].Value;
-                        Vector3 result = Vector3.Lerp(from, target, DeltaTime * 2f * math.length(FloatingOrigin.GetUnityVector(v1.Value.Value)));
+                        Vector3 result = Vector3.Lerp(from, target, DeltaTime * 2f * math.length(FloatingOrigin.GetUnityVector(v1.Value.Linear)));
 
                         translations[b] = new Translation()
                         {

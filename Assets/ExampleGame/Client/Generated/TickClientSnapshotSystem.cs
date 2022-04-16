@@ -39,8 +39,6 @@ namespace Client.Generated
 
         protected override void OnCreate()
         {
-            _client.OnDisconnected += ClearEntities;
-            
             _networkedPrefabSystem = World.GetExistingSystem<NetworkedPrefabSystem>();
             _areas = new NativeHashMap<int, ClientArea>(1000, Allocator.Persistent);
             _snapshotEntities = new NativeHashMap<int, ClientEntitySnapshot>(10000, Allocator.Persistent);
@@ -126,35 +124,6 @@ namespace Client.Generated
             base.OnDestroy();
         }
 
-        public void ClearEntities()
-        {
-            Debug.Log("Removing all networked entities.");
-            
-            var clientData = GetSingleton<ClientData>();
-            
-            foreach (var area in _areas)
-            {
-                area.Value.Dispose();
-            }
-
-            foreach (var snapshot in _snapshotEntities)
-            {
-                if (!_observedEntities.ContainsKey(snapshot.Key) &&
-                    snapshot.Key != clientData.LocalPlayerServerEntityId)
-                {
-                    EntityManager.DestroyEntity(snapshot.Value.Entity);
-                }
-            }
-
-            _snapshotEntities.Clear();
-            _areas.Clear();
-            clientData.Resetting = true;
-            clientData.LastReceivedSnapshotIndex = 0;
-            clientData.LastReceivedSnapshotTick = 0;
-            
-            SetSingleton(clientData);
-        }
-
         protected override void OnUpdate()
         {
             foreach (var packet in _client.ReceivedPackets)
@@ -180,8 +149,6 @@ namespace Client.Generated
                                     Tick = latestSnapshotTick
                                 });
                             }
-                            
-                            SetSingleton(clientData);
                         }
                         else
                         {
@@ -190,9 +157,28 @@ namespace Client.Generated
                             //Reset back to zero for now
                             //TODO: Just clear the entities that are not a part of the current baseline and continue
 
-                            ClearEntities();
+                            foreach (var area in _areas)
+                            {
+                                area.Value.Dispose();
+                            }
+
+                            foreach (var snapshot in _snapshotEntities)
+                            {
+                                if (!_observedEntities.ContainsKey(snapshot.Key) &&
+                                    snapshot.Key != clientData.LocalPlayerServerEntityId)
+                                {
+                                    EntityManager.DestroyEntity(snapshot.Value.Entity);
+                                }
+                            }
+
+                            _snapshotEntities.Clear();
+                            _areas.Clear();
+                            clientData.Resetting = true;
+                            clientData.LastReceivedSnapshotIndex = 0;
+                            clientData.LastReceivedSnapshotTick = 0;
                         }
 
+                        SetSingleton(clientData);
 
                         break;
                     }

@@ -33,8 +33,8 @@ using ExampleGame.Shared.Components;
 //[assembly: RegisterGenericComponentType(typeof(SavedInput<##TYPE##>))]
 //</template>
 //<generated>
-[assembly: RegisterGenericComponentType(typeof(SavedInput<MovementInput>))]
 [assembly: RegisterGenericComponentType(typeof(SavedInput<WeaponInput>))]
+[assembly: RegisterGenericComponentType(typeof(SavedInput<MovementInput>))]
 //</generated>
 //<template:predicted>
 //[assembly: RegisterGenericComponentType(typeof(Prediction<##TYPE##>))]

@@ -5,11 +5,13 @@ using Unity.Entities;
 using Unity.Mathematics;
 using OpenNetcode.Server.Components;
 using OpenNetcode.Shared.Components;
+using ExampleGame.Shared.Physics;
 
 //<using>
 //<generated>
 using ExampleGame.Shared.Movement.Components;
 using ExampleGame.Shared.Components;
+
 //</generated>
 
 namespace Server.Generated
@@ -35,6 +37,8 @@ namespace Server.Generated
             
             tickSystem.AddPostSimulationSystem(new TickServerSnapshotSystem(server));
             tickSystem.AddPreSimulationSystem(new TickInputBufferSystem(server));
+            tickSystem.AddSimulationSystem(new TickPrePhysicsSimulationSystem());
+            tickSystem.AddSimulationSystem(new TickPostPhysicsSimulationSystem());
         }
 
         public static void InitializePlayerEntity(EntityManager entityManager, in Entity entity, int ownerId)
@@ -86,18 +90,18 @@ namespace Server.Generated
             //}
             //</template>
 //<generated>
-            if (entityManager.HasComponent<MovementInput>(entity))
+            if (entityManager.HasComponent<WeaponInput>(entity))
             {
-                var buffer = entityManager.AddBuffer<ReceivedMovementInput>(entity);
+                var buffer = entityManager.AddBuffer<ReceivedWeaponInput>(entity);
             
                 for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
                 {
                     buffer.Add(default);
                 }
             }
-            if (entityManager.HasComponent<WeaponInput>(entity))
+            if (entityManager.HasComponent<MovementInput>(entity))
             {
-                var buffer = entityManager.AddBuffer<ReceivedWeaponInput>(entity);
+                var buffer = entityManager.AddBuffer<ReceivedMovementInput>(entity);
             
                 for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
                 {

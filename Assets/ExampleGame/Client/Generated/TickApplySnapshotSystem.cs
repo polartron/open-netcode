@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using OpenNetcode.Client.Components;
 using OpenNetcode.Shared.Systems;
 using OpenNetcode.Shared.Time;
@@ -11,9 +9,6 @@ using UnityEngine;
 //<generated>
 using ExampleGame.Shared.Movement.Components;
 using ExampleGame.Shared.Components;
-using OpenNetcode.Shared.Components;
-using Unity.Collections;
-
 //</generated>
 
 namespace Client.Generated
@@ -44,79 +39,6 @@ namespace Client.Generated
 //<generated>
         private EntityQuery _bumpEventQuery;
 //</generated>
-
-        private NativeHashMap<Entity, EntityPosition> _entityPositionUpdates;
-        private NativeHashMap<Entity, EntityVelocity> _entityVelocityUpdates;
-        private NativeHashMap<Entity, PathComponent> _pathComponentUpdates;
-        private NativeHashMap<Entity, EntityHealth> _entityHealthUpdates;
-        private NativeHashMap<Entity, BumpEvent> _bumpEventUpdates;
-
-        private Dictionary<Entity, Action<EntityPosition>> _entityPositionUpdateListeners = new Dictionary<Entity, Action<EntityPosition>>();
-        private Dictionary<Entity, Action<EntityVelocity>> _entityVelocityUpdateListeners = new Dictionary<Entity, Action<EntityVelocity>>();
-        private Dictionary<Entity, Action<PathComponent>> _pathComponentUpdateListeners = new Dictionary<Entity, Action<PathComponent>>();
-        private Dictionary<Entity, Action<EntityHealth>> _entityHealthUpdateListeners = new Dictionary<Entity, Action<EntityHealth>>();
-        private Dictionary<Entity, Action<BumpEvent>> _bumpEventUpdateListeners = new Dictionary<Entity, Action<BumpEvent>>();
-
-        public void RegisterListener<T>(Entity entity, Func<T> listener) where T : IComponentData
-        {
-            if (typeof(T) == typeof(EntityPosition))
-            {
-                if(!_entityPositionUpdateListeners.ContainsKey(entity))
-                    _entityPositionUpdateListeners.Add(entity, default);
-                
-                _entityPositionUpdateListeners[entity] += position =>
-                {
-                    listener.Invoke();
-                };
-            }
-            else if (typeof(T) == typeof(EntityVelocity))
-            {
-                if(!_entityVelocityUpdateListeners.ContainsKey(entity))
-                    _entityVelocityUpdateListeners.Add(entity, default);
-                
-                _entityVelocityUpdateListeners[entity] += position =>
-                {
-                    listener.Invoke();
-                };
-            }
-            else if (typeof(T) == typeof(PathComponent))
-            {
-                if(!_pathComponentUpdateListeners.ContainsKey(entity))
-                    _pathComponentUpdateListeners.Add(entity, default);
-                
-                _pathComponentUpdateListeners[entity] += position =>
-                {
-                    listener.Invoke();
-                };
-            }
-            else if (typeof(T) == typeof(EntityHealth))
-            {
-                if(!_entityHealthUpdateListeners.ContainsKey(entity))
-                    _entityHealthUpdateListeners.Add(entity, default);
-                
-                _entityHealthUpdateListeners[entity] += position =>
-                {
-                    listener.Invoke();
-                };
-            }
-            else if (typeof(T) == typeof(BumpEvent))
-            {
-                if(!_bumpEventUpdateListeners.ContainsKey(entity))
-                    _bumpEventUpdateListeners.Add(entity, default);
-                
-                _bumpEventUpdateListeners[entity] += position =>
-                {
-                    listener.Invoke();
-                };
-            }
-        }
-        
-        protected override void OnDestroy()
-        {
-            _entityPositionUpdates.Dispose();
-            _entityVelocityUpdates.Dispose();
-            base.OnDestroy();
-        }
 
         protected override void OnCreate()
         {
@@ -166,23 +88,12 @@ namespace Client.Generated
                 ComponentType.ReadWrite<BumpEvent>());
 //</generated>
 
-
-            _entityPositionUpdates = new NativeHashMap<Entity, EntityPosition>(1000, Allocator.Persistent);
-            _entityVelocityUpdates = new NativeHashMap<Entity, EntityVelocity>(1000, Allocator.Persistent);
-            _pathComponentUpdates = new NativeHashMap<Entity, PathComponent>(1000, Allocator.Persistent);
-            _entityHealthUpdates = new NativeHashMap<Entity, EntityHealth>(1000, Allocator.Persistent);
-            _bumpEventUpdates = new NativeHashMap<Entity, BumpEvent>(1000, Allocator.Persistent);
-
+            
             base.OnCreate();
         }
 
         protected override void OnUpdate()
         {
-            _entityPositionUpdates.Clear();
-            _entityVelocityUpdates.Clear();
-            _pathComponentUpdates.Clear();
-            _entityHealthUpdates.Clear();
-            
             double rttHalf = _tickSystem.RttHalf / 2;
             double tickFloat = _tickSystem.TickFloat;
             double tickServer = tickFloat - (rttHalf + TimeConfig.CommandBufferLengthMs) / 1000f * TimeConfig.TicksPerSecond;
@@ -202,27 +113,21 @@ namespace Client.Generated
             {
                 Tick = (int) tickFrom,
                 SnapshotBufferFromEntity = GetBufferTypeHandle<SnapshotBufferElement<EntityVelocity>>(true),
-                ComponentDataFromEntity = GetComponentTypeHandle<EntityVelocity>(),
-                Updates = _entityVelocityUpdates.AsParallelWriter(),
-                EntityTypeHandle = GetEntityTypeHandle()
+                ComponentDataFromEntity = GetComponentTypeHandle<EntityVelocity>()
             };
             Dependency = entityVelocityJob.ScheduleParallel(_entityVelocityQuery, Dependency);
             ApplyFromBufferJob<EntityPosition> entityPositionJob = new ApplyFromBufferJob<EntityPosition>()
             {
                 Tick = (int) tickFrom,
                 SnapshotBufferFromEntity = GetBufferTypeHandle<SnapshotBufferElement<EntityPosition>>(true),
-                ComponentDataFromEntity = GetComponentTypeHandle<EntityPosition>(),
-                Updates = _entityPositionUpdates.AsParallelWriter(),
-                EntityTypeHandle = GetEntityTypeHandle()
+                ComponentDataFromEntity = GetComponentTypeHandle<EntityPosition>()
             };
             Dependency = entityPositionJob.ScheduleParallel(_entityPositionQuery, Dependency);
             ApplyFromBufferJob<PathComponent> pathComponentJob = new ApplyFromBufferJob<PathComponent>()
             {
                 Tick = (int) tickFrom,
                 SnapshotBufferFromEntity = GetBufferTypeHandle<SnapshotBufferElement<PathComponent>>(true),
-                ComponentDataFromEntity = GetComponentTypeHandle<PathComponent>(),
-                Updates = _pathComponentUpdates.AsParallelWriter(),
-                EntityTypeHandle = GetEntityTypeHandle()
+                ComponentDataFromEntity = GetComponentTypeHandle<PathComponent>()
             };
             Dependency = pathComponentJob.ScheduleParallel(_pathComponentQuery, Dependency);
 //</generated>
@@ -231,8 +136,7 @@ namespace Client.Generated
             //{
             //    Tick = (int) tickFrom,
             //    SnapshotBufferFromEntity = GetBufferTypeHandle<SnapshotBufferElement<##TYPE##>>(true),
-            //    ComponentDataFromEntity = GetComponentTypeHandle<##TYPE##>(),
-            //    Updates = _##TYPELOWERUpdates
+            //    ComponentDataFromEntity = GetComponentTypeHandle<##TYPE##>()
             //};
             //Dependency = ##TYPELOWER##Job.ScheduleParallel(_##TYPELOWER##Query, Dependency);
             //</template>
@@ -241,9 +145,7 @@ namespace Client.Generated
             {
                 Tick = (int) tickFrom,
                 SnapshotBufferFromEntity = GetBufferTypeHandle<SnapshotBufferElement<EntityHealth>>(true),
-                ComponentDataFromEntity = GetComponentTypeHandle<EntityHealth>(),
-                Updates = _entityHealthUpdates.AsParallelWriter(),
-                EntityTypeHandle = GetEntityTypeHandle()
+                ComponentDataFromEntity = GetComponentTypeHandle<EntityHealth>()
             };
             Dependency = entityHealthJob.ScheduleParallel(_entityHealthQuery, Dependency);
 //</generated>
@@ -275,25 +177,20 @@ namespace Client.Generated
         {
             public int Tick;
             public ComponentTypeHandle<T> ComponentDataFromEntity;
-            [ReadOnly] public EntityTypeHandle EntityTypeHandle;
             public BufferTypeHandle<SnapshotBufferElement<T>> SnapshotBufferFromEntity;
-            public NativeHashMap<Entity, T>.ParallelWriter Updates;
         
             public void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
             {
                 var components = chunk.GetNativeArray(ComponentDataFromEntity);
                 var snapshotBuffers = chunk.GetBufferAccessor(SnapshotBufferFromEntity);
-                var entities = chunk.GetNativeArray(EntityTypeHandle);
 
                 for (int i = 0; i < chunk.Count; i++)
                 {
                     var buffer = snapshotBuffers[i];
                     var element = buffer[Tick % TimeConfig.SnapshotsPerSecond];
-                    var entity = entities[i];
                     if (element.Tick == Tick)
                     {
                         components[i] = element.Value;
-                        Updates.TryAdd(entity, element.Value);
                     }
                 }
             }

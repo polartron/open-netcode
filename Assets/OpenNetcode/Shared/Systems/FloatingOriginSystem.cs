@@ -8,7 +8,7 @@ namespace OpenNetcode.Shared.Systems
 {
     public struct FloatingOrigin : IComponentData
     {
-        public static readonly int UnitsPerMeter = 256;
+        public const int UnitsPerMeter = 256;
 
         public GameUnits Origin;
         public float3 Offset;

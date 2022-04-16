@@ -9,8 +9,11 @@ namespace ExampleGame.Shared.Movement.Components
         public void WriteSnapshot(ref DataStreamWriter writer, in NetworkCompressionModel compressionModel, in EntityVelocity baseSnapshot)
         {
             //<write>
-            writer.WriteRawBits(Convert.ToUInt32(!Value.Equals(baseSnapshot.Value)), 1);
-            if(!Value.Equals(baseSnapshot.Value)) Value.Write(ref writer, compressionModel, baseSnapshot.Value);
+            writer.WriteRawBits(Convert.ToUInt32(!Linear.Equals(baseSnapshot.Linear)), 1);
+            if(!Linear.Equals(baseSnapshot.Linear)) Linear.Write(ref writer, compressionModel, baseSnapshot.Linear);
+
+            writer.WriteRawBits(Convert.ToUInt32(!Angular.Equals(baseSnapshot.Angular)), 1);
+            if(!Angular.Equals(baseSnapshot.Angular)) Angular.Write(ref writer, compressionModel, baseSnapshot.Angular);
 
         }
 
@@ -18,9 +21,14 @@ namespace ExampleGame.Shared.Movement.Components
         {
             //<read>
             if (reader.ReadRawBits(1) == 0)
-                Value = baseSnapshot.Value;
+                Linear = baseSnapshot.Linear;
             else
-                Value.Read(ref reader, compressionModel, baseSnapshot.Value);
+                Linear.Read(ref reader, compressionModel, baseSnapshot.Linear);
+
+            if (reader.ReadRawBits(1) == 0)
+                Angular = baseSnapshot.Angular;
+            else
+                Angular.Read(ref reader, compressionModel, baseSnapshot.Angular);
 
         }
 
@@ -28,7 +36,8 @@ namespace ExampleGame.Shared.Movement.Components
         {
             bool equals = true;
             //<equals>
-            equals = equals && Value.Equals(other.Value);
+            equals = equals && Linear.Equals(other.Linear);
+            equals = equals && Angular.Equals(other.Angular);
             return equals;
         }
 
@@ -43,7 +52,8 @@ namespace ExampleGame.Shared.Movement.Components
             {
                 int hash = 17;
                 //<hash>
-                hash = hash * 23 + Value.GetHashCode();
+                hash = hash * 23 + Linear.GetHashCode();
+                hash = hash * 23 + Angular.GetHashCode();
                 return hash;
             }
         }

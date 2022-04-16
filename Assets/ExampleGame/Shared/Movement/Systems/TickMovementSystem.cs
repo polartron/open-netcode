@@ -120,14 +120,14 @@ namespace ExampleGame.Shared.Movement.Systems
                     var translation = translations[i];
                     var playerInput = characterInputs[i];
 
-                    Vector3 velocity = entityVelocity.Value.ToUnityVector3();
+                    Vector3 velocity = entityVelocity.Linear.ToUnityVector3();
                     Vector3 position = floatingOrigin.GetUnityVector(entityPosition.Value);
 
                     Movement.CalculateVelocity(ref velocity, movementConfig, playerInput,
                         TimeConfig.FixedDeltaTime);
                     Movement.Move(ref position, velocity, TimeConfig.FixedDeltaTime);
 
-                    entityVelocity.Value = GameUnits.FromUnityVector3(velocity);
+                    entityVelocity.Linear = GameUnits.FromUnityVector3(velocity);
                     entityVelocities[i] = entityVelocity;
 
                     entityPosition.Value = floatingOrigin.GetGameUnits(position);

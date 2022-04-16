@@ -10,6 +10,7 @@ namespace ExampleGame.Shared.Movement.Components
     [Predict]
     public partial struct EntityVelocity : IComponentData
     {
-        public GameUnits Value;
+        public GameUnits Linear;
+        public GameUnits Angular;
     }
 }

@@ -9,8 +9,6 @@ using Unity.Entities;
 //<generated>
 using ExampleGame.Shared.Movement.Components;
 using ExampleGame.Shared.Components;
-using UnityEngine;
-
 //</generated>
 
 namespace Client.Generated
@@ -163,10 +161,10 @@ namespace Client.Generated
                 //var ##TYPELOWER##Saved = EntityManager.GetBuffer<SavedInput<##TYPE##>>(clientEntity);
                 //</template>
 //<generated>
-                var movementInputCached = EntityManager.GetComponentData<MovementInput>(clientEntity);
-                var movementInputSaved = EntityManager.GetBuffer<SavedInput<MovementInput>>(clientEntity);
                 var weaponInputCached = EntityManager.GetComponentData<WeaponInput>(clientEntity);
                 var weaponInputSaved = EntityManager.GetBuffer<SavedInput<WeaponInput>>(clientEntity);
+                var movementInputCached = EntityManager.GetComponentData<MovementInput>(clientEntity);
+                var movementInputSaved = EntityManager.GetBuffer<SavedInput<MovementInput>>(clientEntity);
 //</generated>
                 
                 for (int i = 1; i < rollbackTicks; i++)
@@ -182,8 +180,8 @@ namespace Client.Generated
                     //EntityManager.SetComponentData(clientEntity, ##TYPELOWER##Saved[index].Value);
                     //</template>
 //<generated>
-                    EntityManager.SetComponentData(clientEntity, movementInputSaved[index].Value);
                     EntityManager.SetComponentData(clientEntity, weaponInputSaved[index].Value);
+                    EntityManager.SetComponentData(clientEntity, movementInputSaved[index].Value);
 //</generated>
                     
                     _tickSystem.StepSimulation();
@@ -198,8 +196,8 @@ namespace Client.Generated
                 //EntityManager.SetComponentData(clientEntity, ##TYPELOWER##Cached);
                 //</template>
 //<generated>
-                EntityManager.SetComponentData(clientEntity, movementInputCached);
                 EntityManager.SetComponentData(clientEntity, weaponInputCached);
+                EntityManager.SetComponentData(clientEntity, movementInputCached);
 //</generated>
             }
         }
