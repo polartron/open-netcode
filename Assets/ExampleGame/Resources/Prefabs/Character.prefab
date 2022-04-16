@@ -19,7 +19,7 @@ GameObject:
   m_Layer: 0
   m_Name: Character
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: 5132851093641282708, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -66,7 +66,6 @@ MonoBehaviour:
     x: 0
     y: 0
     z: 0
-  Test: 0
 --- !u!114 &4760259306954979279
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -79,7 +78,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a023cc351aa77f64d93d8145cc1fb196, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Value:
+  Linear:
+    x: 0
+    y: 0
+    z: 0
+  Angular:
     x: 0
     y: 0
     z: 0
@@ -140,6 +143,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c369dbcaf868ea14987c33b5c7c5c3e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  IsSet: 0
   Value:
     x: 0
     y: 0
