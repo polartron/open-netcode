@@ -16,7 +16,8 @@ namespace OpenNetcode.Server.Systems
         
         protected override void OnCreate()
         {
-            _entityQuery = GetEntityQuery(ComponentType.ReadOnly<Translation>(),
+            _entityQuery = GetEntityQuery(
+                ComponentType.ReadOnly<Translation>(),
                 ComponentType.ReadWrite<SpatialHash>());
             
             base.OnCreate();

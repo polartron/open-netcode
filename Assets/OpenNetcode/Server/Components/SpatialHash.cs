@@ -2,6 +2,7 @@ using Unity.Entities;
 
 namespace OpenNetcode.Server.Components
 {
+    [GenerateAuthoringComponent]
     public struct SpatialHash : IComponentData
     {
         public int h0;

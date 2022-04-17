@@ -6,6 +6,7 @@ namespace ExampleGame.Shared.Components
 {
     [InternalBufferCapacity(SnapshotSettings.MaxEventsBufferLength)]
     [PublicEvent]
+    [GenerateAuthoringComponent]
     public partial struct BumpEvent : IBufferElementData
     {
         public ushort SoundIndex;
