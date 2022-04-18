@@ -27,36 +27,27 @@ namespace OpenNetcode.Shared.Systems
         {
             var blobAssetStore = new BlobAssetStore();
             
-            for (int i = 0; i < _networkedPrefabs.Prefabs.Count; i++)
-            {
-                GameObject prefab;
-                
-                if (_isServer)
-                {
-                    prefab = _networkedPrefabs.Prefabs[i].Server;
-                }
-                else
-                {
-                    prefab = _networkedPrefabs.Prefabs[i].Client;
-                }
-
-                if (prefab == null)
-                    continue;
-                
-                var entity = GameObjectConversionUtility.ConvertGameObjectHierarchy(prefab, GameObjectConversionSettings.FromWorld(World, blobAssetStore));
-                Prefabs[i] = entity;
-
-                GameObjectIndex[prefab] = i;
-                EntityManager.AddComponent<NetworkedPrefab>(entity);
-                EntityManager.SetComponentData(entity, new NetworkedPrefab()
-                {
-                    Index = i
-                });
-                
-                var types = EntityManager.GetComponentTypes(entity);
-                PrefabEntityArchetypes[i] = EntityManager.CreateArchetype(types.ToArray());
-                types.Dispose();
-            }
+            //for (int i = 0; i < _networkedPrefabs.Prefabs.Count; i++)
+            //{
+            //    GameObject prefab;
+//
+            //    if (prefab == null)
+            //        continue;
+            //    
+            //    var entity = GameObjectConversionUtility.ConvertGameObjectHierarchy(prefab, GameObjectConversionSettings.FromWorld(World, blobAssetStore));
+            //    Prefabs[i] = entity;
+//
+            //    GameObjectIndex[prefab] = i;
+            //    //EntityManager.AddComponent<NetworkedPrefabIndex>(entity);
+            //    //EntityManager.SetComponentData(entity, new NetworkedPrefabIndex()
+            //    //{
+            //    //    Value = i
+            //    //});
+            //    
+            //    var types = EntityManager.GetComponentTypes(entity);
+            //    PrefabEntityArchetypes[i] = EntityManager.CreateArchetype(types.ToArray());
+            //    types.Dispose();
+            //}
             
             blobAssetStore.Dispose();
             base.OnCreate();

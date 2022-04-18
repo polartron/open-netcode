@@ -30,7 +30,7 @@ namespace Client.Generated
         [ReadOnly] public BufferFromEntity<SnapshotBufferElement<EntityPosition>> EntityPositionBuffer;
         [ReadOnly] public BufferFromEntity<SnapshotBufferElement<PathComponent>> PathComponentBuffer;
 //</generated>
-        [ReadOnly] public ComponentDataFromEntity<NetworkedPrefab> NetworkedPrefabFromEntity;
+        [ReadOnly] public ComponentDataFromEntity<NetworkedPrefabIndex> NetworkedPrefabFromEntity;
 
         public void Execute()
         {
@@ -64,7 +64,7 @@ namespace Client.Generated
 
                 if (NetworkedPrefabFromEntity.HasComponent(snapshot.Entity))
                 {
-                    snapshot.Type = NetworkedPrefabFromEntity[snapshot.Entity].Index;
+                    snapshot.Type = NetworkedPrefabFromEntity[snapshot.Entity].Value;
                 }
 
                 //<template:publicsnapshot>

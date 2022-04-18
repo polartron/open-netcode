@@ -110,7 +110,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7386549533439998808, guid: db41d817d1425cc47abd2952e59804ba, type: 3}
       propertyPath: m_Name
-      value: Server Monster
+      value: Server Moving Monster
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: db41d817d1425cc47abd2952e59804ba, type: 3}
@@ -136,3 +136,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffa797e26128ef34ebf39f80ae421bec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &5456090581851160168
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1230124021021693017}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b7a1af623724fe4e9c929c3535b6a8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GUID: c4c18b94-d407-4296-819d-ede1eefa4488

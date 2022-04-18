@@ -478,7 +478,7 @@ namespace Client.Generated
                 Entities = _snapshotEntities,
                 SnapshotIndex = snapshotIndex,
                 Tick = tick,
-                NetworkedPrefabFromEntity = GetComponentDataFromEntity<NetworkedPrefab>(true),
+                NetworkedPrefabFromEntity = GetComponentDataFromEntity<NetworkedPrefabIndex>(true),
                 //<template:publicsnapshot>
                 //##TYPE##Buffer = GetBufferFromEntity<SnapshotBufferElement<##TYPE##>>(true),
                 //</template>

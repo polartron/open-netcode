@@ -1,3 +1,4 @@
+using ExampleGame.Server.Generated;
 using OpenNetcode.Server.Systems;
 using OpenNetcode.Shared.Systems;
 using OpenNetcode.Shared.Time;
@@ -25,7 +26,7 @@ namespace Server.Generated
             var tickSystem = serverWorld.AddSystem(new TickSystem(TimeConfig.TicksPerSecond, (long) (UnityEngine.Time.time * 1000f)));
             serverWorld.GetExistingSystem<SimulationSystemGroup>().AddSystemToUpdateList(tickSystem);
             serverWorld.AddSystem(new FloatingOriginSystem(float3.zero));
-            serverWorld.AddSystem(new NetworkedPrefabSystem(networkedPrefabs, true));
+            tickSystem.AddPreSimulationSystem(new TickServerPrefabSystem(networkedPrefabs));
             
             entityManager.CreateEntity(ComponentType.ReadOnly<TickData>());
 

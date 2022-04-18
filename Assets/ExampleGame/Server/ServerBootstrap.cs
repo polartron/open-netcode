@@ -1,4 +1,5 @@
 using System.Reflection;
+using ExampleGame.Server.Generated;
 using ExampleGame.Server.Systems;
 using ExampleGame.Shared.Movement.Components;
 using ExampleGame.Shared.Movement.Systems;
@@ -24,17 +25,9 @@ namespace ExampleGame.Server
             var networkedPrefabs = Resources.Load<NetworkedPrefabs>("Networked Prefabs");
             ServerInitialization.Initialize(World, networkedPrefabs);
 
-            var networkedPrefabSystem = World.GetExistingSystem<NetworkedPrefabSystem>();
             var player = Resources.Load<GameObject>("Prefabs/Server/Server Player");
             var monster = Resources.Load<GameObject>("Prefabs/Server/Server Moving Monster");
             var pathingMonster = Resources.Load<GameObject>("Prefabs/Server/Server Pathing Monster");
-
-            World.AddSystem(new ServerEntitySystem()
-            {
-                Player = networkedPrefabSystem.GetEntityFromPrefab(player),
-                Monster = networkedPrefabSystem.GetEntityFromPrefab(monster),
-                PathingMonster = networkedPrefabSystem.GetEntityFromPrefab(pathingMonster),
-            });
 
             var tickSystem = World.GetExistingSystem<TickSystem>();
             tickSystem.AddPreSimulationSystem(new ServerGuestAuthentication(World.GetExistingSystem<ServerNetworkSystem>()));

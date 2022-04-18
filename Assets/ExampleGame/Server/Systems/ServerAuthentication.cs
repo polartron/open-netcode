@@ -47,13 +47,15 @@ namespace ExampleGame.Server.Systems
 
             foreach (var login in loginMessages)
             {
-                DataStreamWriter writer = new DataStreamWriter(50, Allocator.Temp);
+                DataStreamWriter writer = new DataStreamWriter(1000, Allocator.Temp);
                 
                 if (login.Value.Guest)
                 {
                     Debug.Log("Guest logging in");
+                    
                     Entity entity = _serverEntitySystem.SpawnPlayer(new Vector3(login.Key, 0, login.Key) + new Vector3(1, 0, 1), login.Key);
                     ClientInfoMessage.Write(entity.Index, ref writer, _compressionModel);
+                    
                     _server.Send(login.Key, Packets.WrapPacket(writer));
                 }
                 else

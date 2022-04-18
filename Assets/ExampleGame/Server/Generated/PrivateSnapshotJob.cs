@@ -26,7 +26,7 @@ namespace Server.Generated
         public NativeHashSet<int>.ParallelWriter ActiveAreasList;
         public NativeMultiHashMap<int, PlayerSnapshot>.ParallelWriter PlayersInArea;
         [ReadOnly] public NetworkCompressionModel CompressionModel;
-        [ReadOnly] public ComponentDataFromEntity<NetworkedPrefab> NetworkedPrefabFromEntityHandle;
+        [ReadOnly] public ComponentDataFromEntity<NetworkedPrefabIndex> NetworkedPrefabFromEntityHandle;
         [ReadOnly] public ComponentTypeHandle<ServerNetworkedEntity> ServerNetworkedEntityHandle;
         [ReadOnly] public ComponentTypeHandle<SpatialHash> SpatialHashHandle;
         public ComponentTypeHandle<PlayerBaseLine> PlayerBaseLineHandle;
@@ -100,7 +100,7 @@ namespace Server.Generated
                     var networkedPrefab = NetworkedPrefabFromEntityHandle[targetEntity];
 
                     writer.WritePackedUInt((uint) targetEntity.Index, CompressionModel);
-                    writer.WritePackedInt(networkedPrefab.Index, CompressionModel);
+                    writer.WritePackedInt(networkedPrefab.Value, CompressionModel);
                     int updateMask = target.ComponentInterestMask;
                     writer.WritePackedInt(updateMask, CompressionModel);
 

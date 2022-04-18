@@ -17,7 +17,7 @@ namespace Server.Generated
     struct AddEntitiesToAreas : IJobEntityBatch
     {
         [ReadOnly] public ComponentTypeHandle<SpatialHash> SpatialHashHandle;
-        [ReadOnly] public ComponentTypeHandle<NetworkedPrefab> NetworkedPrefabHandle;
+        [ReadOnly] public ComponentTypeHandle<NetworkedPrefabIndex> NetworkedPrefabHandle;
         [ReadOnly] public EntityTypeHandle EntityTypeHandle;
         [ReadOnly] public NativeHashSet<int> ActiveAreas;
         [WriteOnly] public NativeMultiHashMap<int, ServerEntitySnapshot>.ParallelWriter EntitiesInAreas;
@@ -51,7 +51,7 @@ namespace Server.Generated
                 ServerEntitySnapshot serverEntitySnapshot = new ServerEntitySnapshot();
     
                 serverEntitySnapshot.Entity = entity;
-                serverEntitySnapshot.PrefabType = networkedPrefab.Index;
+                serverEntitySnapshot.PrefabType = networkedPrefab.Value;
 
                 int componentMask = 0;
 

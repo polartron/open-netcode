@@ -52,7 +52,7 @@ namespace Server.Generated
             _compressionModel = new NetworkCompressionModel(Allocator.Persistent);
             _entitiesQuery = GetEntityQuery(
                 ComponentType.ReadOnly<Translation>(),
-                ComponentType.ReadOnly<NetworkedPrefab>(),
+                ComponentType.ReadOnly<NetworkedPrefabIndex>(),
                 ComponentType.ReadOnly<ServerNetworkedEntity>(),
                 ComponentType.ReadOnly<SpatialHash>());
             _playersQuery = GetEntityQuery(
@@ -60,7 +60,7 @@ namespace Server.Generated
                 ComponentType.ReadOnly<ServerNetworkedEntity>(),
                 ComponentType.ReadOnly<PrivateSnapshotObserver>(),
                 ComponentType.ReadOnly<SpatialHash>(),
-                ComponentType.ReadWrite<NetworkedPrefab>(),
+                ComponentType.ReadWrite<NetworkedPrefabIndex>(),
                 ComponentType.ReadWrite<PlayerBaseLine>());
 
             base.OnCreate();
@@ -124,7 +124,7 @@ namespace Server.Generated
                     PlayersInArea = playersInAreas.AsParallelWriter(),
                     ServerNetworkedEntityHandle = GetComponentTypeHandle<ServerNetworkedEntity>(true),
                     PrivateSnapshotObserverHandle = GetBufferTypeHandle<PrivateSnapshotObserver>(true),
-                    NetworkedPrefabFromEntityHandle = GetComponentDataFromEntity<NetworkedPrefab>(true),
+                    NetworkedPrefabFromEntityHandle = GetComponentDataFromEntity<NetworkedPrefabIndex>(true),
                     PlayerBaseLineHandle = GetComponentTypeHandle<PlayerBaseLine>(),
                     SpatialHashHandle = spatialHashHandle,
                     //<template:publicsnapshot>
@@ -168,7 +168,7 @@ namespace Server.Generated
             {
                 ActiveAreas = activeAreasList,
                 EntitiesInAreas = entitiesInAreas.AsParallelWriter(),
-                NetworkedPrefabHandle = GetComponentTypeHandle<NetworkedPrefab>(true),
+                NetworkedPrefabHandle = GetComponentTypeHandle<NetworkedPrefabIndex>(true),
                 EntityTypeHandle = GetEntityTypeHandle(),
                 SpatialHashHandle = spatialHashHandle,
                 //<template:publicsnapshot>
