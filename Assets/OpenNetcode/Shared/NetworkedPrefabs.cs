@@ -1,39 +1,78 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using OpenNetcode.Shared;
-using OpenNetcode.Shared.Components;
+using OpenNetcode.Shared.Authoring;
 using UnityEditor;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "RPS/Networked Prefabs")]
-public class NetworkedPrefabs : ScriptableObject
+namespace OpenNetcode.Shared
 {
-    [SerializeField] private List<GameObject> _prefabs;
-
-    public List<GameObject> Prefabs
+    [CreateAssetMenu(menuName = "RPS/Networked Prefabs")]
+    public class NetworkedPrefabs : ScriptableObject
     {
-        get
-        {
-#if UNITY_EDITOR
-            List<GameObject> prefabs = new List<GameObject>();
-            string[] guids = AssetDatabase.FindAssets("t:Prefab");
+        public GameObject ClientPlayer;
+        
+        [SerializeField] [HideInInspector] private List<GameObject> _serverPrefabs;
+        [SerializeField] [HideInInspector] private List<GameObject> _clientPrefabs;
 
-            foreach (var guid in guids)
+        public List<GameObject> Server
+        {
+            get
             {
-                var path = AssetDatabase.GUIDToAssetPath(guid);
-                GameObject go = AssetDatabase.LoadAssetAtPath<GameObject>(path);
-                
-                if (go.GetComponent<NetworkedPrefabBehaviour>() != null)
+#if UNITY_EDITOR
+                List<GameObject> prefabs = new List<GameObject>();
+                string[] guids = AssetDatabase.FindAssets("t:Prefab");
+
+                foreach (var guid in guids)
                 {
-                    prefabs.Add(go);
+                    var path = AssetDatabase.GUIDToAssetPath(guid);
+                    GameObject go = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+                
+                    if (go.GetComponent<ServerPrefabAuthoring>() != null)
+                    {
+                        prefabs.Add(go);
+                    }
                 }
+
+                return prefabs;
+#else
+                return _serverPrefabs;
+#endif
             }
 
-            return prefabs;
+            set
+            {
+                _serverPrefabs = value;
+            }
+        }
+        
+        public List<GameObject> Client
+        {
+            get
+            {
+#if UNITY_EDITOR
+                List<GameObject> prefabs = new List<GameObject>();
+                string[] guids = AssetDatabase.FindAssets("t:Prefab");
+
+                foreach (var guid in guids)
+                {
+                    var path = AssetDatabase.GUIDToAssetPath(guid);
+                    GameObject go = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+                
+                    if (go.GetComponent<ClientPrefabAuthoring>() != null)
+                    {
+                        prefabs.Add(go);
+                    }
+                }
+
+                return prefabs;
 #else
-            return _prefabs;
+                return _clientPrefabs;
 #endif
+            }
+
+            set
+            {
+                _clientPrefabs = value;
+            }
         }
     }
 }

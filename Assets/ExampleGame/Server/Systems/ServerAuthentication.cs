@@ -2,6 +2,7 @@
 using OpenNetcode.Shared;
 using OpenNetcode.Shared.Messages;
 using OpenNetcode.Shared.Systems;
+using Server.Generated;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Networking.Transport;
@@ -17,6 +18,7 @@ namespace ExampleGame.Server.Systems
         private readonly IServerNetworkSystem _server;
         private ServerEntitySystem _serverEntitySystem;
         private NetworkCompressionModel _compressionModel;
+        private TickServerPrefabSystem _tickServerPrefabSystem;
 
         public ServerGuestAuthentication(IServerNetworkSystem server)
         {
@@ -26,6 +28,7 @@ namespace ExampleGame.Server.Systems
         protected override void OnStartRunning()
         {
             _serverEntitySystem = World.GetExistingSystem<ServerEntitySystem>();
+            _tickServerPrefabSystem = World.GetExistingSystem<TickServerPrefabSystem>();
             _compressionModel = new NetworkCompressionModel(Allocator.Persistent);
             base.OnStartRunning();
         }
@@ -52,11 +55,12 @@ namespace ExampleGame.Server.Systems
                 if (login.Value.Guest)
                 {
                     Debug.Log("Guest logging in");
-                    
-                    Entity entity = _serverEntitySystem.SpawnPlayer(new Vector3(login.Key, 0, login.Key) + new Vector3(1, 0, 1), login.Key);
+
+                    Entity entity = _tickServerPrefabSystem.SpawnPrefab("Player");
+                    ServerInitialization.InitializePlayerEntity(EntityManager, entity, login.Key);
                     ClientInfoMessage.Write(entity.Index, ref writer, _compressionModel);
-                    
                     _server.Send(login.Key, Packets.WrapPacket(writer));
+                    _tickServerPrefabSystem.SendNetworkedPrefabs(login.Key);
                 }
                 else
                 {

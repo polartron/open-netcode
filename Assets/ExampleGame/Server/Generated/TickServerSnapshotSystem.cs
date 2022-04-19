@@ -132,8 +132,8 @@ namespace Server.Generated
                     //</template>
 //<generated>
                     EntityVelocityComponents = GetComponentDataFromEntity<EntityVelocity>(true),
-                    EntityPositionComponents = GetComponentDataFromEntity<EntityPosition>(true),
                     PathComponentComponents = GetComponentDataFromEntity<PathComponent>(true),
+                    EntityPositionComponents = GetComponentDataFromEntity<EntityPosition>(true),
 //</generated>
                     //<template:privatesnapshot>
                     //##TYPE##Components = GetComponentDataFromEntity<##TYPE##>(true),
@@ -176,8 +176,8 @@ namespace Server.Generated
                 //</template>
 //<generated>
                 EntityVelocityComponents = GetComponentDataFromEntity<EntityVelocity>(true),
-                EntityPositionComponents = GetComponentDataFromEntity<EntityPosition>(true),
                 PathComponentComponents = GetComponentDataFromEntity<PathComponent>(true),
+                EntityPositionComponents = GetComponentDataFromEntity<EntityPosition>(true),
 //</generated>
                 //<template:publicevent>
                 //##TYPE##BufferFromEntity = GetBufferFromEntity<BumpEvent>(true),
@@ -239,8 +239,8 @@ namespace Server.Generated
                             //</template>
 //<generated>
                             EntityVelocityFromEntity = GetComponentDataFromEntity<EntityVelocity>(true),
-                            EntityPositionFromEntity = GetComponentDataFromEntity<EntityPosition>(true),
                             PathComponentFromEntity = GetComponentDataFromEntity<PathComponent>(true),
+                            EntityPositionFromEntity = GetComponentDataFromEntity<EntityPosition>(true),
 //</generated>
                             //<template:publicevent>
                             //##TYPE##BufferFromEntity = GetBufferFromEntity<##TYPE##>(true),

@@ -13,7 +13,6 @@ namespace ExampleGame.Server.Systems
 {
     [DisableAutoCreation]
     [UpdateInGroup(typeof(InitializationSystemGroup))]
-    [UpdateAfter(typeof(NetworkedPrefabSystem))]
     public partial class ServerEntitySystem : SystemBase
     {
         internal Entity Player;

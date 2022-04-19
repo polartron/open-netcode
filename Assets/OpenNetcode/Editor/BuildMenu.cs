@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using OpenNetcode.Shared;
 using UnityEditor;
 using UnityEngine;
 
@@ -28,7 +29,8 @@ public class BuildMenu
         };
         defaultOptions.locationPathName = "Build/Client.exe";
         
-        
+        NetworkedPrefabs networkedPrefabs = Resources.Load<NetworkedPrefabs>("Networked Prefabs");
+        networkedPrefabs.Client = networkedPrefabs.Client;
         
         BuildPipeline.BuildPlayer(defaultOptions);
     }

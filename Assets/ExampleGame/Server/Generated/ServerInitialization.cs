@@ -1,4 +1,5 @@
 using ExampleGame.Server.Generated;
+using ExampleGame.Server.Systems;
 using OpenNetcode.Server.Systems;
 using OpenNetcode.Shared.Systems;
 using OpenNetcode.Shared.Time;
@@ -7,6 +8,7 @@ using Unity.Mathematics;
 using OpenNetcode.Server.Components;
 using OpenNetcode.Shared.Components;
 using ExampleGame.Shared.Physics;
+using OpenNetcode.Shared;
 
 //<using>
 //<generated>
@@ -26,12 +28,12 @@ namespace Server.Generated
             var tickSystem = serverWorld.AddSystem(new TickSystem(TimeConfig.TicksPerSecond, (long) (UnityEngine.Time.time * 1000f)));
             serverWorld.GetExistingSystem<SimulationSystemGroup>().AddSystemToUpdateList(tickSystem);
             serverWorld.AddSystem(new FloatingOriginSystem(float3.zero));
-            tickSystem.AddPreSimulationSystem(new TickServerPrefabSystem(networkedPrefabs));
-            
+
             entityManager.CreateEntity(ComponentType.ReadOnly<TickData>());
 
             ServerNetworkSystem server = serverWorld.AddSystem(new ServerNetworkSystem());
-            
+
+            tickSystem.AddPreSimulationSystem(new TickServerPrefabSystem(networkedPrefabs, server));
             tickSystem.AddPreSimulationSystem(new TickServerReceiveSystem(server));
             tickSystem.AddPostSimulationSystem(new TickSendResultSystem(server));
             tickSystem.AddPostSimulationSystem(new TickServerSendSystem(server));
@@ -57,10 +59,16 @@ namespace Server.Generated
             // Set data
             int componentInterestMask = 0;
             //<template:privatesnapshot>
-            //componentInterestMask = PrivateSnapshotObserver.Observe<##TYPE##>(componentInterestMask);
+            //if (entityManager.HasComponent<##TYPE##>(entity))
+            //{
+            //    componentInterestMask = PrivateSnapshotObserver.Observe<##TYPE##>(componentInterestMask);
+            //}
             //</template>
 //<generated>
-            componentInterestMask = PrivateSnapshotObserver.Observe<EntityHealth>(componentInterestMask);
+            if (entityManager.HasComponent<EntityHealth>(entity))
+            {
+                componentInterestMask = PrivateSnapshotObserver.Observe<EntityHealth>(componentInterestMask);
+            }
 //</generated>
                 
             privateSnapshotObservers.Add(new PrivateSnapshotObserver()
@@ -91,15 +99,6 @@ namespace Server.Generated
             //}
             //</template>
 //<generated>
-            if (entityManager.HasComponent<WeaponInput>(entity))
-            {
-                var buffer = entityManager.AddBuffer<ReceivedWeaponInput>(entity);
-            
-                for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
-                {
-                    buffer.Add(default);
-                }
-            }
             if (entityManager.HasComponent<MovementInput>(entity))
             {
                 var buffer = entityManager.AddBuffer<ReceivedMovementInput>(entity);

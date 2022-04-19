@@ -107,8 +107,7 @@ namespace Client.Generated
             int lastIndex = 0;
             int lastType = 0;
 
-            var entityComponentBuffers =
-                new NativeHashMap<int, ComponentBuffers>(SnapshotEntities.Count(), Allocator.Temp);
+            var entityComponentBuffers = new NativeHashMap<int, ComponentBuffers>(SnapshotEntities.Count(), Allocator.Temp);
 
             for (int i = 0; i < removedOrAddedCount; i++)
             {

@@ -12,8 +12,8 @@ using ExampleGame.Shared.Components;
 //</template>
 //<generated>
 [assembly: RegisterGenericComponentType(typeof(SnapshotBufferElement<EntityVelocity>))]
-[assembly: RegisterGenericComponentType(typeof(SnapshotBufferElement<EntityPosition>))]
 [assembly: RegisterGenericComponentType(typeof(SnapshotBufferElement<PathComponent>))]
+[assembly: RegisterGenericComponentType(typeof(SnapshotBufferElement<EntityPosition>))]
 //</generated>
 //<template:privatesnapshot>
 //[assembly: RegisterGenericComponentType(typeof(SnapshotBufferElement<##TYPE##>))]
@@ -33,7 +33,6 @@ using ExampleGame.Shared.Components;
 //[assembly: RegisterGenericComponentType(typeof(SavedInput<##TYPE##>))]
 //</template>
 //<generated>
-[assembly: RegisterGenericComponentType(typeof(SavedInput<WeaponInput>))]
 [assembly: RegisterGenericComponentType(typeof(SavedInput<MovementInput>))]
 //</generated>
 //<template:predicted>
@@ -49,8 +48,8 @@ using ExampleGame.Shared.Components;
 //</template>
 //<generated>
 [assembly: RegisterGenericComponentType(typeof(Prediction<EntityVelocity>))]
-[assembly: RegisterGenericComponentType(typeof(Prediction<EntityPosition>))]
 [assembly: RegisterGenericComponentType(typeof(Prediction<PathComponent>))]
+[assembly: RegisterGenericComponentType(typeof(Prediction<EntityPosition>))]
 //</generated>
 //</generated>
 //<template:privatesnapshot>

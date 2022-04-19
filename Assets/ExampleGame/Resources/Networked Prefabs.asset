@@ -12,10 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03d27d9390bd07e49905af42c8f05be0, type: 3}
   m_Name: Networked Prefabs
   m_EditorClassIdentifier: 
-  Prefabs:
-  - Client: {fileID: 8380289861992919687, guid: 221ffc63418fe6445b07352d1dd55253, type: 3}
-    Server: {fileID: 1666439945764861006, guid: 30cb904d08b080247ac96b7ea565b9cd, type: 3}
-  - Client: {fileID: 6037343977086250771, guid: 723a12918d53db4409c43875af9f4b67, type: 3}
-    Server: {fileID: 1230124021021693017, guid: b0221ccf5d39c574285707ae3f1a402b, type: 3}
-  - Client: {fileID: 3546616573049609333, guid: 0d5e566e72a0d8f47b29d5e8dc784cd5, type: 3}
-    Server: {fileID: 2355842311674756388, guid: 5cc0e66dc1883524082e7f4bbbf0f62c, type: 3}
+  ClientPlayer: {fileID: 4827697552890072089, guid: d89698bc43990f44da7a569b2ab6f475, type: 3}
+  _serverPrefabs: []
+  _clientPrefabs: []

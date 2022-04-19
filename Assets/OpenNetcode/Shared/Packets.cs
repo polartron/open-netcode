@@ -12,7 +12,8 @@ namespace OpenNetcode.Shared
         PrivateSnapshot,
         Result,
         Login,
-        ClientInfo
+        ClientInfo,
+        NetworkedPrefabs
     }
 
     public static class Packets

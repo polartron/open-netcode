@@ -26,8 +26,8 @@ namespace Server.Generated
         //</template>
 //<generated>
         public BaseLines<EntityVelocity> EntityVelocityBaseLine;
-        public BaseLines<EntityPosition> EntityPositionBaseLine;
         public BaseLines<PathComponent> PathComponentBaseLine;
+        public BaseLines<EntityPosition> EntityPositionBaseLine;
 //</generated>
 
         public Area(int capacity)
@@ -39,8 +39,8 @@ namespace Server.Generated
             //</template>
 //<generated>
             EntityVelocityBaseLine = new BaseLines<EntityVelocity>(capacity, TimeConfig.SnapshotsPerSecond);
-            EntityPositionBaseLine = new BaseLines<EntityPosition>(capacity, TimeConfig.SnapshotsPerSecond);
             PathComponentBaseLine = new BaseLines<PathComponent>(capacity, TimeConfig.SnapshotsPerSecond);
+            EntityPositionBaseLine = new BaseLines<EntityPosition>(capacity, TimeConfig.SnapshotsPerSecond);
 //</generated>
         }
 
@@ -52,8 +52,8 @@ namespace Server.Generated
             //</template>
 //<generated>
             EntityVelocityBaseLine.Dispose();
-            EntityPositionBaseLine.Dispose();
             PathComponentBaseLine.Dispose();
+            EntityPositionBaseLine.Dispose();
 //</generated>
         }
     }

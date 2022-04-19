@@ -25,11 +25,6 @@ namespace Server.Generated
     //}
     //</template>
 //<generated>
-    public struct ReceivedWeaponInput : IBufferElementData
-    {
-        public int Tick;
-        public WeaponInput Input;
-    }
     public struct ReceivedMovementInput : IBufferElementData
     {
         public int Tick;
@@ -58,7 +53,6 @@ namespace Server.Generated
                 //ComponentType.ReadOnly<##TYPE##>(),
                 //</template>
 //<generated>
-                ComponentType.ReadOnly<WeaponInput>(),
                 ComponentType.ReadOnly<MovementInput>(),
 //</generated>
                 ComponentType.ReadOnly<ProcessedInput>(),
@@ -85,7 +79,6 @@ namespace Server.Generated
                 //Received##TYPE## = GetBufferTypeHandle<Received##TYPE##>(),
                 //</template>
 //<generated>
-                ReceivedWeaponInput = GetBufferTypeHandle<ReceivedWeaponInput>(),
                 ReceivedMovementInput = GetBufferTypeHandle<ReceivedMovementInput>(),
 //</generated>
             };
@@ -103,8 +96,6 @@ namespace Server.Generated
                 //Received##TYPE##TypeHandle = GetBufferTypeHandle<Received##TYPE##>(true),
                 //</template>
 //<generated>
-                WeaponInputTypeHandle = GetComponentTypeHandle<WeaponInput>(),
-                ReceivedWeaponInputTypeHandle = GetBufferTypeHandle<ReceivedWeaponInput>(true),
                 MovementInputTypeHandle = GetComponentTypeHandle<MovementInput>(),
                 ReceivedMovementInputTypeHandle = GetBufferTypeHandle<ReceivedMovementInput>(true),
 //</generated>
@@ -128,7 +119,6 @@ namespace Server.Generated
             //public BufferTypeHandle<Received##TYPE##> Received##TYPE##;
             //</template>
 //<generated>
-            public BufferTypeHandle<ReceivedWeaponInput> ReceivedWeaponInput;
             public BufferTypeHandle<ReceivedMovementInput> ReceivedMovementInput;
 //</generated>
             
@@ -141,7 +131,6 @@ namespace Server.Generated
                 //var received##TYPE##s = batchInChunk.GetBufferAccessor(Received##TYPE##);
                 //</template>
 //<generated>
-                var receivedWeaponInputs = batchInChunk.GetBufferAccessor(ReceivedWeaponInput);
                 var receivedMovementInputs = batchInChunk.GetBufferAccessor(ReceivedMovementInput);
 //</generated>
 
@@ -160,7 +149,6 @@ namespace Server.Generated
                             //var received##TYPE## = received##TYPE##s[i];
                             //</template>
 //<generated>
-                            var receivedWeaponInput = receivedWeaponInputs[i];
                             var receivedMovementInput = receivedMovementInputs[i];
 //</generated>
                             
@@ -187,7 +175,6 @@ namespace Server.Generated
                             //##TYPE## last##TYPE## = new ##TYPE##();
                             //</template>
 //<generated>
-                            WeaponInput lastWeaponInput = new WeaponInput();
                             MovementInput lastMovementInput = new MovementInput();
 //</generated>
 
@@ -199,9 +186,6 @@ namespace Server.Generated
                                 //last##TYPE## = ##TYPELOWER##;
                                 //</template>
 //<generated>
-                                WeaponInput weaponInput = new WeaponInput();
-                                weaponInput.ReadSnapshot(ref reader, CompressionModel, lastWeaponInput);
-                                lastWeaponInput = weaponInput;
                                 MovementInput movementInput = new MovementInput();
                                 movementInput.ReadSnapshot(ref reader, CompressionModel, lastMovementInput);
                                 lastMovementInput = movementInput;
@@ -220,14 +204,6 @@ namespace Server.Generated
                                 //}
                                 //</template>
 //<generated>
-                                if (receivedWeaponInput[index].Tick != tick - j)
-                                {
-                                    receivedWeaponInput[index] = new ReceivedWeaponInput()
-                                    {
-                                        Tick = tick - j,
-                                        Input = weaponInput
-                                    };
-                                }
                                 if (receivedMovementInput[index].Tick != tick - j)
                                 {
                                     receivedMovementInput[index] = new ReceivedMovementInput()
@@ -256,8 +232,6 @@ namespace Server.Generated
             //public ComponentTypeHandle<##TYPE##> ##TYPE##TypeHandle;
             //</template>
 //<generated>
-            [ReadOnly] public BufferTypeHandle<ReceivedWeaponInput> ReceivedWeaponInputTypeHandle;
-            public ComponentTypeHandle<WeaponInput> WeaponInputTypeHandle;
             [ReadOnly] public BufferTypeHandle<ReceivedMovementInput> ReceivedMovementInputTypeHandle;
             public ComponentTypeHandle<MovementInput> MovementInputTypeHandle;
 //</generated>
@@ -271,8 +245,6 @@ namespace Server.Generated
                 //var received##TYPE##s = batchInChunk.GetBufferAccessor(Received##TYPE##TypeHandle);
                 //</template>
 //<generated>
-                var weaponInputs = batchInChunk.GetNativeArray(WeaponInputTypeHandle);
-                var receivedWeaponInputs = batchInChunk.GetBufferAccessor(ReceivedWeaponInputTypeHandle);
                 var movementInputs = batchInChunk.GetNativeArray(MovementInputTypeHandle);
                 var receivedMovementInputs = batchInChunk.GetBufferAccessor(ReceivedMovementInputTypeHandle);
 //</generated>
@@ -294,13 +266,6 @@ namespace Server.Generated
                     //}
                     //</template>
 //<generated>
-                    var receivedWeaponInput = receivedWeaponInputs[i];
-                    var weaponInput = receivedWeaponInput[index];
-                    if (weaponInput.Tick == Tick)
-                    {
-                        weaponInputs[i] = weaponInput.Input;
-                        appliedAtThisTick = true;
-                    }
                     var receivedMovementInput = receivedMovementInputs[i];
                     var movementInput = receivedMovementInput[index];
                     if (movementInput.Tick == Tick)

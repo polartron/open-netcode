@@ -9,6 +9,7 @@ using OpenNetcode.Shared.Systems;
 using UnityEngine.Scripting;
 using ExampleGame.Client.Systems;
 using ExampleGame.Shared.Movement.Systems;
+using OpenNetcode.Shared;
 
 namespace ExampleGame.Client
 {
@@ -29,8 +30,7 @@ namespace ExampleGame.Client
             var world = SharedBootstrap.CreateWorld(name);
 
             NetworkedPrefabs networkedPrefabs = Resources.Load<NetworkedPrefabs>("Networked Prefabs");
-            GameObject playerPrefab = Resources.Load<GameObject>("Prefabs/Local Player");
-            ClientInitialization.Initialize(world, playerPrefab, networkedPrefabs);
+            ClientInitialization.Initialize(world, networkedPrefabs);
             
             SharedBootstrap.AddSystem<SimulationSystemGroup>(world, new PlayerInputSystem());
             SharedBootstrap.AddSystem<SimulationSystemGroup>(world, new SoundSystem());

@@ -60,7 +60,7 @@ namespace ExampleGame.Server.Systems
             
             Vector3 center = new Vector3(0, 0, 0);
             
-            Entities.ForEach((ref MovementInput input, ref Translation translation, ref DynamicBuffer<BumpEvent> bumpEvents, in Entity entity, in WanderingAiTag wanderingAiTag) =>
+            Entities.ForEach((ref MovementInput input, ref Translation translation, in Entity entity, in WanderingAiTag wanderingAiTag) =>
             {
                 if (input.Move.x == 0f && input.Move.y == 0f)
                 {
@@ -69,23 +69,19 @@ namespace ExampleGame.Server.Systems
                 
                 if (translation.Value.x - center.x > range)
                 {
-                    bumpEvents.Add(new BumpEvent());
                     input.Move = new float2(-1f, input.Move.y);
                 }
                 else if (translation.Value.x - center.x < -range)
                 {
-                    bumpEvents.Add(new BumpEvent());
                     input.Move = new float2(1f, input.Move.y);
                 }
             
                 if (translation.Value.z - center.z > range)
                 {
-                    bumpEvents.Add(new BumpEvent());
                     input.Move = new float2(input.Move.x, -1f);
                 }
                 else if (translation.Value.z - center.z < -range)
                 {
-                    bumpEvents.Add(new BumpEvent());
                     input.Move = new float2(input.Move.x, 1f);
                 }
             }).Run();

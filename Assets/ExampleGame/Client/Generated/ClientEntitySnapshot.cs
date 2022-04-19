@@ -21,8 +21,8 @@ namespace Client.Generated
         //</template>
 //<generated>
         public int EntityVelocityIndex;
-        public int EntityPositionIndex;
         public int PathComponentIndex;
+        public int EntityPositionIndex;
 //</generated>
 
         public int CompareTo(ClientEntitySnapshot other)

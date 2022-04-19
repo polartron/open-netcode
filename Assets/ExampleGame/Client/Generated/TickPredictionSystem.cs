@@ -64,8 +64,8 @@ namespace Client.Generated
             //</template>
 //<generated>
             DoRollback<EntityVelocity>(entity, tick);
-            DoRollback<EntityPosition>(entity, tick);
             DoRollback<PathComponent>(entity, tick);
+            DoRollback<EntityPosition>(entity, tick);
 //</generated>
         }
         
@@ -161,8 +161,6 @@ namespace Client.Generated
                 //var ##TYPELOWER##Saved = EntityManager.GetBuffer<SavedInput<##TYPE##>>(clientEntity);
                 //</template>
 //<generated>
-                var weaponInputCached = EntityManager.GetComponentData<WeaponInput>(clientEntity);
-                var weaponInputSaved = EntityManager.GetBuffer<SavedInput<WeaponInput>>(clientEntity);
                 var movementInputCached = EntityManager.GetComponentData<MovementInput>(clientEntity);
                 var movementInputSaved = EntityManager.GetBuffer<SavedInput<MovementInput>>(clientEntity);
 //</generated>
@@ -180,7 +178,6 @@ namespace Client.Generated
                     //EntityManager.SetComponentData(clientEntity, ##TYPELOWER##Saved[index].Value);
                     //</template>
 //<generated>
-                    EntityManager.SetComponentData(clientEntity, weaponInputSaved[index].Value);
                     EntityManager.SetComponentData(clientEntity, movementInputSaved[index].Value);
 //</generated>
                     
@@ -196,7 +193,6 @@ namespace Client.Generated
                 //EntityManager.SetComponentData(clientEntity, ##TYPELOWER##Cached);
                 //</template>
 //<generated>
-                EntityManager.SetComponentData(clientEntity, weaponInputCached);
                 EntityManager.SetComponentData(clientEntity, movementInputCached);
 //</generated>
             }

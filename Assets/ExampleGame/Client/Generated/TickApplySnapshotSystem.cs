@@ -24,8 +24,8 @@ namespace Client.Generated
         //</template>
 //<generated>
         private EntityQuery _entityVelocityQuery;
-        private EntityQuery _entityPositionQuery;
         private EntityQuery _pathComponentQuery;
+        private EntityQuery _entityPositionQuery;
 //</generated>
         //<template:privatesnapshot>
         //private EntityQuery _##TYPELOWER##Query;
@@ -55,14 +55,14 @@ namespace Client.Generated
                 ComponentType.Exclude<Prediction<EntityVelocity>>(),
                 ComponentType.ReadOnly<SnapshotBufferElement<EntityVelocity>>(),
                 ComponentType.ReadWrite<EntityVelocity>());
-            _entityPositionQuery = GetEntityQuery(
-                ComponentType.Exclude<Prediction<EntityPosition>>(),
-                ComponentType.ReadOnly<SnapshotBufferElement<EntityPosition>>(),
-                ComponentType.ReadWrite<EntityPosition>());
             _pathComponentQuery = GetEntityQuery(
                 ComponentType.Exclude<Prediction<PathComponent>>(),
                 ComponentType.ReadOnly<SnapshotBufferElement<PathComponent>>(),
                 ComponentType.ReadWrite<PathComponent>());
+            _entityPositionQuery = GetEntityQuery(
+                ComponentType.Exclude<Prediction<EntityPosition>>(),
+                ComponentType.ReadOnly<SnapshotBufferElement<EntityPosition>>(),
+                ComponentType.ReadWrite<EntityPosition>());
 //</generated>
             //<template:privatesnapshot>
             //_##TYPELOWER##Query = GetEntityQuery(
@@ -116,13 +116,6 @@ namespace Client.Generated
                 ComponentDataFromEntity = GetComponentTypeHandle<EntityVelocity>()
             };
             Dependency = entityVelocityJob.ScheduleParallel(_entityVelocityQuery, Dependency);
-            ApplyFromBufferJob<EntityPosition> entityPositionJob = new ApplyFromBufferJob<EntityPosition>()
-            {
-                Tick = (int) tickFrom,
-                SnapshotBufferFromEntity = GetBufferTypeHandle<SnapshotBufferElement<EntityPosition>>(true),
-                ComponentDataFromEntity = GetComponentTypeHandle<EntityPosition>()
-            };
-            Dependency = entityPositionJob.ScheduleParallel(_entityPositionQuery, Dependency);
             ApplyFromBufferJob<PathComponent> pathComponentJob = new ApplyFromBufferJob<PathComponent>()
             {
                 Tick = (int) tickFrom,
@@ -130,6 +123,13 @@ namespace Client.Generated
                 ComponentDataFromEntity = GetComponentTypeHandle<PathComponent>()
             };
             Dependency = pathComponentJob.ScheduleParallel(_pathComponentQuery, Dependency);
+            ApplyFromBufferJob<EntityPosition> entityPositionJob = new ApplyFromBufferJob<EntityPosition>()
+            {
+                Tick = (int) tickFrom,
+                SnapshotBufferFromEntity = GetBufferTypeHandle<SnapshotBufferElement<EntityPosition>>(true),
+                ComponentDataFromEntity = GetComponentTypeHandle<EntityPosition>()
+            };
+            Dependency = entityPositionJob.ScheduleParallel(_entityPositionQuery, Dependency);
 //</generated>
             //<template:privatesnapshot>
             //ApplyFromBufferJob<##TYPE##> ##TYPELOWER##Job = new ApplyFromBufferJob<##TYPE##>()

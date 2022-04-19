@@ -1,3 +1,4 @@
+using ExampleGame.Client.Systems;
 using UnityEngine;
 using Unity.Collections;
 using Unity.Entities;
@@ -28,7 +29,7 @@ namespace Client.Generated
         private NativeHashMap<int, ClientEntitySnapshot> _snapshotEntities;
         private NativeHashMap<int, ClientEntitySnapshot> _observedEntities;
         private NativeHashMap<int, ClientArea> _areas;
-        private NetworkedPrefabSystem _networkedPrefabSystem;
+        private TickClientPrefabSystem _clientPrefabSystem;
         private NetworkCompressionModel _compressionModel;
         private EntityQuery _linkEntitiesQuery;
 
@@ -39,7 +40,7 @@ namespace Client.Generated
 
         protected override void OnCreate()
         {
-            _networkedPrefabSystem = World.GetExistingSystem<NetworkedPrefabSystem>();
+            _clientPrefabSystem = World.GetExistingSystem<TickClientPrefabSystem>();
             _areas = new NativeHashMap<int, ClientArea>(1000, Allocator.Persistent);
             _snapshotEntities = new NativeHashMap<int, ClientEntitySnapshot>(10000, Allocator.Persistent);
             _observedEntities = new NativeHashMap<int, ClientEntitySnapshot>(10000, Allocator.Persistent);
@@ -67,17 +68,17 @@ namespace Client.Generated
                     buffer.Add(default);
                 }
             }
-            if (EntityManager.HasComponent<EntityPosition>(clientEntity))
+            if (EntityManager.HasComponent<PathComponent>(clientEntity))
             {
-                var buffer = EntityManager.AddBuffer<SnapshotBufferElement<EntityPosition>>(clientEntity);
+                var buffer = EntityManager.AddBuffer<SnapshotBufferElement<PathComponent>>(clientEntity);
                 for (int i = 0; i < TimeConfig.SnapshotsPerSecond; i++)
                 {
                     buffer.Add(default);
                 }
             }
-            if (EntityManager.HasComponent<PathComponent>(clientEntity))
+            if (EntityManager.HasComponent<EntityPosition>(clientEntity))
             {
-                var buffer = EntityManager.AddBuffer<SnapshotBufferElement<PathComponent>>(clientEntity);
+                var buffer = EntityManager.AddBuffer<SnapshotBufferElement<EntityPosition>>(clientEntity);
                 for (int i = 0; i < TimeConfig.SnapshotsPerSecond; i++)
                 {
                     buffer.Add(default);
@@ -217,7 +218,7 @@ namespace Client.Generated
             clientData.Version = version;
             SetSingleton(clientData);
 
-            var prefabs = _networkedPrefabSystem.Prefabs;
+            var prefabs = _clientPrefabSystem.PrefabEntities;
 
             for (int i = 0; i < observedEntities; i++)
             {
@@ -256,11 +257,11 @@ namespace Client.Generated
                     {
                         componentMask = componentMask | (1 << 0);
                     }
-                    if (EntityManager.HasComponent(entity, typeof(EntityPosition)))
+                    if (EntityManager.HasComponent(entity, typeof(PathComponent)))
                     {
                         componentMask = componentMask | (1 << 1);
                     }
-                    if (EntityManager.HasComponent(entity, typeof(PathComponent)))
+                    if (EntityManager.HasComponent(entity, typeof(EntityPosition)))
                     {
                         componentMask = componentMask | (1 << 2);
                     }
@@ -293,15 +294,15 @@ namespace Client.Generated
                         for (int b = 0; b < TimeConfig.SnapshotsPerSecond; b++)
                             buffer.Add(default);
                     }
-                    if (!EntityManager.HasComponent<SnapshotBufferElement<EntityPosition>>(entity))
-                    {
-                        var buffer = EntityManager.AddBuffer<SnapshotBufferElement<EntityPosition>>(entity);
-                        for (int b = 0; b < TimeConfig.SnapshotsPerSecond; b++)
-                            buffer.Add(default);
-                    }
                     if (!EntityManager.HasComponent<SnapshotBufferElement<PathComponent>>(entity))
                     {
                         var buffer = EntityManager.AddBuffer<SnapshotBufferElement<PathComponent>>(entity);
+                        for (int b = 0; b < TimeConfig.SnapshotsPerSecond; b++)
+                            buffer.Add(default);
+                    }
+                    if (!EntityManager.HasComponent<SnapshotBufferElement<EntityPosition>>(entity))
+                    {
+                        var buffer = EntityManager.AddBuffer<SnapshotBufferElement<EntityPosition>>(entity);
                         for (int b = 0; b < TimeConfig.SnapshotsPerSecond; b++)
                             buffer.Add(default);
                     }
@@ -347,11 +348,11 @@ namespace Client.Generated
                 }
                 if ((updateMask & (1 << 1)) != 0)
                 {
-                    ReadBufferElement<EntityPosition>(ref reader, observedSnapshot.Entity, snapshotTick);
+                    ReadBufferElement<PathComponent>(ref reader, observedSnapshot.Entity, snapshotTick);
                 }
                 if ((updateMask & (1 << 2)) != 0)
                 {
-                    ReadBufferElement<PathComponent>(ref reader, observedSnapshot.Entity, snapshotTick);
+                    ReadBufferElement<EntityPosition>(ref reader, observedSnapshot.Entity, snapshotTick);
                 }
 //</generated>
                 //<template:privatesnapshot>
@@ -413,8 +414,8 @@ namespace Client.Generated
                 Reader = reader,
                 ClientData = clientData,
                 CompressionModel = _compressionModel,
-                EntityArchetypes = _networkedPrefabSystem.PrefabEntityArchetypes,
-                Prefabs = _networkedPrefabSystem.Prefabs,
+                EntityArchetypes = _clientPrefabSystem.PrefabEntityArchetypes,
+                Prefabs = _clientPrefabSystem.PrefabEntities,
                 ObservedEntities = _observedEntities,
                 SnapshotEntities = _snapshotEntities,
                 EntityCommandBuffer = ecb,
@@ -423,8 +424,8 @@ namespace Client.Generated
                 //</template>
 //<generated>
                 EntityVelocityBuffer = GetBufferFromEntity<SnapshotBufferElement<EntityVelocity>>(),
-                EntityPositionBuffer = GetBufferFromEntity<SnapshotBufferElement<EntityPosition>>(),
                 PathComponentBuffer = GetBufferFromEntity<SnapshotBufferElement<PathComponent>>(),
+                EntityPositionBuffer = GetBufferFromEntity<SnapshotBufferElement<EntityPosition>>(),
 //</generated>
                 //<template:privatesnapshot>
                 //##TYPE##Buffer = GetBufferFromEntity<SnapshotBufferElement<##TYPE##>>(),
@@ -484,8 +485,8 @@ namespace Client.Generated
                 //</template>
 //<generated>
                 EntityVelocityBuffer = GetBufferFromEntity<SnapshotBufferElement<EntityVelocity>>(true),
-                EntityPositionBuffer = GetBufferFromEntity<SnapshotBufferElement<EntityPosition>>(true),
                 PathComponentBuffer = GetBufferFromEntity<SnapshotBufferElement<PathComponent>>(true),
+                EntityPositionBuffer = GetBufferFromEntity<SnapshotBufferElement<EntityPosition>>(true),
 //</generated>
             };
             

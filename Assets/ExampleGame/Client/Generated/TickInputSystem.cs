@@ -29,7 +29,6 @@ namespace Client.Generated
         //private NativeArray<##TYPE##> _##TYPELOWER##History = new NativeArray<##TYPE##>(5, Allocator.Persistent);
         //</template>
 //<generated>
-        private NativeArray<WeaponInput> _weaponInputHistory = new NativeArray<WeaponInput>(5, Allocator.Persistent);
         private NativeArray<MovementInput> _movementInputHistory = new NativeArray<MovementInput>(5, Allocator.Persistent);
 //</generated>
 
@@ -56,14 +55,6 @@ namespace Client.Generated
             //}
             //</template>
 //<generated>
-            if (EntityManager.HasComponent<WeaponInput>(clientEntity))
-            {
-                var buffer = EntityManager.AddBuffer<SavedInput<WeaponInput>>(clientEntity);
-                for (int i = 0; i < TimeConfig.TicksPerSecond; i++)
-                {
-                    buffer.Add(default);
-                }
-            }
             if (EntityManager.HasComponent<MovementInput>(clientEntity))
             {
                 var buffer = EntityManager.AddBuffer<SavedInput<MovementInput>>(clientEntity);
@@ -83,7 +74,6 @@ namespace Client.Generated
             //_##TYPELOWER##History.Dispose();
             //</template>
 //<generated>
-            _weaponInputHistory.Dispose();
             _movementInputHistory.Dispose();
 //</generated>
             
@@ -112,21 +102,6 @@ namespace Client.Generated
             //}
             //</template>
 //<generated>
-            var currentWeaponInput = EntityManager.GetComponentData<WeaponInput>(entity);
-            _weaponInputHistory[tick % inputsLength] = currentWeaponInput;
-            var savedWeaponInput = EntityManager.GetBuffer<SavedInput<WeaponInput>>(entity);
-            savedWeaponInput.Add(new SavedInput<WeaponInput>()
-            {
-                Value = currentWeaponInput
-            });
-            
-            NativeArray<WeaponInput> weaponInputSorted = new NativeArray<WeaponInput>(inputsLength, Allocator.Temp);
-            
-            for (int i = 0; i < inputsLength; i++)
-            {
-                int index = (tick - i + inputsLength) % inputsLength;
-                weaponInputSorted[i] = _weaponInputHistory[index];
-            }
             var currentMovementInput = EntityManager.GetComponentData<MovementInput>(entity);
             _movementInputHistory[tick % inputsLength] = currentMovementInput;
             var savedMovementInput = EntityManager.GetBuffer<SavedInput<MovementInput>>(entity);
@@ -155,7 +130,6 @@ namespace Client.Generated
             //##TYPE## last##TYPE## = new ##TYPE##();
             //</template>
 //<generated>
-            WeaponInput lastWeaponInput = new WeaponInput();
             MovementInput lastMovementInput = new MovementInput();
 //</generated>
 
@@ -167,9 +141,6 @@ namespace Client.Generated
                 //last##TYPE## = ##TYPELOWER##;
                 //</template>
 //<generated>
-                var weaponInput = weaponInputSorted[i];
-                weaponInput.WriteSnapshot(ref writer, _compressionModel, lastWeaponInput);
-                lastWeaponInput = weaponInput;
                 var movementInput = movementInputSorted[i];
                 movementInput.WriteSnapshot(ref writer, _compressionModel, lastMovementInput);
                 lastMovementInput = movementInput;
@@ -192,14 +163,6 @@ namespace Client.Generated
             //}
             //</template>
 //<generated>
-            {
-                DataStreamWriter writer = new DataStreamWriter(10, Allocator.Temp);
-                var input = EntityManager.GetComponentData<WeaponInput>(entity);
-                input.WriteSnapshot(ref writer, _compressionModel, default);
-                DataStreamReader reader = new DataStreamReader(writer.AsNativeArray());
-                input.ReadSnapshot(ref reader, _compressionModel, default);
-                EntityManager.SetComponentData(entity, input);
-            }
             {
                 DataStreamWriter writer = new DataStreamWriter(10, Allocator.Temp);
                 var input = EntityManager.GetComponentData<MovementInput>(entity);

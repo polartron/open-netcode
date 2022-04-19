@@ -27,11 +27,11 @@ namespace Server.Generated
             {
                 return mask | (1 << 0);
             }
-            if (typeof(T) == typeof(EntityPosition))
+            if (typeof(T) == typeof(PathComponent))
             {
                 return mask | (1 << 1);
             }
-            if (typeof(T) == typeof(PathComponent))
+            if (typeof(T) == typeof(EntityPosition))
             {
                 return mask | (1 << 2);
             }

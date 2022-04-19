@@ -37,8 +37,8 @@ namespace Server.Generated
         //</template>
 //<generated>
         [ReadOnly] public ComponentDataFromEntity<EntityVelocity> EntityVelocityFromEntity;
-        [ReadOnly] public ComponentDataFromEntity<EntityPosition> EntityPositionFromEntity;
         [ReadOnly] public ComponentDataFromEntity<PathComponent> PathComponentFromEntity;
+        [ReadOnly] public ComponentDataFromEntity<EntityPosition> EntityPositionFromEntity;
 //</generated>
         //<template:publicevent>
         //[ReadOnly] public BufferFromEntity<##TYPE##> ##TYPE##BufferFromEntity;
@@ -92,10 +92,10 @@ namespace Server.Generated
 //<generated>
             NativeArray<EntityVelocity> entityVelocityComponents = new NativeArray<EntityVelocity>(entitySnapshots.Length, Allocator.Temp);
             int entityVelocityIndex = 0;
-            NativeArray<EntityPosition> entityPositionComponents = new NativeArray<EntityPosition>(entitySnapshots.Length, Allocator.Temp);
-            int entityPositionIndex = 0;
             NativeArray<PathComponent> pathComponentComponents = new NativeArray<PathComponent>(entitySnapshots.Length, Allocator.Temp);
             int pathComponentIndex = 0;
+            NativeArray<EntityPosition> entityPositionComponents = new NativeArray<EntityPosition>(entitySnapshots.Length, Allocator.Temp);
+            int entityPositionIndex = 0;
 //</generated>
 
             for (int i = 0; i < entitySnapshots.Length; i++)
@@ -120,15 +120,15 @@ namespace Server.Generated
                 }
                 if ((mask & (1 << 1)) != 0)
                 {
-                    entityPositionComponents[entityPositionIndex] = EntityPositionFromEntity[snapshot.Entity];
-                    snapshot.EntityPositionIndex = entityPositionIndex;
-                    entityPositionIndex++;
-                }
-                if ((mask & (1 << 2)) != 0)
-                {
                     pathComponentComponents[pathComponentIndex] = PathComponentFromEntity[snapshot.Entity];
                     snapshot.PathComponentIndex = pathComponentIndex;
                     pathComponentIndex++;
+                }
+                if ((mask & (1 << 2)) != 0)
+                {
+                    entityPositionComponents[entityPositionIndex] = EntityPositionFromEntity[snapshot.Entity];
+                    snapshot.EntityPositionIndex = entityPositionIndex;
+                    entityPositionIndex++;
                 }
 //</generated>
 
@@ -141,8 +141,8 @@ namespace Server.Generated
             //</template>
 //<generated>
             area.EntityVelocityBaseLine.UpdateBaseline(entityVelocityComponents, tick, entityVelocityIndex);
-            area.EntityPositionBaseLine.UpdateBaseline(entityPositionComponents, tick, entityPositionIndex);
             area.PathComponentBaseLine.UpdateBaseline(pathComponentComponents, tick, pathComponentIndex);
+            area.EntityPositionBaseLine.UpdateBaseline(entityPositionComponents, tick, entityPositionIndex);
 //</generated>
 
             entities.Dispose();
@@ -201,8 +201,8 @@ namespace Server.Generated
             //</template>
 //<generated>
             var baseentityVelocity = Area.EntityVelocityBaseLine.GetBaseline(PlayerSnapshotIndex);
-            var baseentityPosition = Area.EntityPositionBaseLine.GetBaseline(PlayerSnapshotIndex);
             var basepathComponent = Area.PathComponentBaseLine.GetBaseline(PlayerSnapshotIndex);
+            var baseentityPosition = Area.EntityPositionBaseLine.GetBaseline(PlayerSnapshotIndex);
 //</generated>
 
             for (int i = 0; i < currentSnapshots.Length; i++)
@@ -229,14 +229,14 @@ namespace Server.Generated
                 }
                 if ((componentMask & (1 << 1)) != 0)
                 {
-                    EntityPosition component = EntityPositionFromEntity[current.Entity];
-                    EntityPosition baseComponent = updated.Added ? default : baseentityPosition[updated.Base.EntityPositionIndex];
+                    PathComponent component = PathComponentFromEntity[current.Entity];
+                    PathComponent baseComponent = updated.Added ? default : basepathComponent[updated.Base.PathComponentIndex];
                     component.WriteSnapshot(ref writer, CompressionModel, baseComponent);
                 }
                 if ((componentMask & (1 << 2)) != 0)
                 {
-                    PathComponent component = PathComponentFromEntity[current.Entity];
-                    PathComponent baseComponent = updated.Added ? default : basepathComponent[updated.Base.PathComponentIndex];
+                    EntityPosition component = EntityPositionFromEntity[current.Entity];
+                    EntityPosition baseComponent = updated.Added ? default : baseentityPosition[updated.Base.EntityPositionIndex];
                     component.WriteSnapshot(ref writer, CompressionModel, baseComponent);
                 }
 //</generated>

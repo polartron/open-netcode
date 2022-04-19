@@ -27,8 +27,8 @@ namespace Client.Generated
         //</template>
 //<generated>
         [ReadOnly] public BufferFromEntity<SnapshotBufferElement<EntityVelocity>> EntityVelocityBuffer;
-        [ReadOnly] public BufferFromEntity<SnapshotBufferElement<EntityPosition>> EntityPositionBuffer;
         [ReadOnly] public BufferFromEntity<SnapshotBufferElement<PathComponent>> PathComponentBuffer;
+        [ReadOnly] public BufferFromEntity<SnapshotBufferElement<EntityPosition>> EntityPositionBuffer;
 //</generated>
         [ReadOnly] public ComponentDataFromEntity<NetworkedPrefabIndex> NetworkedPrefabFromEntity;
 
@@ -51,10 +51,10 @@ namespace Client.Generated
 //<generated>
             NativeArray<EntityVelocity> entityVelocitys = new NativeArray<EntityVelocity>(entitySnapshots.Length, Allocator.Temp);
             int entityVelocityIndex = 0;
-            NativeArray<EntityPosition> entityPositions = new NativeArray<EntityPosition>(entitySnapshots.Length, Allocator.Temp);
-            int entityPositionIndex = 0;
             NativeArray<PathComponent> pathComponents = new NativeArray<PathComponent>(entitySnapshots.Length, Allocator.Temp);
             int pathComponentIndex = 0;
+            NativeArray<EntityPosition> entityPositions = new NativeArray<EntityPosition>(entitySnapshots.Length, Allocator.Temp);
+            int entityPositionIndex = 0;
 //</generated>
 
             for (int i = 0; i < entitySnapshots.Length; i++)
@@ -86,17 +86,17 @@ namespace Client.Generated
                 }
                 if ((mask & (1 << 1)) != 0)
                 {
-                    var buffer = EntityPositionBuffer[snapshot.Entity];
-                    entityPositions[entityPositionIndex] = buffer[SnapshotIndex % buffer.Length].Value;
-                    snapshot.EntityPositionIndex = entityPositionIndex;
-                    entityPositionIndex++;
-                }
-                if ((mask & (1 << 2)) != 0)
-                {
                     var buffer = PathComponentBuffer[snapshot.Entity];
                     pathComponents[pathComponentIndex] = buffer[SnapshotIndex % buffer.Length].Value;
                     snapshot.PathComponentIndex = pathComponentIndex;
                     pathComponentIndex++;
+                }
+                if ((mask & (1 << 2)) != 0)
+                {
+                    var buffer = EntityPositionBuffer[snapshot.Entity];
+                    entityPositions[entityPositionIndex] = buffer[SnapshotIndex % buffer.Length].Value;
+                    snapshot.EntityPositionIndex = entityPositionIndex;
+                    entityPositionIndex++;
                 }
 //</generated>
                 entities[i] = snapshot;
@@ -109,8 +109,8 @@ namespace Client.Generated
             //</template>
 //<generated>
             area.EntityVelocityBaseLine.UpdateBaseline(entityVelocitys, SnapshotIndex, entityVelocityIndex);
-            area.EntityPositionBaseLine.UpdateBaseline(entityPositions, SnapshotIndex, entityPositionIndex);
             area.PathComponentBaseLine.UpdateBaseline(pathComponents, SnapshotIndex, pathComponentIndex);
+            area.EntityPositionBaseLine.UpdateBaseline(entityPositions, SnapshotIndex, entityPositionIndex);
 //</generated>
         }
     }

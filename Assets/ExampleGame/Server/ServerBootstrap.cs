@@ -5,6 +5,7 @@ using ExampleGame.Shared.Movement.Components;
 using ExampleGame.Shared.Movement.Systems;
 using OpenNetcode.Server;
 using OpenNetcode.Server.Systems;
+using OpenNetcode.Shared;
 using OpenNetcode.Shared.Systems;
 using Server.Generated;
 using Shared;
@@ -24,10 +25,6 @@ namespace ExampleGame.Server
 
             var networkedPrefabs = Resources.Load<NetworkedPrefabs>("Networked Prefabs");
             ServerInitialization.Initialize(World, networkedPrefabs);
-
-            var player = Resources.Load<GameObject>("Prefabs/Server/Server Player");
-            var monster = Resources.Load<GameObject>("Prefabs/Server/Server Moving Monster");
-            var pathingMonster = Resources.Load<GameObject>("Prefabs/Server/Server Pathing Monster");
 
             var tickSystem = World.GetExistingSystem<TickSystem>();
             tickSystem.AddPreSimulationSystem(new ServerGuestAuthentication(World.GetExistingSystem<ServerNetworkSystem>()));
