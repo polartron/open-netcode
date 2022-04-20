@@ -21,7 +21,13 @@ namespace OpenNetcode.Shared.Debugging
             _instance._elements[label] = element;
         }
         
+        public static void AddText(FixedString32Bytes label, float value)
+        {
+            _instance._text[label] = value;
+        }
+        
         internal NativeHashMap<FixedString32Bytes, TickElement> _elements;
+        internal NativeHashMap<FixedString32Bytes, float> _text;
         
         private bool _toggleView;
         private Entity clientEntity;
@@ -31,12 +37,14 @@ namespace OpenNetcode.Shared.Debugging
         private void OnDestroy()
         {
             _elements.Dispose();
+            _text.Dispose();
         }
 
         void Awake()
         {
             _instance = this;
             _elements = new NativeHashMap<FixedString32Bytes, TickElement>(100, Allocator.Persistent);
+            _text = new NativeHashMap<FixedString32Bytes, float>(100, Allocator.Persistent);
 
             _white = new Texture2D(1, 1);
             _white.SetPixel(0,0, Color.white);
@@ -50,13 +58,14 @@ namespace OpenNetcode.Shared.Debugging
                 return;
             
             Rect elementsRect = new Rect(20, 20, 500, 200);
-
+            
             float labelWidth = 150;
             float height = 20;
-
+            
             int areaWidth = TimeConfig.TicksPerSecond * 5;
-
+            
             int i = 0;
+            
             foreach(var element in _elements)
             {
                 i++;
@@ -78,6 +87,16 @@ namespace OpenNetcode.Shared.Debugging
                 // Tick
                 GUI.color = element.Value.Color;
                 GUI.Label(new Rect(elementsRect.x + labelWidth + element.Value.Tick % areaWidth, elementsRect.y + height * i, areaWidth, height), "|");
+            }
+
+            elementsRect.y += height * _elements.Count();
+            i = 0;
+
+            foreach (var text in _text)
+            {
+                i++;
+                GUI.color = Color.yellow;
+                GUI.Label(new Rect(elementsRect.x, elementsRect.y + height * i, labelWidth, height), text.Key + " = " + text.Value);
             }
         }
     }

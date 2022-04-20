@@ -20,10 +20,19 @@ namespace ExampleGame.Client.Systems
         private IClientNetworkSystem _client;
         private bool _connecting = false;
         private bool _loggingIn = false;
+        private TickSystem _tickSystem;
+        private TickReceiveResultSystem _tickReceiveResultSystem;
 
         public TickDevClient(IClientNetworkSystem client)
         {
             _client = client;
+        }
+
+        protected override void OnCreate()
+        {
+            _tickSystem = World.GetExistingSystem<TickSystem>();
+            _tickReceiveResultSystem = World.GetExistingSystem<TickReceiveResultSystem>();
+            base.OnCreate();
         }
 
         public void TryConnect(string ip, ushort port)
@@ -86,6 +95,16 @@ namespace ExampleGame.Client.Systems
                 Color = Color.green,
                 Tick = GetSingleton<TickData>().Value
             });
+            
+            DebugOverlay.AddTickElement("Received Server Tick", new TickElement()
+            {
+                Color = Color.green,
+                Tick = (int) _tickReceiveResultSystem.ReceivedServerTick
+            });
+            
+            DebugOverlay.AddText("Rtt", (float) _tickSystem.RttHalf);
+            DebugOverlay.AddText("Tick", (float) _tickSystem.TickFloat);
+            DebugOverlay.AddText("Proc", (float) _tickReceiveResultSystem.ProcessedTime);
         }
     }
 }

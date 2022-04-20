@@ -40,6 +40,8 @@ namespace ExampleGame.Client.Systems
             {
                 _prefabs.Add(prefab.name, prefab);
             }
+            
+            Debug.Log($"TickClientPrefabSystem: Got {_prefabs.Count} prefabs.");
         }
 
         protected override void OnDestroy()

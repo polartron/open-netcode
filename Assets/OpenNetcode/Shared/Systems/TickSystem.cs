@@ -85,6 +85,11 @@ namespace OpenNetcode.Shared.Systems
             _ticker.SetTime(time);
         }
         
+        public void AdjustTime(double offset)
+        {
+            _ticker.AdjustTime(offset);
+        }
+        
         public void SetRttHalf(float rtt)
         {
             _ticker.SetRttHalf(rtt);

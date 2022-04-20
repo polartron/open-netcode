@@ -12,7 +12,6 @@ public class BuildMenu
     [MenuItem("OpenNetcode/Build/Build Client")]
     public static void BuildClient()
     {
-        
         BuildPlayerOptions defaultOptions = new BuildPlayerOptions();
         EditorUserBuildSettings.SetPlatformSettings("Standalone", "CopyPDBFiles", "true");
         defaultOptions.target = EditorUserBuildSettings.activeBuildTarget;
@@ -20,7 +19,7 @@ public class BuildMenu
         defaultOptions.options = BuildOptions.Development;
         defaultOptions.scenes = new[]
         {
-            "Assets/Scenes/Test.unity"
+            "Assets/Scenes/ClientScene.unity"
         };
         
         defaultOptions.extraScriptingDefines = new[]
@@ -30,8 +29,42 @@ public class BuildMenu
         defaultOptions.locationPathName = "Build/Client.exe";
         
         NetworkedPrefabs networkedPrefabs = Resources.Load<NetworkedPrefabs>("Networked Prefabs");
-        networkedPrefabs.Client = networkedPrefabs.Client;
+        var prefabs = networkedPrefabs.Client;
+        networkedPrefabs.Client = prefabs;
         networkedPrefabs.Server = null;
+        Debug.Log($"Saving {prefabs.Count} client prefabs.");
+        EditorUtility.SetDirty(networkedPrefabs);
+        AssetDatabase.SaveAssets();
+        
+        BuildPipeline.BuildPlayer(defaultOptions);
+    }
+    
+    [MenuItem("OpenNetcode/Build/Build Client Scripts Only")]
+    public static void BuildClientScriptsOnly()
+    {
+        BuildPlayerOptions defaultOptions = new BuildPlayerOptions();
+        EditorUserBuildSettings.SetPlatformSettings("Standalone", "CopyPDBFiles", "true");
+        defaultOptions.target = EditorUserBuildSettings.activeBuildTarget;
+        defaultOptions.targetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
+        defaultOptions.options = BuildOptions.Development | BuildOptions.BuildScriptsOnly;
+        defaultOptions.scenes = new[]
+        {
+            "Assets/Scenes/ClientScene.unity"
+        };
+        
+        defaultOptions.extraScriptingDefines = new[]
+        {
+            "CLIENT"
+        };
+        defaultOptions.locationPathName = "Build/Client.exe";
+
+        NetworkedPrefabs networkedPrefabs = Resources.Load<NetworkedPrefabs>("Networked Prefabs");
+        var prefabs = networkedPrefabs.Client;
+        networkedPrefabs.Client = prefabs;
+        networkedPrefabs.Server = null;
+        Debug.Log($"Saving {prefabs.Count} client prefabs.");
+        EditorUtility.SetDirty(networkedPrefabs);
+        AssetDatabase.SaveAssets();
         
         BuildPipeline.BuildPlayer(defaultOptions);
     }

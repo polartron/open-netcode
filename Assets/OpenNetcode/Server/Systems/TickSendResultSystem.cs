@@ -33,7 +33,7 @@ namespace OpenNetcode.Server.Systems
         {
             int tick = GetSingleton<TickData>().Value;
 
-            if (tick % (TimeConfig.TicksPerSecond / 2) != 0)
+            if (tick % (TimeConfig.TicksPerSecond / TimeConfig.SnapshotsPerSecond) != 0)
             {
                 return;
             }

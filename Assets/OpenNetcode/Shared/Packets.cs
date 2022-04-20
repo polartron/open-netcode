@@ -47,12 +47,12 @@ namespace OpenNetcode.Shared
         
         public static PacketType ReadPacketType(ref DataStreamReader reader)
         {
-            return (PacketType) reader.ReadRawBits(4);
+            return (PacketType) reader.ReadRawBits(5);
         }
 
         public static void WritePacketType(PacketType type, ref DataStreamWriter writer)
         {
-            writer.WriteRawBits((uint) type, 4);
+            writer.WriteRawBits((uint) type, 5);
         }
     }
 }

@@ -182,7 +182,7 @@ namespace OpenNetcode.Server.Systems
         {
             public NetworkDriver.Concurrent Driver;
             [ReadOnly] public NativeList<NetworkConnection> Connections;
-            public NativeMultiHashMap<int, IncomingPacket>.ParallelWriter ReceivedMessages;
+            [WriteOnly] public NativeMultiHashMap<int, IncomingPacket>.ParallelWriter ReceivedMessages;
 
             public void Execute(int index)
             {

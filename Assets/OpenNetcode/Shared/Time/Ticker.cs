@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using Shared.Time;
 using UnityEngine;
 
@@ -43,7 +44,7 @@ namespace OpenNetcode.Shared.Time
             TicksPerSecond = 20,
             SmoothTimeMs = 500
         };
-    }
+    }    
 
     public class Ticker
     {
@@ -78,7 +79,14 @@ namespace OpenNetcode.Shared.Time
                 TimeUpdated = TimeUtils.CurrentTimeInMs(), 
                 DilationTo = 1
             };
-            
+        }
+
+        public override string ToString()
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.AppendLine($"Tick = {_tickerData.LastTick}");
+            stringBuilder.AppendLine($"Rtt = {_tickerData.SmoothRttHalf}");
+            return stringBuilder.ToString();
         }
 
         public void Reset()
@@ -130,6 +138,12 @@ namespace OpenNetcode.Shared.Time
 
         public void SetTime(double time)
         {
+            SetTime(ref _tickerData, _tickerConfig, time);
+        }
+        
+        public void AdjustTime(double offset)
+        {
+            double time = Time + (offset * 0.1f);
             SetTime(ref _tickerData, _tickerConfig, time);
         }
 

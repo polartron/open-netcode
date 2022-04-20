@@ -34,6 +34,9 @@ namespace OpenNetcode.Client.Systems
         private NativeList<double> _timeOffsets;
         private bool _timeSet;
         private int _timeOffsetIndex = 0;
+        
+        public float ProcessedTime { get; private set; }
+        public float ReceivedServerTick { get; private set; }
 
         public TickReceiveResultSystem(IClientNetworkSystem client)
         {
@@ -44,7 +47,7 @@ namespace OpenNetcode.Client.Systems
         {
             _tickSystem = World.GetExistingSystem<TickSystem>();
             _compressionModel = new NetworkCompressionModel(Allocator.Persistent);
-            _sentInputs = new NativeHashMap<int, SentTime>(TimeConfig.TicksPerSecond, Allocator.Persistent);
+            _sentInputs = new NativeHashMap<int, SentTime>(TimeConfig.TicksPerSecond * 10, Allocator.Persistent);
             _timeOffsets = new NativeList<double>(10, Allocator.Persistent);
         }
 
@@ -78,6 +81,9 @@ namespace OpenNetcode.Client.Systems
                         float processedTime = reader.ReadPackedFloat(_compressionModel);
                         bool hasLostInput = Convert.ToBoolean(reader.ReadRawBits(1));
 
+                        ProcessedTime = processedTime * 1000f;
+                        ReceivedServerTick = serverTick;
+
                         if (_sentInputs.TryGetValue(resultTick % _sentInputs.Capacity, out SentTime sentTime))
                         {
                             if (sentTime.Tick != resultTick)
@@ -95,12 +101,31 @@ namespace OpenNetcode.Client.Systems
                                 Debug.LogWarning("The server didn't receive input in time. Possible spike in latency.");
                             }
                             
+                            
+                            
                             if (!_timeSet || hasLostInput)
                             {
                                 double time = ((float) serverTick / TimeConfig.TicksPerSecond) * 1000f;
                                 time += TimeConfig.CommandBufferLengthMs;
                                 _tickSystem.SetTime(time);
                                 _timeSet = true;
+                            }
+                            else
+                            {
+                                double clientTime = ((float) serverTick / TimeConfig.TicksPerSecond) * 1000f;
+                                clientTime += TimeConfig.CommandBufferLengthMs;
+                                double offset = clientTime - _tickSystem.TickerTime;
+                                _tickSystem.AdjustTime(offset);
+                            }
+                        }
+                        else
+                        {
+                            if (!_timeSet || hasLostInput)
+                            {
+                                double time = ((float) serverTick / TimeConfig.TicksPerSecond) * 1000f;
+                                time += TimeConfig.CommandBufferLengthMs;
+                                _tickSystem.SetTime(time);
+                                _tickSystem.SetRttHalf(500);
                             }
                         }
 

@@ -83,7 +83,9 @@ namespace Server.Generated
 //</generated>
             };
 
-            Dependency = readPlayerInputJob.ScheduleParallel(_playersQuery, Dependency);
+            Dependency = readPlayerInputJob.Schedule(_playersQuery, Dependency);
+            // TODO: Figure out the real reason why using ScheduleParallel produces the error from DataStreamReader
+            // InvalidOperationException: The Unity.Collections.NativeList`1[System.Byte] has been declared as [WriteOnly] in the job, but you are reading from it.
             Dependency.Complete();
 
             UpdatePlayerInputJob updatePlayerInputJob = new UpdatePlayerInputJob()
@@ -137,7 +139,7 @@ namespace Server.Generated
                 for (int i = 0; i < serverNetworkedEntities.Length; i++)
                 {
                     var serverNetworkedEntity = serverNetworkedEntities[i];
-                    
+
                     if(ReceivedPackets.TryGetFirstValue((int) PacketType.Input, out IncomingPacket wrapper, out NativeMultiHashMapIterator<int> iterator))
                     {
                         do
