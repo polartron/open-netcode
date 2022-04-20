@@ -31,6 +31,7 @@ public class BuildMenu
         
         NetworkedPrefabs networkedPrefabs = Resources.Load<NetworkedPrefabs>("Networked Prefabs");
         networkedPrefabs.Client = networkedPrefabs.Client;
+        networkedPrefabs.Server = null;
         
         BuildPipeline.BuildPlayer(defaultOptions);
     }

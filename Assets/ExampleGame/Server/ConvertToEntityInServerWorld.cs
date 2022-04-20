@@ -1,8 +1,6 @@
-using ExampleGame.Server;
 using Unity.Entities;
-using UnityEngine;
 
-namespace ExampleGame.Shared
+namespace ExampleGame.Server
 {
     public class ConvertToEntityInServerWorld : ConvertToEntity
     {
