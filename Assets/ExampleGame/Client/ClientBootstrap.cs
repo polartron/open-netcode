@@ -48,7 +48,6 @@ namespace ExampleGame.Client
             SourceConsole.SourceConsole.AddAssembly(Assembly.GetExecutingAssembly());
             SourceConsole.SourceConsole.RefreshCommands();
             
-            
             return world;
         }
     }

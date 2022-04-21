@@ -38,7 +38,7 @@ namespace OpenNetcode.Server.Systems
         [BurstCompile]
         private struct SpatialHashingGridJob : IJobEntityBatch
         {
-            private static readonly int AreaSize = 10;
+            private static readonly int AreaSize = 1000;
             private static readonly int HashSegments = 1000;
             
             [ReadOnly] public ComponentTypeHandle<Translation> TranslationsHandle;
