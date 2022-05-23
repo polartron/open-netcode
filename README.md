@@ -1,3 +1,10 @@
+## Hello from 23/5/22 (an update)
+This project is "on hold" until I've stress tested it in the current company I'm working at.
+Unity Transport is also not production ready as it is lacking NAT Punchthrough and other feautures I want. Unity Relay also costs money per CCU so there's that.
+I've ditched Unity Transport at the moment as Steam Relay works really well. I'm hoping to get all this into this public repository when Unity slowly crawls towards an 1.0 release of DOTS and when more people are ready to adopt this new workflow. 
+
+
+
 ![signal-2022-01-09-191118](https://user-images.githubusercontent.com/38894848/148695519-838ba0d3-cdc2-462d-b38d-ddad0ee1499d.png)
 
 Open Netcode is a feature rich networking package for Unity DOTS.
