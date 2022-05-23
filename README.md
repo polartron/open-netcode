@@ -1,6 +1,6 @@
 ## Hello from 23/5/22 (an update)
 This project is "on hold" until I've stress tested it in the current company I'm working at.
-Unity Transport is also not production ready as it is lacking NAT Punchthrough and other feautures I want. Unity Relay also costs money per CCU so there's that.
+Unity Transport is also not production ready as it is lacking NAT Punchthrough and other features I want. Unity Relay also costs money per CCU so there's that.
 I've ditched Unity Transport at the moment as Steam Relay works really well. I'm hoping to get all this into this public repository when Unity slowly crawls towards an 1.0 release of DOTS and when more people are ready to adopt this new workflow. 
 
 
