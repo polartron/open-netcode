@@ -1,7 +1,4 @@
-## Hello from 16/9/22 (an update)
-
-I've decided to wait for DOTS 1.0 and then completely re-write this from scratch using Roslyn Source Generators and better intergration with the hybrid workflow. 
-
+## (Abandoned project, use com.unity.netcode instead 
 
 
 
